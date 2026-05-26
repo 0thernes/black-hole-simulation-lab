@@ -1,89 +1,95 @@
-# =============================================================================
-# BlackHoleDS - Visual Black Hole Simulation & Data Science Platform
-# Gold Standard .gitignore - Terry Davis / Maximum-Seeking / 250-Point Compliant
-# NO SECRETS EVER. GitHub will accept this repo clean. Zero violations in history.
-# =============================================================================
+# BlackHoleDS / OPPENGROK Black Hole Simulation Lab
+# .gitignore — secret hygiene, build artifacts, generated data, IDE noise
+#
+# Rules:
+#   1. No secrets ever — every secret pattern is a positive (allow-listed) match
+#      against well-known credential file names, never a substring match on code.
+#   2. Build outputs and generated data are ignored. Curated examples are
+#      allow-listed explicitly so legitimate research/data fixtures stay tracked.
+#   3. Archives are ignored except for test fixtures that need to ship.
 
 # -----------------------------------------------------------------------------
-# SECRETS, CREDENTIALS, TOKENS, KEYS (CRITICAL - GitHub acceptance & security)
+# Secrets and credentials
 # -----------------------------------------------------------------------------
 .env
 .env.*
 *.env
-*secret*
-*secrets*
-*credential*
-*credentials*
+
+# Common credential file basenames (whole-name, not substring)
+credentials
+credentials.*
+secrets
+secrets.*
+*-credentials.json
+*-credentials.yml
+*-credentials.yaml
+*.credentials
+*.secrets
+
+# Tokens and API keys — match leading dot files and obvious basenames
+.netrc
+.npmrc
+.pypirc
+.htpasswd
+
+# Cryptographic key material
 *.pem
 *.key
-*.p12
 *.pfx
-id_rsa*
-id_dsa*
-id_ecdsa*
-id_ed25519*
-*.ppk
-*token*
-*api_key*
-*apikey*
-*auth*
-aws-credentials*
-gcp-credentials*
-azure-credentials*
-service-account*.json
+*.p12
 *.jks
 *.keystore
-*privatekey*
-*private_key*
-*access_key*
-*secret_key*
-*client_secret*
-*.ovpn
-*.htpasswd
-*.netrc
-.stripe*
-.sentry*
-.ghp_*
-ghp_*
-sk-*
-AKIA*
-AIza*
------BEGIN*PRIVATE*KEY*
-# Also catch common misspellings or variants that could leak
-*passwrd*
-*passwd*
-*passphrase*
-*auth_token*
+*.ppk
+id_rsa
+id_rsa.*
+id_dsa
+id_dsa.*
+id_ecdsa
+id_ecdsa.*
+id_ed25519
+id_ed25519.*
+
+# Cloud provider credentials
+.aws/
+.gcp/
+.azure/
+gcp-service-account*.json
+aws-credentials*
+azure-credentials*
+
+# Known leaked-secret prefixes (filenames or staged copies of leaked material)
+ghp_*.txt
+sk-*.txt
+AKIA*.txt
+AIza*.txt
 
 # -----------------------------------------------------------------------------
-# Orca / Agent / Stress-Test Workspace State (this environment)
+# Orca / Codex / agent state
 # -----------------------------------------------------------------------------
 .orca/
-*.orca
 orca-terminal-*
 worktree-*.comment
-sessions/
-*.log
-terminal-*.log
-orca-*.log
-# Agent coordination state (if persisted)
 agent-*.state
 parallel-*.lock
+.codex/
 
-# Nested Orca/Git worktree that is not part of the project source tree
+# Nested Orca worktree that is not part of the project source tree
 Nautilus/
 
 # -----------------------------------------------------------------------------
-# Build Artifacts & Tooling (C++ primary - MSVC, CMake, vcpkg, Ninja, etc.)
+# C++ build artifacts
 # -----------------------------------------------------------------------------
 build/
+build-*/
 out/
 dist/
+install/
 *.o
 *.obj
 *.a
 *.lib
 *.so
+*.dylib
 *.dll
 *.exe
 *.pdb
@@ -97,8 +103,8 @@ CMakeUserPresets.json
 compile_commands.json
 vcpkg_installed/
 vcpkg-manifest.log
-*.ninja
 .ninja_*
+
 # Visual Studio
 .vs/
 *.vcxproj.user
@@ -106,79 +112,79 @@ vcpkg-manifest.log
 *.sdf
 *.opensdf
 ipch/
-# Xcode / other
+
+# Xcode and other IDEs
 *.xcodeproj/
 *.xcworkspace/
 DerivedData/
-# Python data science helpers (if used for ETL/ viz glue)
+
+# Python (data science tooling)
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
+.eggs/
 .installed.cfg
 *.egg
 .venv/
 venv/
 ENV/
 env/
-# Node (if any web dashboard later)
+
+# Node (in case a small web dashboard is added)
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 # -----------------------------------------------------------------------------
-# Data Science Exports & Large Artifacts (reproducible via code, not stored)
+# Data exports (regenerable; curated examples allow-listed below)
 # -----------------------------------------------------------------------------
 exports/
+sim-runs/
+ensemble-*/
+trajectories/
+frames/
+renders/
 *.csv
 *.tsv
 *.parquet
 *.feather
 *.sqlite
-*.db
 *.sqlite3
+*.db
 *.pbix
 *.pbit
 *.xlsx
 *.xlsm
 *.xls
-# Keep tiny curated examples for docs and tests
+# PowerBI / Excel temporary files
+~$*.xlsx
+~$*.xlsm
+
+# Allow-list: curated examples and test fixtures must stay tracked
 !examples/**/*.csv
 !examples/**/*.db
 !examples/**/*.xlsx
-!test/data/**/*.csv
-!test/fixtures/**/*.sqlite
-# Large simulation dumps
-sim-runs/
-ensemble-*/
-trajectories/
-# PowerBI / Excel cache
-*.tmp
-~$*.xlsx
-# Generated diagrams / viz frames (regenerable)
-frames/
-renders/
+!tests/data/**/*.csv
+!tests/fixtures/**/*.sqlite
+!assets/charts/*.csv
+!data/research/*.csv
+!data/research/*.json
+!docs/**/*.csv
+
+# Generated visualization frames
 diagrams/*.png
 diagrams/*.svg
 diagrams/*.pdf
+!docs/**/*.svg
+!docs/**/*.png
+!assets/diagrams/*.svg
+!assets/diagrams/*.mmd
 
 # -----------------------------------------------------------------------------
-# IDE, Editor, OS, Misc
+# IDE, editor, OS noise
 # -----------------------------------------------------------------------------
 .idea/
 *.iml
@@ -191,61 +197,58 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 *.bak
-*.tmp
-*.temp
-*.log
-logs/
-# Patch files, diffs from tools
+
+# Patch files and diffs from local tools
 *.patch
 *.diff
 
-# Incoming repo-package staging for direct local GitHub workflow
+# Local logs
+*.log
+logs/
+
+# -----------------------------------------------------------------------------
+# Incoming package staging
+# -----------------------------------------------------------------------------
 _incoming/
 archives/
-# Secrets scanning / audit artifacts (we run them, do not commit raw reports with hits)
+
+# -----------------------------------------------------------------------------
+# Audit and scan outputs (artifacts, not source)
+# -----------------------------------------------------------------------------
 secret-scan-*.json
 audit-*.raw
 gitleaks-report*.json
 
 # -----------------------------------------------------------------------------
-# Git & Version Control Hygiene
+# Version control hygiene
 # -----------------------------------------------------------------------------
-# Never commit the .git directory obviously, but also:
 .git-credentials
 .gitconfig.local
-# Large binary history prevention (use LFS or never commit)
+
+# Archives — most are intake artifacts, not source
 *.zip
+*.tar
 *.tar.gz
 *.tgz
-*.tar
 *.rar
 *.7z
-# But allow small test fixtures
-!test/fixtures/*.zip
+!tests/fixtures/*.zip
 
 # -----------------------------------------------------------------------------
-# Documentation & Generated (regenerable from source + theory)
+# Generated documentation (kept regenerable)
 # -----------------------------------------------------------------------------
 docs/generated/
 docs/_build/
-*.pdf
-# Except committed hand-authored or final gold versions
-!docs/*.pdf
-!docs/architecture/*.pdf
 
-# -----------------------------------------------------------------------------
-# CI / CD / Daemon State (Ralph Wiggum loops run in CI or locally, artifacts ignored)
-# -----------------------------------------------------------------------------
+# CI/CD artifacts
 .github/workflows/*-local*
 ci-artifacts/
 junit/
 coverage/
 lcov.info
 .nyc_output/
-# Scheduler / automation state files
+
+# Scheduler and daemon state
 scheduler-*.state
 daemon-*.pid
 cron-*.lock
-
-# End of .gitignore - This file itself is part of the 250-point audit (item on hygiene).
-# Any addition of a secret pattern here is a deliberate defensive act, never an afterthought.
