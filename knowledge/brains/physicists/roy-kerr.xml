@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="roy-kerr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="physicist">
+    <name>Roy P. Kerr</name>
+    <lifespan>1934-present</lifespan>
+    <nationality>New Zealander</nationality>
+    <primary_field>General relativity</primary_field>
+    <secondary_fields>
+      <field>Differential geometry</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Kerr solution</title>
+      <year>1963</year>
+      <description>Exact axially symmetric vacuum solution to Einstein's field equations describing rotating black holes.</description>
+      <relevance_to_blackhole_ds>The other foundational metric in this project. Used in tests/smoke_tests.cpp via kerr_isco_radius.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Algebraically special spacetimes (Petrov type D); guess-and-verify backed by symmetry.</proof_standard>
+    <favorite_question>What symmetries can I exploit to reduce the field equations?</favorite_question>
+    <favorite_question>Is this spacetime algebraically special?</favorite_question>
+    <favorite_question>What conserved quantities does the symmetry guarantee?</favorite_question>
+    <failure_mode>Ignoring the rich global structure of Kerr (multiple horizons, ergosphere, ring singularity, closed timelike curves inside the inner horizon).</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Kerr, R. P. (1963). Gravitational field of a spinning mass as an example of algebraically special metrics. Phys. Rev. Lett. 11, 237.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Designing modules that touch rotating black holes, ISCO, photon sphere with spin, frame dragging, or the ergosphere.</when_to_consult>
+    <module_relevance>
+      <module>metrics/kerr</module>
+      <module>core/ergosphere</module>
+      <module>integrators/equatorial_kerr</module>
+    </module_relevance>
+    <cautions>The maximally extended Kerr spacetime includes pathologies inside the inner horizon. Validation suites should use astrophysically reasonable parameter ranges.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

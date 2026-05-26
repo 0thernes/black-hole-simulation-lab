@@ -1,0 +1,833 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Seed roster for the BlackHoleDS reasoning-lens XML profiles. Profiles are structured prompts, not claims about a person's mind. See docs/vision/SCIENTIFIC_INTEGRITY_CHARTER.md section VI.",
+  "profiles": [
+    {
+      "slug": "karl-schwarzschild",
+      "category": "physicist",
+      "name": "Karl Schwarzschild",
+      "lifespan": "1873-1916",
+      "nationality": "German",
+      "primary_field": "General relativity, astrophysics",
+      "secondary_fields": ["Optics", "Stellar dynamics"],
+      "contributions": [
+        {
+          "title": "Schwarzschild solution to Einstein's field equations",
+          "year": "1916",
+          "description": "First exact non-trivial solution to Einstein's vacuum field equations. Describes the spacetime outside a non-rotating, uncharged, spherically symmetric mass.",
+          "relevance": "Foundational. The Schwarzschild metric is the analytic baseline of this project."
+        },
+        {
+          "title": "Schwarzschild radius",
+          "year": "1916",
+          "description": "Defined the characteristic radius r_s = 2GM/c^2 at which the metric becomes singular in Schwarzschild coordinates (the event horizon for non-rotating black holes).",
+          "relevance": "Implemented in src/BlackHoleDS.cpp and tested in tests/smoke_tests.cpp."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Find exact closed-form solutions when possible; verify by substitution into the original equations.",
+        "questions": [
+          "What is the simplest geometry that still captures the essential physics?",
+          "Where does this solution break down, and what is happening there physically vs mathematically?",
+          "Can I separate variables exploiting the symmetry?"
+        ],
+        "failures": [
+          "Mistaking a coordinate singularity for a physical singularity (r = r_s vs r = 0)."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Schwarzschild, K. (1916). Uber das Gravitationsfeld eines Massenpunktes nach der Einsteinschen Theorie. Sitzungsberichte der Preussischen Akademie der Wissenschaften.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Designing or validating any module that touches non-rotating, vacuum-spacetime geometry.",
+        "modules": ["metrics/schwarzschild", "core/horizon", "tests/analytic_validators"],
+        "cautions": "His original coordinate system has a coordinate singularity at r = r_s. Use Eddington-Finkelstein or Kruskal-Szekeres coordinates near the horizon."
+      }
+    },
+    {
+      "slug": "roy-kerr",
+      "category": "physicist",
+      "name": "Roy P. Kerr",
+      "lifespan": "1934-present",
+      "nationality": "New Zealander",
+      "primary_field": "General relativity",
+      "secondary_fields": ["Differential geometry"],
+      "contributions": [
+        {
+          "title": "Kerr solution",
+          "year": "1963",
+          "description": "Exact axially symmetric vacuum solution to Einstein's field equations describing rotating black holes.",
+          "relevance": "The other foundational metric in this project. Used in tests/smoke_tests.cpp via kerr_isco_radius."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Algebraically special spacetimes (Petrov type D); guess-and-verify backed by symmetry.",
+        "questions": [
+          "What symmetries can I exploit to reduce the field equations?",
+          "Is this spacetime algebraically special?",
+          "What conserved quantities does the symmetry guarantee?"
+        ],
+        "failures": [
+          "Ignoring the rich global structure of Kerr (multiple horizons, ergosphere, ring singularity, closed timelike curves inside the inner horizon)."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Kerr, R. P. (1963). Gravitational field of a spinning mass as an example of algebraically special metrics. Phys. Rev. Lett. 11, 237.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Designing modules that touch rotating black holes, ISCO, photon sphere with spin, frame dragging, or the ergosphere.",
+        "modules": ["metrics/kerr", "core/ergosphere", "integrators/equatorial_kerr"],
+        "cautions": "The maximally extended Kerr spacetime includes pathologies inside the inner horizon. Validation suites should use astrophysically reasonable parameter ranges."
+      }
+    },
+    {
+      "slug": "albert-einstein",
+      "category": "physicist",
+      "name": "Albert Einstein",
+      "lifespan": "1879-1955",
+      "nationality": "German/Swiss/American",
+      "primary_field": "Theoretical physics",
+      "secondary_fields": ["Special relativity", "General relativity", "Statistical mechanics", "Quantum theory"],
+      "contributions": [
+        {
+          "title": "General relativity",
+          "year": "1915",
+          "description": "Geometric theory of gravitation in which mass-energy curves spacetime. The Einstein field equations relate the Einstein tensor to the stress-energy tensor.",
+          "relevance": "The entire physics layer of this project sits on top of Einstein's field equations."
+        },
+        {
+          "title": "Equivalence principle",
+          "year": "1907",
+          "description": "Local equivalence of gravitation and acceleration; foundational for the geometric interpretation of gravity.",
+          "relevance": "Drives the choice of coordinate systems and freely falling observers in the integrator."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Thought experiments grounded in invariance principles; equations follow the geometry.",
+        "questions": [
+          "What is the simplest universal principle that this phenomenon obeys?",
+          "What does a freely falling observer see?",
+          "How is the physics expressed in coordinate-independent terms?"
+        ],
+        "failures": [
+          "Letting an elegant idea outrun observational checks (Einstein's cosmological constant flip-flop, his resistance to indeterministic quantum mechanics)."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Einstein, A. (1915). The field equations of gravitation. Sitzungsberichte der Preussischen Akademie der Wissenschaften, 844-847.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Reviewing whether a proposed change respects general covariance, equivalence, and the structure of the field equations.",
+        "modules": ["core/coordinates", "metrics/*", "integrators/*"],
+        "cautions": "Beauty is a strong heuristic but not a substitute for testable predictions. Tag elegant unverified ideas as speculative_extension."
+      }
+    },
+    {
+      "slug": "roger-penrose",
+      "category": "physicist",
+      "name": "Roger Penrose",
+      "lifespan": "1931-present",
+      "nationality": "British",
+      "primary_field": "Mathematical physics",
+      "secondary_fields": ["General relativity", "Cosmology", "Geometry", "Foundations of quantum mechanics"],
+      "contributions": [
+        {
+          "title": "Penrose singularity theorem",
+          "year": "1965",
+          "description": "Proved that, under physically reasonable energy conditions, gravitational collapse must lead to a spacetime singularity.",
+          "relevance": "Justifies treating black-hole interiors as places where the classical theory breaks down. Bounds the model_status of interior claims."
+        },
+        {
+          "title": "Penrose process",
+          "year": "1969",
+          "description": "Energy extraction from a rotating black hole via the ergosphere.",
+          "relevance": "Future work on Kerr energetics and accretion-disk models."
+        },
+        {
+          "title": "Penrose diagrams",
+          "year": "1960s",
+          "description": "Conformal compactifications used to visualize the global causal structure of spacetimes.",
+          "relevance": "Useful for visualization_metaphor modules and for reasoning about horizons."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Global topological and causal arguments rather than local coordinate computations.",
+        "questions": [
+          "What does the global causal structure of this spacetime look like?",
+          "Does an energy condition fail anywhere?",
+          "Is there a trapped surface?"
+        ],
+        "failures": [
+          "Conflating mathematical idealizations (closed trapped surface, asymptotic flatness) with astrophysical realities without saying so."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Penrose, R. (1965). Gravitational collapse and space-time singularities. Phys. Rev. Lett. 14, 57.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Reasoning about black-hole interiors, energy extraction, cosmological singularities, or whether a claim is global vs local.",
+        "modules": ["core/causal_structure", "metrics/kerr_ergosphere", "docs/research/source_cards"],
+        "cautions": "His later speculative work (cyclic conformal cosmology, Orch-OR consciousness) is not validated physics. Label any incursion of those ideas as speculative_extension."
+      }
+    },
+    {
+      "slug": "stephen-hawking",
+      "category": "physicist",
+      "name": "Stephen Hawking",
+      "lifespan": "1942-2018",
+      "nationality": "British",
+      "primary_field": "Theoretical physics",
+      "secondary_fields": ["General relativity", "Cosmology", "Quantum field theory in curved spacetime"],
+      "contributions": [
+        {
+          "title": "Hawking radiation",
+          "year": "1974",
+          "description": "Predicted that black holes emit thermal radiation due to quantum effects near the event horizon, with temperature T = hbar c^3 / (8 pi G M k_B).",
+          "relevance": "Defines the speculative_extension boundary for this project. Hawking radiation is well-established theoretically but unobserved."
+        },
+        {
+          "title": "Four laws of black hole mechanics",
+          "year": "1973",
+          "description": "Co-developed (with Bardeen and Carter) the formal analogy between black hole mechanics and the laws of thermodynamics.",
+          "relevance": "Anchors the connection between geometry (surface gravity, horizon area) and thermodynamic-style quantities (temperature, entropy)."
+        },
+        {
+          "title": "Penrose-Hawking singularity theorems",
+          "year": "1970",
+          "description": "Generalized Penrose's theorem to broader contexts including cosmological singularities.",
+          "relevance": "Same as Penrose's contribution: bounds the truth-tier of interior claims."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Quantum field theory in fixed curved backgrounds; gain insight by combining geometry with QFT modes.",
+        "questions": [
+          "What do the field modes look like near this horizon?",
+          "What does an observer at infinity see, vs a freely falling observer?",
+          "Is there a thermodynamic analog of this geometric quantity?"
+        ],
+        "failures": [
+          "Treating QFT-in-curved-spacetime results as final theory of quantum gravity (they are not)."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Hawking, S. W. (1974). Black hole explosions? Nature 248, 30.", "model_status": "speculative_extension"},
+        {"citation": "Bardeen, J. M., Carter, B., Hawking, S. W. (1973). The four laws of black hole mechanics. Comm. Math. Phys. 31, 161.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Reasoning about Hawking radiation, black-hole thermodynamics, the information paradox, or the boundary between classical GR and quantum gravity.",
+        "modules": ["docs/research/source_cards", "metrics/thermodynamics", "speculative/hawking_radiation"],
+        "cautions": "Hawking radiation has not been observed. Any code path or visualization implying detection should be labeled speculative_extension."
+      }
+    },
+    {
+      "slug": "subrahmanyan-chandrasekhar",
+      "category": "astronomer",
+      "name": "Subrahmanyan Chandrasekhar",
+      "lifespan": "1910-1995",
+      "nationality": "Indian/American",
+      "primary_field": "Astrophysics",
+      "secondary_fields": ["Stellar structure", "Black holes", "Mathematical theory of black holes"],
+      "contributions": [
+        {
+          "title": "Chandrasekhar limit",
+          "year": "1931",
+          "description": "Showed that white dwarfs cannot exceed approximately 1.4 solar masses without collapsing; predicted the existence of objects beyond degeneracy pressure support.",
+          "relevance": "Anchors stellar-mass black hole formation pathways."
+        },
+        {
+          "title": "The Mathematical Theory of Black Holes",
+          "year": "1983",
+          "description": "Definitive monograph on the perturbation theory of black holes (Schwarzschild, Reissner-Nordstrom, Kerr).",
+          "relevance": "Primary analytic reference for ISCO, photon sphere, quasi-normal modes, and perturbation methods."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Push analytic methods (separation of variables, special functions, perturbation theory) as far as they will go before resorting to numerics.",
+        "questions": [
+          "Does this problem admit a separable form?",
+          "What does perturbation theory tell us about stability?",
+          "What is the full hierarchy of governing equations?"
+        ],
+        "failures": [
+          "Sometimes pushing analytic methods past the point where numerics would be faster and clearer."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Chandrasekhar, S. (1983). The Mathematical Theory of Black Holes. Oxford University Press.", "model_status": "analytic_classical"},
+        {"citation": "Chandrasekhar, S. (1931). The maximum mass of ideal white dwarfs. Astrophys. J. 74, 81.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Implementing perturbation theory, quasi-normal modes, ringdown, or anything that admits a separable analytic form.",
+        "modules": ["metrics/*", "integrators/perturbation", "tests/analytic_validators"],
+        "cautions": "His notation is dense. Translate carefully to modern conventions when implementing."
+      }
+    },
+    {
+      "slug": "kip-thorne",
+      "category": "physicist",
+      "name": "Kip S. Thorne",
+      "lifespan": "1940-present",
+      "nationality": "American",
+      "primary_field": "Gravitational physics, astrophysics",
+      "secondary_fields": ["Gravitational waves", "Black holes", "Numerical relativity"],
+      "contributions": [
+        {
+          "title": "LIGO (co-founder)",
+          "year": "1980s-",
+          "description": "Co-founded LIGO, the laser interferometer that made the first direct detection of gravitational waves in 2015.",
+          "relevance": "Anchors the observational_constraint tier for the gravitational-wave catalog (GWTC) data we integrate."
+        },
+        {
+          "title": "Gravitation (with Misner and Wheeler)",
+          "year": "1973",
+          "description": "Standard graduate textbook on general relativity.",
+          "relevance": "Primary reference for the analytic formulas used throughout the project."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Physical intuition first, then mathematics; relentless attention to observational consequences.",
+        "questions": [
+          "How would you actually measure this?",
+          "What waveform does the detector see, and how much SNR do we need?",
+          "What is the experimentally relevant approximation?"
+        ],
+        "failures": [
+          "Occasionally overestimating the relevance of speculative ideas (e.g., wormholes for time travel) in popular communication."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Misner, C. W., Thorne, K. S., Wheeler, J. A. (1973). Gravitation. W. H. Freeman.", "model_status": "analytic_classical"},
+        {"citation": "Abbott, B. P. et al. (LIGO Scientific Collaboration) (2016). Observation of gravitational waves from a binary black hole merger. Phys. Rev. Lett. 116, 061102.", "model_status": "observational_constraint"}
+      ],
+      "apply": {
+        "when": "Designing observational consumers, gravitational-wave catalog integrations, or sanity-checking against MTW conventions.",
+        "modules": ["data/gw_ingestion", "metrics/*", "docs/research/source_cards"],
+        "cautions": "MTW uses (-+++) signature; document which signature any code path assumes."
+      }
+    },
+    {
+      "slug": "ezra-newman",
+      "category": "physicist",
+      "name": "Ezra T. Newman",
+      "lifespan": "1929-2021",
+      "nationality": "American",
+      "primary_field": "Mathematical physics",
+      "secondary_fields": ["General relativity", "Differential geometry"],
+      "contributions": [
+        {
+          "title": "Kerr-Newman solution",
+          "year": "1965",
+          "description": "Generalized the Kerr solution to include electric charge, producing the most general black hole solution in Einstein-Maxwell theory.",
+          "relevance": "Fourth metric in our DIM_METRIC table (after Schwarzschild, Kerr, Kerr-Newman, Kerr-deSitter)."
+        },
+        {
+          "title": "Newman-Penrose formalism",
+          "year": "1962",
+          "description": "Tetrad-based formulation of general relativity, well-suited for studying gravitational radiation and algebraically special spacetimes.",
+          "relevance": "Useful for perturbation theory and ringdown modules."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Use null tetrads and complex coordinates to expose hidden structure.",
+        "questions": [
+          "What does this spacetime look like in a null tetrad frame?",
+          "Which Weyl scalars vanish, and what does that mean physically?"
+        ],
+        "failures": [
+          "The NP formalism is powerful but obscures intuition; do not impose it where Schwarzschild coordinates make a calculation trivial."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Newman, E. T., Janis, A. I. (1965). Note on the Kerr spinning-particle metric. J. Math. Phys. 6, 915.", "model_status": "analytic_classical"},
+        {"citation": "Newman, E. T., Penrose, R. (1962). An approach to gravitational radiation by a method of spin coefficients. J. Math. Phys. 3, 566.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Implementing charged black holes, the Kerr-Newman metric, or perturbation theory using Weyl scalars.",
+        "modules": ["metrics/kerr_newman", "integrators/perturbation", "metrics/np_formalism"],
+        "cautions": "Sign conventions vary between sources. Cite the convention you adopt."
+      }
+    },
+    {
+      "slug": "jacob-bekenstein",
+      "category": "physicist",
+      "name": "Jacob Bekenstein",
+      "lifespan": "1947-2015",
+      "nationality": "Mexican/Israeli",
+      "primary_field": "Theoretical physics",
+      "secondary_fields": ["Black hole thermodynamics", "Information theory"],
+      "contributions": [
+        {
+          "title": "Bekenstein entropy",
+          "year": "1973",
+          "description": "Proposed that black holes carry entropy proportional to their horizon area: S = (k_B c^3 / 4 hbar G) A.",
+          "relevance": "Defines the thermodynamic interpretation of black holes used in the Hawking-radiation pedagogy modules."
+        },
+        {
+          "title": "Bekenstein bound",
+          "year": "1981",
+          "description": "Maximum amount of information that can be contained within a given region of space-time.",
+          "relevance": "Speculative_extension territory. Useful for reasoning about holographic limits."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Thermodynamic gedankenexperiments; use the second law as a constraint.",
+        "questions": [
+          "What does the second law of thermodynamics say must happen here?",
+          "What information is hidden behind the horizon?"
+        ],
+        "failures": [
+          "Conflating well-established formulas (horizon area entropy) with conjectural bounds."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Bekenstein, J. D. (1973). Black holes and entropy. Phys. Rev. D 7, 2333.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Designing thermodynamic or information-theoretic modules.",
+        "modules": ["metrics/thermodynamics", "speculative/information"],
+        "cautions": "Keep the analytic entropy formula separate from speculative quantum-gravity microstate counting."
+      }
+    },
+    {
+      "slug": "shing-tung-yau",
+      "category": "mathematician",
+      "name": "Shing-Tung Yau",
+      "lifespan": "1949-present",
+      "nationality": "Chinese/American",
+      "primary_field": "Mathematics",
+      "secondary_fields": ["Differential geometry", "Geometric analysis"],
+      "contributions": [
+        {
+          "title": "Calabi-Yau manifolds",
+          "year": "1976",
+          "description": "Proved the Calabi conjecture, establishing the existence of Ricci-flat Kähler manifolds, now central to string theory.",
+          "relevance": "Speculative_extension; useful as a lens for reasoning about higher-dimensional generalizations."
+        },
+        {
+          "title": "Positive mass theorem",
+          "year": "1979",
+          "description": "Proved (with Schoen) that the ADM mass of an asymptotically flat spacetime obeying the dominant energy condition is non-negative.",
+          "relevance": "Bounds the analytic_classical claims about black-hole masses in the project."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Rigorous global analysis on manifolds; PDE methods on geometric structures.",
+        "questions": [
+          "What global PDE governs this geometric quantity?",
+          "What energy condition is implicitly assumed?"
+        ],
+        "failures": [
+          "Mathematical rigor sometimes outpaces physical relevance."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Schoen, R., Yau, S.-T. (1979). On the proof of the positive mass conjecture in general relativity. Comm. Math. Phys. 65, 45.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Reviewing global claims about masses, energy conditions, or higher-dimensional generalizations.",
+        "modules": ["core/global_geometry", "speculative/higher_dimensions"],
+        "cautions": "Calabi-Yau / string-theory connections are speculative_extension for this project."
+      }
+    },
+    {
+      "slug": "bernhard-riemann",
+      "category": "mathematician",
+      "name": "Bernhard Riemann",
+      "lifespan": "1826-1866",
+      "nationality": "German",
+      "primary_field": "Mathematics",
+      "secondary_fields": ["Differential geometry", "Complex analysis", "Analytic number theory"],
+      "contributions": [
+        {
+          "title": "Riemannian geometry",
+          "year": "1854",
+          "description": "Generalized Gauss's surface geometry to arbitrary dimensions, introducing the metric tensor and the Riemann curvature tensor.",
+          "relevance": "The mathematical language of general relativity. Every spacetime metric in this project is a Riemannian (technically pseudo-Riemannian, Lorentzian) metric."
+        },
+        {
+          "title": "Riemann surfaces",
+          "year": "1851",
+          "description": "Multi-sheeted surfaces on which multi-valued complex functions become single-valued.",
+          "relevance": "Useful for visualizing complex coordinate systems in Kerr geometry."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Construct the right object for the question, then prove things about it.",
+        "questions": [
+          "What is the right space on which this object is well-defined?",
+          "How does curvature constrain what can happen here?"
+        ],
+        "failures": [
+          "Riemann sometimes lacked formal rigor by modern standards; his arguments work but need cleaning."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Riemann, B. (1868). Uber die Hypothesen welche der Geometrie zu Grunde liegen. Abh. Gesellschaft Wiss. Gottingen 13.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Any time you reach for a metric tensor, curvature, or differential geometry.",
+        "modules": ["core/geometry", "metrics/*", "include/blackhole_ds/units.hpp"],
+        "cautions": "Mind the signature convention; Riemannian (positive definite) vs Lorentzian (one minus sign) matters for causality."
+      }
+    },
+    {
+      "slug": "henri-poincare",
+      "category": "mathematician",
+      "name": "Henri Poincare",
+      "lifespan": "1854-1912",
+      "nationality": "French",
+      "primary_field": "Mathematics",
+      "secondary_fields": ["Topology", "Dynamical systems", "Mathematical physics"],
+      "contributions": [
+        {
+          "title": "Poincare conjecture (later proved by Perelman)",
+          "year": "1904",
+          "description": "Topological characterization of the 3-sphere.",
+          "relevance": "Indirectly relevant; topology of spatial slices matters for global GR claims."
+        },
+        {
+          "title": "Foundations of dynamical systems and chaos theory",
+          "year": "1890",
+          "description": "Showed that the three-body problem can exhibit sensitive dependence on initial conditions, prefiguring chaos theory.",
+          "relevance": "Directly relevant for Lyapunov-exponent and chaos modules in CHAOS_STATS."
+        },
+        {
+          "title": "Poincare sections",
+          "year": "1880s",
+          "description": "Technique for analyzing periodic and quasi-periodic orbits via successive intersections with a transversal surface.",
+          "relevance": "Implemented as poincare_section_count in the TRAJECTORIES schema."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Qualitative methods: identify invariants and topology before computing.",
+        "questions": [
+          "Is the long-term behavior periodic, quasi-periodic, or chaotic?",
+          "What are the fixed points and their stability?",
+          "What is the topology of the phase space?"
+        ],
+        "failures": [
+          "Sometimes prioritized intuition over careful computation; verify quantitatively."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Poincare, H. (1890). Sur le probleme des trois corps et les equations de la dynamique. Acta Mathematica 13, 1.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Analyzing trajectory chaos, ergodicity, or long-term stability of geodesics.",
+        "modules": ["integrators/*", "core/chaos_diagnostics", "data/chaos_stats"],
+        "cautions": "Chaos diagnostics need long integrations and careful error control to be meaningful."
+      }
+    },
+    {
+      "slug": "carl-friedrich-gauss",
+      "category": "mathematician",
+      "name": "Carl Friedrich Gauss",
+      "lifespan": "1777-1855",
+      "nationality": "German",
+      "primary_field": "Mathematics",
+      "secondary_fields": ["Number theory", "Differential geometry", "Astronomy", "Statistics"],
+      "contributions": [
+        {
+          "title": "Intrinsic curvature (Theorema Egregium)",
+          "year": "1827",
+          "description": "Showed that the Gaussian curvature of a surface is an intrinsic invariant, independent of embedding.",
+          "relevance": "Foundation for the modern notion of curvature in Riemannian geometry, which GR inherits."
+        },
+        {
+          "title": "Method of least squares",
+          "year": "1809",
+          "description": "Statistical estimation method for orbit determination and other inverse problems.",
+          "relevance": "Useful for fitting model parameters to observational data (EHT, gravitational wave catalogs)."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Compute carefully and exhaustively; check special cases against the general result.",
+        "questions": [
+          "What is intrinsic to this object, independent of how we describe it?",
+          "What does a careful asymptotic expansion say?"
+        ],
+        "failures": [
+          "Famously slow to publish, so others sometimes got the credit."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Gauss, C. F. (1828). Disquisitiones generales circa superficies curvas. Commentationes Soc. Reg. Sci. Gott. Recent. 6, 99.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Anything involving intrinsic curvature, coordinate-independent geometric quantities, or parameter estimation.",
+        "modules": ["core/geometry", "data/parameter_fitting"],
+        "cautions": "Modern conventions differ from Gauss's; translate carefully."
+      }
+    },
+    {
+      "slug": "elie-cartan",
+      "category": "mathematician",
+      "name": "Elie Cartan",
+      "lifespan": "1869-1951",
+      "nationality": "French",
+      "primary_field": "Mathematics",
+      "secondary_fields": ["Differential geometry", "Lie groups", "General relativity"],
+      "contributions": [
+        {
+          "title": "Cartan formalism (moving frames, exterior calculus)",
+          "year": "1900-1930s",
+          "description": "Coordinate-free language for differential geometry using differential forms and orthonormal frames.",
+          "relevance": "Modern formulation of general relativity uses Cartan structure equations; useful for tetrad-based numerical relativity."
+        },
+        {
+          "title": "Einstein-Cartan theory",
+          "year": "1922",
+          "description": "Extension of general relativity including torsion as well as curvature.",
+          "relevance": "Speculative_extension; useful as a foil for understanding why standard GR uses only curvature."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Coordinate-free formulations; expose the geometric content first.",
+        "questions": [
+          "What is the differential form that captures this physics?",
+          "Can I work in an orthonormal frame to simplify?"
+        ],
+        "failures": [
+          "Cartan's notation is famously dense; can obscure rather than clarify for beginners."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Cartan, E. (1923). Sur les varietes a connexion affine et la theorie de la relativite generalisee. Annales scientifiques de l'E.N.S. 40, 325.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Implementing tetrad-based formulations or working with differential forms.",
+        "modules": ["metrics/np_formalism", "core/tetrad"],
+        "cautions": "Coordinate-free formulations are powerful but pedagogically heavy; document the equivalent coordinate calculation."
+      }
+    },
+    {
+      "slug": "yvonne-choquet-bruhat",
+      "category": "mathematician",
+      "name": "Yvonne Choquet-Bruhat",
+      "lifespan": "1923-present",
+      "nationality": "French",
+      "primary_field": "Mathematics",
+      "secondary_fields": ["General relativity", "Partial differential equations"],
+      "contributions": [
+        {
+          "title": "Local well-posedness of the Cauchy problem in GR",
+          "year": "1952",
+          "description": "Proved that the Einstein equations admit a well-posed initial-value formulation in harmonic coordinates.",
+          "relevance": "Foundation of numerical relativity. Every initial-value solver in the field traces back to this result."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Rigorous PDE methods on the geometry of spacetime; pay close attention to function spaces and energy estimates.",
+        "questions": [
+          "Is this problem well-posed?",
+          "What is the appropriate function space?",
+          "Do the energy estimates close?"
+        ],
+        "failures": [
+          "Mathematical rigor sometimes requires assumptions that physicists wave at."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Foures-Bruhat, Y. (1952). Theoreme d'existence pour certains systemes d'equations aux derivees partielles non lineaires. Acta Math. 88, 141.", "model_status": "analytic_classical"}
+      ],
+      "apply": {
+        "when": "Designing initial-data and constraint-satisfaction algorithms for future numerical relativity work.",
+        "modules": ["integrators/initial_value", "speculative/numerical_relativity"],
+        "cautions": "Numerical methods must respect the constraint equations, not just the evolution equations."
+      }
+    },
+    {
+      "slug": "arthur-eddington",
+      "category": "astronomer",
+      "name": "Arthur Eddington",
+      "lifespan": "1882-1944",
+      "nationality": "British",
+      "primary_field": "Astrophysics",
+      "secondary_fields": ["General relativity", "Stellar structure"],
+      "contributions": [
+        {
+          "title": "1919 eclipse expedition",
+          "year": "1919",
+          "description": "Measured the deflection of starlight by the Sun, confirming Einstein's GR prediction.",
+          "relevance": "Anchors the gravitational-lensing observational tier."
+        },
+        {
+          "title": "Eddington-Finkelstein coordinates",
+          "year": "1924",
+          "description": "Coordinate system that removes the coordinate singularity at the Schwarzschild radius.",
+          "relevance": "Useful for any module that needs to integrate geodesics across the event horizon."
+        },
+        {
+          "title": "Eddington limit",
+          "year": "1926",
+          "description": "Upper limit on the luminosity of a stable, spherically symmetric accreting object.",
+          "relevance": "Defines the natural scale for accretion-rate parameters in RUNS."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Combine careful observation, physical reasoning, and clean coordinate choices.",
+        "questions": [
+          "Is this prediction observationally testable?",
+          "What coordinate system makes this physics most transparent?"
+        ],
+        "failures": [
+          "Initially resisted Chandrasekhar's white-dwarf mass limit; let prior beliefs slow acceptance."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Dyson, F. W., Eddington, A. S., Davidson, C. (1920). A determination of the deflection of light by the Sun's gravitational field. Phil. Trans. Roy. Soc. A 220, 291.", "model_status": "observational_constraint"}
+      ],
+      "apply": {
+        "when": "Working with horizon-crossing geodesics, accretion-rate normalization, or gravitational lensing observables.",
+        "modules": ["metrics/eddington_finkelstein", "data/accretion", "metrics/lensing"],
+        "cautions": "Eddington-limit accretion-rate constraints are approximations; real systems can exceed it in beamed or transient regimes."
+      }
+    },
+    {
+      "slug": "andrea-ghez",
+      "category": "astronomer",
+      "name": "Andrea Ghez",
+      "lifespan": "1965-present",
+      "nationality": "American",
+      "primary_field": "Astronomy",
+      "secondary_fields": ["Galactic center", "Stellar dynamics"],
+      "contributions": [
+        {
+          "title": "Mass of Sgr A* via stellar orbits",
+          "year": "1998-",
+          "description": "Tracked stars orbiting the supermassive black hole at the center of the Milky Way, measuring its mass via Kepler's third law.",
+          "relevance": "Anchors the observational_constraint tier for Sgr A* (~4.1 million solar masses)."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Long-baseline observational campaigns; track real objects over decades and let the data settle the theory.",
+        "questions": [
+          "What is the simplest dynamical model that fits this orbit?",
+          "What systematics could fake this signal?"
+        ],
+        "failures": [
+          "Long-baseline programs are vulnerable to instrumentation changes."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Ghez, A. M. et al. (2008). Measuring distance and properties of the Milky Way's central supermassive black hole. Astrophys. J. 689, 1044.", "model_status": "observational_constraint"}
+      ],
+      "apply": {
+        "when": "Using Sgr A* as an anchor for supermassive black hole parameters.",
+        "modules": ["data/observational_anchors", "docs/research/source_cards"],
+        "cautions": "Sgr A* parameters carry real uncertainties; quote them with error bars."
+      }
+    },
+    {
+      "slug": "reinhard-genzel",
+      "category": "astronomer",
+      "name": "Reinhard Genzel",
+      "lifespan": "1952-present",
+      "nationality": "German",
+      "primary_field": "Astronomy",
+      "secondary_fields": ["Galactic center", "Infrared interferometry"],
+      "contributions": [
+        {
+          "title": "Sgr A* mass and proper motions (parallel program to Ghez)",
+          "year": "1990s-",
+          "description": "Independent program tracking stars at the galactic center using VLT and GRAVITY interferometer.",
+          "relevance": "Cross-validates Ghez's Sgr A* measurements with independent instruments."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Push instrument capabilities to the diffraction limit; cross-check with independent observers.",
+        "questions": [
+          "What is the systematic error from instrument calibration?",
+          "Does the independent observer see the same thing?"
+        ],
+        "failures": [
+          "Instrument-dependent calibration can introduce systematic offsets."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Genzel, R. et al. (2010). The galactic center massive black hole and nuclear star cluster. Rev. Mod. Phys. 82, 3121.", "model_status": "observational_constraint"}
+      ],
+      "apply": {
+        "when": "Same as Ghez. Use both as independent observational anchors.",
+        "modules": ["data/observational_anchors"],
+        "cautions": "Cross-check parameter values between Ghez and Genzel programs; they should agree within stated uncertainties."
+      }
+    },
+    {
+      "slug": "shep-doeleman",
+      "category": "astronomer",
+      "name": "Sheperd Doeleman",
+      "lifespan": "1967-present",
+      "nationality": "American",
+      "primary_field": "Astronomy",
+      "secondary_fields": ["Very long baseline interferometry", "Black hole imaging"],
+      "contributions": [
+        {
+          "title": "Event Horizon Telescope founding director",
+          "year": "2009-",
+          "description": "Led the EHT collaboration that produced the first horizon-scale images of M87* (2019) and Sgr A* (2022).",
+          "relevance": "Provides the observational_constraint reference for the horizon-scale ring (M87*: 42 +/- 3 microarcseconds; Sgr A*: 51.8 +/- 2.3 microarcseconds)."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Push interferometric baselines to Earth-diameter scale; use closure quantities (closure phase, closure amplitude) that are robust to station errors.",
+        "questions": [
+          "What is the closure phase of the source brightness distribution?",
+          "Is the ring asymmetric, and what does that tell us about the spin axis?"
+        ],
+        "failures": [
+          "Imaging at the diffraction limit is sensitive to prior assumptions; EHT collaboration carefully cross-validates with multiple algorithms."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Event Horizon Telescope Collaboration (2019). First M87 Event Horizon Telescope results. I-VI. Astrophys. J. Lett. 875.", "model_status": "observational_constraint"}
+      ],
+      "apply": {
+        "when": "Using horizon-scale imaging data as a constraint or validation target.",
+        "modules": ["data/eht_ingestion", "docs/research/source_cards"],
+        "cautions": "Reported uncertainties are non-Gaussian; do not naively convolve them as if they were."
+      }
+    },
+    {
+      "slug": "andrew-strominger",
+      "category": "physicist",
+      "name": "Andrew Strominger",
+      "lifespan": "1955-present",
+      "nationality": "American",
+      "primary_field": "Theoretical physics",
+      "secondary_fields": ["String theory", "Black-hole microstate counting", "Soft theorems"],
+      "contributions": [
+        {
+          "title": "Strominger-Vafa microstate counting",
+          "year": "1996",
+          "description": "Counted the microstates of certain extremal black holes in string theory and reproduced the Bekenstein-Hawking entropy.",
+          "relevance": "Speculative_extension. Defines the bar for what a microscopic explanation of black-hole entropy would look like."
+        },
+        {
+          "title": "Soft hair on black holes",
+          "year": "2016",
+          "description": "Argued (with Hawking and Perry) that black holes carry an infinite number of soft hairs (low-energy gauge or graviton excitations).",
+          "relevance": "Speculative_extension; relevant for the information paradox discussion."
+        }
+      ],
+      "reasoning": {
+        "proof_standard": "Use stringy / holographic dualities to translate intractable problems into computable ones.",
+        "questions": [
+          "Is there a dual description in which this is easy?",
+          "What symmetries are hidden by gauge choice?"
+        ],
+        "failures": [
+          "Holographic reasoning assumes string theory's framework; physically relevant conclusions need to be checked against model-independent constraints."
+        ]
+      },
+      "bibliography": [
+        {"citation": "Strominger, A., Vafa, C. (1996). Microscopic origin of the Bekenstein-Hawking entropy. Phys. Lett. B 379, 99.", "model_status": "speculative_extension"}
+      ],
+      "apply": {
+        "when": "Reasoning about microstate counting, soft hair, or holographic dualities.",
+        "modules": ["speculative/microstate", "speculative/holography"],
+        "cautions": "Label everything in this lineage as speculative_extension until cross-validated against observation."
+      }
+    }
+  ]
+}

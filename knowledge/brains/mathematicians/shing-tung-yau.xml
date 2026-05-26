@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="shing-tung-yau" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="mathematician">
+    <name>Shing-Tung Yau</name>
+    <lifespan>1949-present</lifespan>
+    <nationality>Chinese/American</nationality>
+    <primary_field>Mathematics</primary_field>
+    <secondary_fields>
+      <field>Differential geometry</field>
+      <field>Geometric analysis</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Calabi-Yau manifolds</title>
+      <year>1976</year>
+      <description>Proved the Calabi conjecture, establishing the existence of Ricci-flat Kähler manifolds, now central to string theory.</description>
+      <relevance_to_blackhole_ds>Speculative_extension; useful as a lens for reasoning about higher-dimensional generalizations.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Positive mass theorem</title>
+      <year>1979</year>
+      <description>Proved (with Schoen) that the ADM mass of an asymptotically flat spacetime obeying the dominant energy condition is non-negative.</description>
+      <relevance_to_blackhole_ds>Bounds the analytic_classical claims about black-hole masses in the project.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Rigorous global analysis on manifolds; PDE methods on geometric structures.</proof_standard>
+    <favorite_question>What global PDE governs this geometric quantity?</favorite_question>
+    <favorite_question>What energy condition is implicitly assumed?</favorite_question>
+    <failure_mode>Mathematical rigor sometimes outpaces physical relevance.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Schoen, R., Yau, S.-T. (1979). On the proof of the positive mass conjecture in general relativity. Comm. Math. Phys. 65, 45.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Reviewing global claims about masses, energy conditions, or higher-dimensional generalizations.</when_to_consult>
+    <module_relevance>
+      <module>core/global_geometry</module>
+      <module>speculative/higher_dimensions</module>
+    </module_relevance>
+    <cautions>Calabi-Yau / string-theory connections are speculative_extension for this project.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

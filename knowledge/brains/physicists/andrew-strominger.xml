@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="andrew-strominger" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="physicist">
+    <name>Andrew Strominger</name>
+    <lifespan>1955-present</lifespan>
+    <nationality>American</nationality>
+    <primary_field>Theoretical physics</primary_field>
+    <secondary_fields>
+      <field>String theory</field>
+      <field>Black-hole microstate counting</field>
+      <field>Soft theorems</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Strominger-Vafa microstate counting</title>
+      <year>1996</year>
+      <description>Counted the microstates of certain extremal black holes in string theory and reproduced the Bekenstein-Hawking entropy.</description>
+      <relevance_to_blackhole_ds>Speculative_extension. Defines the bar for what a microscopic explanation of black-hole entropy would look like.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Soft hair on black holes</title>
+      <year>2016</year>
+      <description>Argued (with Hawking and Perry) that black holes carry an infinite number of soft hairs (low-energy gauge or graviton excitations).</description>
+      <relevance_to_blackhole_ds>Speculative_extension; relevant for the information paradox discussion.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Use stringy / holographic dualities to translate intractable problems into computable ones.</proof_standard>
+    <favorite_question>Is there a dual description in which this is easy?</favorite_question>
+    <favorite_question>What symmetries are hidden by gauge choice?</favorite_question>
+    <failure_mode>Holographic reasoning assumes string theory's framework; physically relevant conclusions need to be checked against model-independent constraints.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Strominger, A., Vafa, C. (1996). Microscopic origin of the Bekenstein-Hawking entropy. Phys. Lett. B 379, 99.</citation>
+      <model_status>speculative_extension</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Reasoning about microstate counting, soft hair, or holographic dualities.</when_to_consult>
+    <module_relevance>
+      <module>speculative/microstate</module>
+      <module>speculative/holography</module>
+    </module_relevance>
+    <cautions>Label everything in this lineage as speculative_extension until cross-validated against observation.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

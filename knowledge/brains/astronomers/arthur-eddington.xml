@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="arthur-eddington" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="astronomer">
+    <name>Arthur Eddington</name>
+    <lifespan>1882-1944</lifespan>
+    <nationality>British</nationality>
+    <primary_field>Astrophysics</primary_field>
+    <secondary_fields>
+      <field>General relativity</field>
+      <field>Stellar structure</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>1919 eclipse expedition</title>
+      <year>1919</year>
+      <description>Measured the deflection of starlight by the Sun, confirming Einstein's GR prediction.</description>
+      <relevance_to_blackhole_ds>Anchors the gravitational-lensing observational tier.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Eddington-Finkelstein coordinates</title>
+      <year>1924</year>
+      <description>Coordinate system that removes the coordinate singularity at the Schwarzschild radius.</description>
+      <relevance_to_blackhole_ds>Useful for any module that needs to integrate geodesics across the event horizon.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Eddington limit</title>
+      <year>1926</year>
+      <description>Upper limit on the luminosity of a stable, spherically symmetric accreting object.</description>
+      <relevance_to_blackhole_ds>Defines the natural scale for accretion-rate parameters in RUNS.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Combine careful observation, physical reasoning, and clean coordinate choices.</proof_standard>
+    <favorite_question>Is this prediction observationally testable?</favorite_question>
+    <favorite_question>What coordinate system makes this physics most transparent?</favorite_question>
+    <failure_mode>Initially resisted Chandrasekhar's white-dwarf mass limit; let prior beliefs slow acceptance.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Dyson, F. W., Eddington, A. S., Davidson, C. (1920). A determination of the deflection of light by the Sun's gravitational field. Phil. Trans. Roy. Soc. A 220, 291.</citation>
+      <model_status>observational_constraint</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Working with horizon-crossing geodesics, accretion-rate normalization, or gravitational lensing observables.</when_to_consult>
+    <module_relevance>
+      <module>metrics/eddington_finkelstein</module>
+      <module>data/accretion</module>
+      <module>metrics/lensing</module>
+    </module_relevance>
+    <cautions>Eddington-limit accretion-rate constraints are approximations; real systems can exceed it in beamed or transient regimes.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

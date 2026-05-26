@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  brain_soul.xsd
+  Schema for the BlackHoleDS reasoning-lens XML profiles
+  ("brain/soul" files under knowledge/brains/).
+
+  A profile is a structured prompt that helps human contributors and AI
+  agents ask better questions in the style of a known thinker. It does NOT
+  claim to be a person's mind. Read the Scientific Integrity Charter
+  (docs/vision/SCIENTIFIC_INTEGRITY_CHARTER.md), section VI, before
+  authoring or modifying profiles.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+  <xs:simpleType name="CategoryEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="mathematician"/>
+      <xs:enumeration value="physicist"/>
+      <xs:enumeration value="astronomer"/>
+      <xs:enumeration value="coder"/>
+      <xs:enumeration value="developer"/>
+      <xs:enumeration value="engineer"/>
+      <xs:enumeration value="architect"/>
+      <xs:enumeration value="scientist"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TruthTierEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="analytic_classical"/>
+      <xs:enumeration value="numerical_approximation"/>
+      <xs:enumeration value="observational_constraint"/>
+      <xs:enumeration value="visualization_metaphor"/>
+      <xs:enumeration value="pedagogical_simplification"/>
+      <xs:enumeration value="speculative_extension"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="brain">
+    <xs:complexType>
+      <xs:sequence>
+
+        <xs:element name="identity">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="name" type="xs:string"/>
+              <xs:element name="lifespan" type="xs:string" minOccurs="0"/>
+              <xs:element name="nationality" type="xs:string" minOccurs="0"/>
+              <xs:element name="primary_field" type="xs:string"/>
+              <xs:element name="secondary_fields" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="field" type="xs:string"
+                                maxOccurs="unbounded"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="ads_orcid" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="category" type="CategoryEnum" use="required"/>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="contributions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="contribution" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="title" type="xs:string"/>
+                    <xs:element name="year" type="xs:gYear" minOccurs="0"/>
+                    <xs:element name="description" type="xs:string"/>
+                    <xs:element name="relevance_to_blackhole_ds"
+                                type="xs:string" minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="reasoning_lens">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="proof_standard" type="xs:string"/>
+              <xs:element name="favorite_question" type="xs:string"
+                          maxOccurs="unbounded"/>
+              <xs:element name="failure_mode" type="xs:string" minOccurs="0"
+                          maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="bibliography" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="reference" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="citation" type="xs:string"/>
+                    <xs:element name="url" type="xs:anyURI" minOccurs="0"/>
+                    <xs:element name="model_status" type="TruthTierEnum"
+                                minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="how_to_apply">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="when_to_consult" type="xs:string"/>
+              <xs:element name="module_relevance">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="module" type="xs:string"
+                                maxOccurs="unbounded"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="cautions" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="metadata">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="profile_version" type="xs:string"/>
+              <xs:element name="created" type="xs:date"/>
+              <xs:element name="updated" type="xs:date"/>
+              <xs:element name="author" type="xs:string"/>
+              <xs:element name="reviewed_by" type="xs:string" minOccurs="0"/>
+              <xs:element name="confidence" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+      </xs:sequence>
+
+      <xs:attribute name="slug" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

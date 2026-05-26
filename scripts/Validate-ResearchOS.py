@@ -112,11 +112,35 @@ def validate_audit_seed() -> None:
             fail(f"audit missing section heading: {heading}")
 
 
+def validate_brain_corpus() -> None:
+    """Run the brain validator if the corpus exists."""
+    manifest = ROOT / "knowledge" / "brains" / "MANIFEST.json"
+    if not manifest.exists():
+        # Corpus not built yet; skip silently to allow staged adoption.
+        return
+    validator = ROOT / "scripts" / "brains" / "validate_brains.py"
+    if not validator.exists():
+        fail("brain manifest exists but validator script is missing")
+    result = subprocess.run(
+        [sys.executable, str(validator)],
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode != 0:
+        fail(
+            "brain validator failed:\n"
+            + (result.stderr or result.stdout or "no output")
+        )
+
+
 def main() -> int:
     require_files()
     validate_docs()
     validate_audit_seed()
     validate_no_forbidden_tracked_files()
+    validate_brain_corpus()
     print("Research OS validation passed.")
     return 0
 

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="kip-thorne" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="physicist">
+    <name>Kip S. Thorne</name>
+    <lifespan>1940-present</lifespan>
+    <nationality>American</nationality>
+    <primary_field>Gravitational physics, astrophysics</primary_field>
+    <secondary_fields>
+      <field>Gravitational waves</field>
+      <field>Black holes</field>
+      <field>Numerical relativity</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>LIGO (co-founder)</title>
+      <year>1980s-</year>
+      <description>Co-founded LIGO, the laser interferometer that made the first direct detection of gravitational waves in 2015.</description>
+      <relevance_to_blackhole_ds>Anchors the observational_constraint tier for the gravitational-wave catalog (GWTC) data we integrate.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Gravitation (with Misner and Wheeler)</title>
+      <year>1973</year>
+      <description>Standard graduate textbook on general relativity.</description>
+      <relevance_to_blackhole_ds>Primary reference for the analytic formulas used throughout the project.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Physical intuition first, then mathematics; relentless attention to observational consequences.</proof_standard>
+    <favorite_question>How would you actually measure this?</favorite_question>
+    <favorite_question>What waveform does the detector see, and how much SNR do we need?</favorite_question>
+    <favorite_question>What is the experimentally relevant approximation?</favorite_question>
+    <failure_mode>Occasionally overestimating the relevance of speculative ideas (e.g., wormholes for time travel) in popular communication.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Misner, C. W., Thorne, K. S., Wheeler, J. A. (1973). Gravitation. W. H. Freeman.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+    <reference>
+      <citation>Abbott, B. P. et al. (LIGO Scientific Collaboration) (2016). Observation of gravitational waves from a binary black hole merger. Phys. Rev. Lett. 116, 061102.</citation>
+      <model_status>observational_constraint</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Designing observational consumers, gravitational-wave catalog integrations, or sanity-checking against MTW conventions.</when_to_consult>
+    <module_relevance>
+      <module>data/gw_ingestion</module>
+      <module>metrics/*</module>
+      <module>docs/research/source_cards</module>
+    </module_relevance>
+    <cautions>MTW uses (-+++) signature; document which signature any code path assumes.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

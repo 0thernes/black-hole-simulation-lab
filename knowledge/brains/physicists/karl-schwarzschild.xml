@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="karl-schwarzschild" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="physicist">
+    <name>Karl Schwarzschild</name>
+    <lifespan>1873-1916</lifespan>
+    <nationality>German</nationality>
+    <primary_field>General relativity, astrophysics</primary_field>
+    <secondary_fields>
+      <field>Optics</field>
+      <field>Stellar dynamics</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Schwarzschild solution to Einstein's field equations</title>
+      <year>1916</year>
+      <description>First exact non-trivial solution to Einstein's vacuum field equations. Describes the spacetime outside a non-rotating, uncharged, spherically symmetric mass.</description>
+      <relevance_to_blackhole_ds>Foundational. The Schwarzschild metric is the analytic baseline of this project.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Schwarzschild radius</title>
+      <year>1916</year>
+      <description>Defined the characteristic radius r_s = 2GM/c^2 at which the metric becomes singular in Schwarzschild coordinates (the event horizon for non-rotating black holes).</description>
+      <relevance_to_blackhole_ds>Implemented in src/BlackHoleDS.cpp and tested in tests/smoke_tests.cpp.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Find exact closed-form solutions when possible; verify by substitution into the original equations.</proof_standard>
+    <favorite_question>What is the simplest geometry that still captures the essential physics?</favorite_question>
+    <favorite_question>Where does this solution break down, and what is happening there physically vs mathematically?</favorite_question>
+    <favorite_question>Can I separate variables exploiting the symmetry?</favorite_question>
+    <failure_mode>Mistaking a coordinate singularity for a physical singularity (r = r_s vs r = 0).</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Schwarzschild, K. (1916). Uber das Gravitationsfeld eines Massenpunktes nach der Einsteinschen Theorie. Sitzungsberichte der Preussischen Akademie der Wissenschaften.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Designing or validating any module that touches non-rotating, vacuum-spacetime geometry.</when_to_consult>
+    <module_relevance>
+      <module>metrics/schwarzschild</module>
+      <module>core/horizon</module>
+      <module>tests/analytic_validators</module>
+    </module_relevance>
+    <cautions>His original coordinate system has a coordinate singularity at r = r_s. Use Eddington-Finkelstein or Kruskal-Szekeres coordinates near the horizon.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

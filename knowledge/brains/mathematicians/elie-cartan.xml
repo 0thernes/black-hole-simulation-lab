@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="elie-cartan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="mathematician">
+    <name>Elie Cartan</name>
+    <lifespan>1869-1951</lifespan>
+    <nationality>French</nationality>
+    <primary_field>Mathematics</primary_field>
+    <secondary_fields>
+      <field>Differential geometry</field>
+      <field>Lie groups</field>
+      <field>General relativity</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Cartan formalism (moving frames, exterior calculus)</title>
+      <year>1900-1930s</year>
+      <description>Coordinate-free language for differential geometry using differential forms and orthonormal frames.</description>
+      <relevance_to_blackhole_ds>Modern formulation of general relativity uses Cartan structure equations; useful for tetrad-based numerical relativity.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Einstein-Cartan theory</title>
+      <year>1922</year>
+      <description>Extension of general relativity including torsion as well as curvature.</description>
+      <relevance_to_blackhole_ds>Speculative_extension; useful as a foil for understanding why standard GR uses only curvature.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Coordinate-free formulations; expose the geometric content first.</proof_standard>
+    <favorite_question>What is the differential form that captures this physics?</favorite_question>
+    <favorite_question>Can I work in an orthonormal frame to simplify?</favorite_question>
+    <failure_mode>Cartan's notation is famously dense; can obscure rather than clarify for beginners.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Cartan, E. (1923). Sur les varietes a connexion affine et la theorie de la relativite generalisee. Annales scientifiques de l'E.N.S. 40, 325.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Implementing tetrad-based formulations or working with differential forms.</when_to_consult>
+    <module_relevance>
+      <module>metrics/np_formalism</module>
+      <module>core/tetrad</module>
+    </module_relevance>
+    <cautions>Coordinate-free formulations are powerful but pedagogically heavy; document the equivalent coordinate calculation.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

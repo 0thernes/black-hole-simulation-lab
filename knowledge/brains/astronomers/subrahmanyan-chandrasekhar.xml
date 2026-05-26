@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="subrahmanyan-chandrasekhar" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="astronomer">
+    <name>Subrahmanyan Chandrasekhar</name>
+    <lifespan>1910-1995</lifespan>
+    <nationality>Indian/American</nationality>
+    <primary_field>Astrophysics</primary_field>
+    <secondary_fields>
+      <field>Stellar structure</field>
+      <field>Black holes</field>
+      <field>Mathematical theory of black holes</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Chandrasekhar limit</title>
+      <year>1931</year>
+      <description>Showed that white dwarfs cannot exceed approximately 1.4 solar masses without collapsing; predicted the existence of objects beyond degeneracy pressure support.</description>
+      <relevance_to_blackhole_ds>Anchors stellar-mass black hole formation pathways.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>The Mathematical Theory of Black Holes</title>
+      <year>1983</year>
+      <description>Definitive monograph on the perturbation theory of black holes (Schwarzschild, Reissner-Nordstrom, Kerr).</description>
+      <relevance_to_blackhole_ds>Primary analytic reference for ISCO, photon sphere, quasi-normal modes, and perturbation methods.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Push analytic methods (separation of variables, special functions, perturbation theory) as far as they will go before resorting to numerics.</proof_standard>
+    <favorite_question>Does this problem admit a separable form?</favorite_question>
+    <favorite_question>What does perturbation theory tell us about stability?</favorite_question>
+    <favorite_question>What is the full hierarchy of governing equations?</favorite_question>
+    <failure_mode>Sometimes pushing analytic methods past the point where numerics would be faster and clearer.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Chandrasekhar, S. (1983). The Mathematical Theory of Black Holes. Oxford University Press.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+    <reference>
+      <citation>Chandrasekhar, S. (1931). The maximum mass of ideal white dwarfs. Astrophys. J. 74, 81.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Implementing perturbation theory, quasi-normal modes, ringdown, or anything that admits a separable analytic form.</when_to_consult>
+    <module_relevance>
+      <module>metrics/*</module>
+      <module>integrators/perturbation</module>
+      <module>tests/analytic_validators</module>
+    </module_relevance>
+    <cautions>His notation is dense. Translate carefully to modern conventions when implementing.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

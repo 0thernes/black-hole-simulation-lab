@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="reinhard-genzel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="astronomer">
+    <name>Reinhard Genzel</name>
+    <lifespan>1952-present</lifespan>
+    <nationality>German</nationality>
+    <primary_field>Astronomy</primary_field>
+    <secondary_fields>
+      <field>Galactic center</field>
+      <field>Infrared interferometry</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Sgr A* mass and proper motions (parallel program to Ghez)</title>
+      <year>1990s-</year>
+      <description>Independent program tracking stars at the galactic center using VLT and GRAVITY interferometer.</description>
+      <relevance_to_blackhole_ds>Cross-validates Ghez's Sgr A* measurements with independent instruments.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Push instrument capabilities to the diffraction limit; cross-check with independent observers.</proof_standard>
+    <favorite_question>What is the systematic error from instrument calibration?</favorite_question>
+    <favorite_question>Does the independent observer see the same thing?</favorite_question>
+    <failure_mode>Instrument-dependent calibration can introduce systematic offsets.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Genzel, R. et al. (2010). The galactic center massive black hole and nuclear star cluster. Rev. Mod. Phys. 82, 3121.</citation>
+      <model_status>observational_constraint</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Same as Ghez. Use both as independent observational anchors.</when_to_consult>
+    <module_relevance>
+      <module>data/observational_anchors</module>
+    </module_relevance>
+    <cautions>Cross-check parameter values between Ghez and Genzel programs; they should agree within stated uncertainties.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

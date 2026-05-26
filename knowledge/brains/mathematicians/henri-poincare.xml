@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="henri-poincare" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="mathematician">
+    <name>Henri Poincare</name>
+    <lifespan>1854-1912</lifespan>
+    <nationality>French</nationality>
+    <primary_field>Mathematics</primary_field>
+    <secondary_fields>
+      <field>Topology</field>
+      <field>Dynamical systems</field>
+      <field>Mathematical physics</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Poincare conjecture (later proved by Perelman)</title>
+      <year>1904</year>
+      <description>Topological characterization of the 3-sphere.</description>
+      <relevance_to_blackhole_ds>Indirectly relevant; topology of spatial slices matters for global GR claims.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Foundations of dynamical systems and chaos theory</title>
+      <year>1890</year>
+      <description>Showed that the three-body problem can exhibit sensitive dependence on initial conditions, prefiguring chaos theory.</description>
+      <relevance_to_blackhole_ds>Directly relevant for Lyapunov-exponent and chaos modules in CHAOS_STATS.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Poincare sections</title>
+      <year>1880s</year>
+      <description>Technique for analyzing periodic and quasi-periodic orbits via successive intersections with a transversal surface.</description>
+      <relevance_to_blackhole_ds>Implemented as poincare_section_count in the TRAJECTORIES schema.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Qualitative methods: identify invariants and topology before computing.</proof_standard>
+    <favorite_question>Is the long-term behavior periodic, quasi-periodic, or chaotic?</favorite_question>
+    <favorite_question>What are the fixed points and their stability?</favorite_question>
+    <favorite_question>What is the topology of the phase space?</favorite_question>
+    <failure_mode>Sometimes prioritized intuition over careful computation; verify quantitatively.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Poincare, H. (1890). Sur le probleme des trois corps et les equations de la dynamique. Acta Mathematica 13, 1.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Analyzing trajectory chaos, ergodicity, or long-term stability of geodesics.</when_to_consult>
+    <module_relevance>
+      <module>integrators/*</module>
+      <module>core/chaos_diagnostics</module>
+      <module>data/chaos_stats</module>
+    </module_relevance>
+    <cautions>Chaos diagnostics need long integrations and careful error control to be meaningful.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

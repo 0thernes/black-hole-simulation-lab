@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0.0",
+  "generated": "2026-05-26",
+  "total": 20,
+  "counts_by_category": {
+    "physicist": 9,
+    "astronomer": 5,
+    "mathematician": 6
+  },
+  "profiles": [
+    {
+      "slug": "albert-einstein",
+      "name": "Albert Einstein",
+      "category": "physicist",
+      "path": "knowledge/brains/physicists/albert-einstein.xml"
+    },
+    {
+      "slug": "andrea-ghez",
+      "name": "Andrea Ghez",
+      "category": "astronomer",
+      "path": "knowledge/brains/astronomers/andrea-ghez.xml"
+    },
+    {
+      "slug": "andrew-strominger",
+      "name": "Andrew Strominger",
+      "category": "physicist",
+      "path": "knowledge/brains/physicists/andrew-strominger.xml"
+    },
+    {
+      "slug": "arthur-eddington",
+      "name": "Arthur Eddington",
+      "category": "astronomer",
+      "path": "knowledge/brains/astronomers/arthur-eddington.xml"
+    },
+    {
+      "slug": "bernhard-riemann",
+      "name": "Bernhard Riemann",
+      "category": "mathematician",
+      "path": "knowledge/brains/mathematicians/bernhard-riemann.xml"
+    },
+    {
+      "slug": "carl-friedrich-gauss",
+      "name": "Carl Friedrich Gauss",
+      "category": "mathematician",
+      "path": "knowledge/brains/mathematicians/carl-friedrich-gauss.xml"
+    },
+    {
+      "slug": "elie-cartan",
+      "name": "Elie Cartan",
+      "category": "mathematician",
+      "path": "knowledge/brains/mathematicians/elie-cartan.xml"
+    },
+    {
+      "slug": "ezra-newman",
+      "name": "Ezra T. Newman",
+      "category": "physicist",
+      "path": "knowledge/brains/physicists/ezra-newman.xml"
+    },
+    {
+      "slug": "henri-poincare",
+      "name": "Henri Poincare",
+      "category": "mathematician",
+      "path": "knowledge/brains/mathematicians/henri-poincare.xml"
+    },
+    {
+      "slug": "jacob-bekenstein",
+      "name": "Jacob Bekenstein",
+      "category": "physicist",
+      "path": "knowledge/brains/physicists/jacob-bekenstein.xml"
+    },
+    {
+      "slug": "karl-schwarzschild",
+      "name": "Karl Schwarzschild",
+      "category": "physicist",
+      "path": "knowledge/brains/physicists/karl-schwarzschild.xml"
+    },
+    {
+      "slug": "kip-thorne",
+      "name": "Kip S. Thorne",
+      "category": "physicist",
+      "path": "knowledge/brains/physicists/kip-thorne.xml"
+    },
+    {
+      "slug": "reinhard-genzel",
+      "name": "Reinhard Genzel",
+      "category": "astronomer",
+      "path": "knowledge/brains/astronomers/reinhard-genzel.xml"
+    },
+    {
+      "slug": "roger-penrose",
+      "name": "Roger Penrose",
+      "category": "physicist",
+      "path": "knowledge/brains/physicists/roger-penrose.xml"
+    },
+    {
+      "slug": "roy-kerr",
+      "name": "Roy P. Kerr",
+      "category": "physicist",
+      "path": "knowledge/brains/physicists/roy-kerr.xml"
+    },
+    {
+      "slug": "shep-doeleman",
+      "name": "Sheperd Doeleman",
+      "category": "astronomer",
+      "path": "knowledge/brains/astronomers/shep-doeleman.xml"
+    },
+    {
+      "slug": "shing-tung-yau",
+      "name": "Shing-Tung Yau",
+      "category": "mathematician",
+      "path": "knowledge/brains/mathematicians/shing-tung-yau.xml"
+    },
+    {
+      "slug": "stephen-hawking",
+      "name": "Stephen Hawking",
+      "category": "physicist",
+      "path": "knowledge/brains/physicists/stephen-hawking.xml"
+    },
+    {
+      "slug": "subrahmanyan-chandrasekhar",
+      "name": "Subrahmanyan Chandrasekhar",
+      "category": "astronomer",
+      "path": "knowledge/brains/astronomers/subrahmanyan-chandrasekhar.xml"
+    },
+    {
+      "slug": "yvonne-choquet-bruhat",
+      "name": "Yvonne Choquet-Bruhat",
+      "category": "mathematician",
+      "path": "knowledge/brains/mathematicians/yvonne-choquet-bruhat.xml"
+    }
+  ]
+}

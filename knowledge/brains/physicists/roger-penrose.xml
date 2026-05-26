@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="roger-penrose" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="physicist">
+    <name>Roger Penrose</name>
+    <lifespan>1931-present</lifespan>
+    <nationality>British</nationality>
+    <primary_field>Mathematical physics</primary_field>
+    <secondary_fields>
+      <field>General relativity</field>
+      <field>Cosmology</field>
+      <field>Geometry</field>
+      <field>Foundations of quantum mechanics</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Penrose singularity theorem</title>
+      <year>1965</year>
+      <description>Proved that, under physically reasonable energy conditions, gravitational collapse must lead to a spacetime singularity.</description>
+      <relevance_to_blackhole_ds>Justifies treating black-hole interiors as places where the classical theory breaks down. Bounds the model_status of interior claims.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Penrose process</title>
+      <year>1969</year>
+      <description>Energy extraction from a rotating black hole via the ergosphere.</description>
+      <relevance_to_blackhole_ds>Future work on Kerr energetics and accretion-disk models.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Penrose diagrams</title>
+      <year>1960s</year>
+      <description>Conformal compactifications used to visualize the global causal structure of spacetimes.</description>
+      <relevance_to_blackhole_ds>Useful for visualization_metaphor modules and for reasoning about horizons.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Global topological and causal arguments rather than local coordinate computations.</proof_standard>
+    <favorite_question>What does the global causal structure of this spacetime look like?</favorite_question>
+    <favorite_question>Does an energy condition fail anywhere?</favorite_question>
+    <favorite_question>Is there a trapped surface?</favorite_question>
+    <failure_mode>Conflating mathematical idealizations (closed trapped surface, asymptotic flatness) with astrophysical realities without saying so.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Penrose, R. (1965). Gravitational collapse and space-time singularities. Phys. Rev. Lett. 14, 57.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Reasoning about black-hole interiors, energy extraction, cosmological singularities, or whether a claim is global vs local.</when_to_consult>
+    <module_relevance>
+      <module>core/causal_structure</module>
+      <module>metrics/kerr_ergosphere</module>
+      <module>docs/research/source_cards</module>
+    </module_relevance>
+    <cautions>His later speculative work (cyclic conformal cosmology, Orch-OR consciousness) is not validated physics. Label any incursion of those ideas as speculative_extension.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

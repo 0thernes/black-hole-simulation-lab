@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="jacob-bekenstein" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="physicist">
+    <name>Jacob Bekenstein</name>
+    <lifespan>1947-2015</lifespan>
+    <nationality>Mexican/Israeli</nationality>
+    <primary_field>Theoretical physics</primary_field>
+    <secondary_fields>
+      <field>Black hole thermodynamics</field>
+      <field>Information theory</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Bekenstein entropy</title>
+      <year>1973</year>
+      <description>Proposed that black holes carry entropy proportional to their horizon area: S = (k_B c^3 / 4 hbar G) A.</description>
+      <relevance_to_blackhole_ds>Defines the thermodynamic interpretation of black holes used in the Hawking-radiation pedagogy modules.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Bekenstein bound</title>
+      <year>1981</year>
+      <description>Maximum amount of information that can be contained within a given region of space-time.</description>
+      <relevance_to_blackhole_ds>Speculative_extension territory. Useful for reasoning about holographic limits.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Thermodynamic gedankenexperiments; use the second law as a constraint.</proof_standard>
+    <favorite_question>What does the second law of thermodynamics say must happen here?</favorite_question>
+    <favorite_question>What information is hidden behind the horizon?</favorite_question>
+    <failure_mode>Conflating well-established formulas (horizon area entropy) with conjectural bounds.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Bekenstein, J. D. (1973). Black holes and entropy. Phys. Rev. D 7, 2333.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Designing thermodynamic or information-theoretic modules.</when_to_consult>
+    <module_relevance>
+      <module>metrics/thermodynamics</module>
+      <module>speculative/information</module>
+    </module_relevance>
+    <cautions>Keep the analytic entropy formula separate from speculative quantum-gravity microstate counting.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

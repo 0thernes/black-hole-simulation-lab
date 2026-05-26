@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="bernhard-riemann" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="mathematician">
+    <name>Bernhard Riemann</name>
+    <lifespan>1826-1866</lifespan>
+    <nationality>German</nationality>
+    <primary_field>Mathematics</primary_field>
+    <secondary_fields>
+      <field>Differential geometry</field>
+      <field>Complex analysis</field>
+      <field>Analytic number theory</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Riemannian geometry</title>
+      <year>1854</year>
+      <description>Generalized Gauss's surface geometry to arbitrary dimensions, introducing the metric tensor and the Riemann curvature tensor.</description>
+      <relevance_to_blackhole_ds>The mathematical language of general relativity. Every spacetime metric in this project is a Riemannian (technically pseudo-Riemannian, Lorentzian) metric.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Riemann surfaces</title>
+      <year>1851</year>
+      <description>Multi-sheeted surfaces on which multi-valued complex functions become single-valued.</description>
+      <relevance_to_blackhole_ds>Useful for visualizing complex coordinate systems in Kerr geometry.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Construct the right object for the question, then prove things about it.</proof_standard>
+    <favorite_question>What is the right space on which this object is well-defined?</favorite_question>
+    <favorite_question>How does curvature constrain what can happen here?</favorite_question>
+    <failure_mode>Riemann sometimes lacked formal rigor by modern standards; his arguments work but need cleaning.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Riemann, B. (1868). Uber die Hypothesen welche der Geometrie zu Grunde liegen. Abh. Gesellschaft Wiss. Gottingen 13.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Any time you reach for a metric tensor, curvature, or differential geometry.</when_to_consult>
+    <module_relevance>
+      <module>core/geometry</module>
+      <module>metrics/*</module>
+      <module>include/blackhole_ds/units.hpp</module>
+    </module_relevance>
+    <cautions>Mind the signature convention; Riemannian (positive definite) vs Lorentzian (one minus sign) matters for causality.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="shep-doeleman" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="astronomer">
+    <name>Sheperd Doeleman</name>
+    <lifespan>1967-present</lifespan>
+    <nationality>American</nationality>
+    <primary_field>Astronomy</primary_field>
+    <secondary_fields>
+      <field>Very long baseline interferometry</field>
+      <field>Black hole imaging</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Event Horizon Telescope founding director</title>
+      <year>2009-</year>
+      <description>Led the EHT collaboration that produced the first horizon-scale images of M87* (2019) and Sgr A* (2022).</description>
+      <relevance_to_blackhole_ds>Provides the observational_constraint reference for the horizon-scale ring (M87*: 42 +/- 3 microarcseconds; Sgr A*: 51.8 +/- 2.3 microarcseconds).</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Push interferometric baselines to Earth-diameter scale; use closure quantities (closure phase, closure amplitude) that are robust to station errors.</proof_standard>
+    <favorite_question>What is the closure phase of the source brightness distribution?</favorite_question>
+    <favorite_question>Is the ring asymmetric, and what does that tell us about the spin axis?</favorite_question>
+    <failure_mode>Imaging at the diffraction limit is sensitive to prior assumptions; EHT collaboration carefully cross-validates with multiple algorithms.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Event Horizon Telescope Collaboration (2019). First M87 Event Horizon Telescope results. I-VI. Astrophys. J. Lett. 875.</citation>
+      <model_status>observational_constraint</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Using horizon-scale imaging data as a constraint or validation target.</when_to_consult>
+    <module_relevance>
+      <module>data/eht_ingestion</module>
+      <module>docs/research/source_cards</module>
+    </module_relevance>
+    <cautions>Reported uncertainties are non-Gaussian; do not naively convolve them as if they were.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="andrea-ghez" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="astronomer">
+    <name>Andrea Ghez</name>
+    <lifespan>1965-present</lifespan>
+    <nationality>American</nationality>
+    <primary_field>Astronomy</primary_field>
+    <secondary_fields>
+      <field>Galactic center</field>
+      <field>Stellar dynamics</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Mass of Sgr A* via stellar orbits</title>
+      <year>1998-</year>
+      <description>Tracked stars orbiting the supermassive black hole at the center of the Milky Way, measuring its mass via Kepler's third law.</description>
+      <relevance_to_blackhole_ds>Anchors the observational_constraint tier for Sgr A* (~4.1 million solar masses).</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Long-baseline observational campaigns; track real objects over decades and let the data settle the theory.</proof_standard>
+    <favorite_question>What is the simplest dynamical model that fits this orbit?</favorite_question>
+    <favorite_question>What systematics could fake this signal?</favorite_question>
+    <failure_mode>Long-baseline programs are vulnerable to instrumentation changes.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Ghez, A. M. et al. (2008). Measuring distance and properties of the Milky Way's central supermassive black hole. Astrophys. J. 689, 1044.</citation>
+      <model_status>observational_constraint</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Using Sgr A* as an anchor for supermassive black hole parameters.</when_to_consult>
+    <module_relevance>
+      <module>data/observational_anchors</module>
+      <module>docs/research/source_cards</module>
+    </module_relevance>
+    <cautions>Sgr A* parameters carry real uncertainties; quote them with error bars.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

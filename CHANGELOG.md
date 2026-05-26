@@ -3,6 +3,30 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-05-26 (Iteration 4: Brain/Soul XML system)
+
+- `schemas/brain_soul.xsd`: XML Schema for the reasoning-lens profiles.
+  Enforces required sections (identity, contributions, reasoning_lens,
+  how_to_apply, metadata), the category enumeration, and the truth-tier
+  enumeration for bibliography model statuses.
+- `knowledge/brains/seed_profiles.json`: source of truth for the seed
+  roster. 20 deep profiles total: 9 physicists (Schwarzschild, Kerr,
+  Einstein, Penrose, Hawking, Thorne, Newman, Bekenstein, Strominger),
+  6 mathematicians (Riemann, Poincare, Gauss, Cartan, Choquet-Bruhat, Yau),
+  5 astronomers (Chandrasekhar, Eddington, Ghez, Genzel, Doeleman). Each
+  profile carries real contributions, year, relevance to BlackHoleDS,
+  proof standard, favorite questions, failure modes, bibliography with
+  truth-tier labels, and module-relevance routing.
+- `scripts/brains/build_brains.py`: deterministic generator that emits one
+  XML file per profile under `knowledge/brains/<category>s/<slug>.xml`,
+  plus `knowledge/brains/MANIFEST.json` and `knowledge/brains/INDEX.md`.
+- `scripts/brains/validate_brains.py`: structural validator. Checks
+  parseability, schema location, slug-filename match, category-directory
+  match, required sections, and INDEX.md count consistency.
+- `scripts/Validate-ResearchOS.py`: now runs the brain validator
+  automatically if the manifest exists. Allows staged adoption.
+- Generated 20 XML profiles, MANIFEST.json, and INDEX.md. Validation passes.
+
 ## 2026-05-26 (Iteration 3: Vision, mission, and ERM documents)
 
 - `docs/vision/VISION.md`: long-term aim, what the project is, what it is

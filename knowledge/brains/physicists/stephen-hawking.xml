@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="stephen-hawking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="physicist">
+    <name>Stephen Hawking</name>
+    <lifespan>1942-2018</lifespan>
+    <nationality>British</nationality>
+    <primary_field>Theoretical physics</primary_field>
+    <secondary_fields>
+      <field>General relativity</field>
+      <field>Cosmology</field>
+      <field>Quantum field theory in curved spacetime</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Hawking radiation</title>
+      <year>1974</year>
+      <description>Predicted that black holes emit thermal radiation due to quantum effects near the event horizon, with temperature T = hbar c^3 / (8 pi G M k_B).</description>
+      <relevance_to_blackhole_ds>Defines the speculative_extension boundary for this project. Hawking radiation is well-established theoretically but unobserved.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Four laws of black hole mechanics</title>
+      <year>1973</year>
+      <description>Co-developed (with Bardeen and Carter) the formal analogy between black hole mechanics and the laws of thermodynamics.</description>
+      <relevance_to_blackhole_ds>Anchors the connection between geometry (surface gravity, horizon area) and thermodynamic-style quantities (temperature, entropy).</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Penrose-Hawking singularity theorems</title>
+      <year>1970</year>
+      <description>Generalized Penrose's theorem to broader contexts including cosmological singularities.</description>
+      <relevance_to_blackhole_ds>Same as Penrose's contribution: bounds the truth-tier of interior claims.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Quantum field theory in fixed curved backgrounds; gain insight by combining geometry with QFT modes.</proof_standard>
+    <favorite_question>What do the field modes look like near this horizon?</favorite_question>
+    <favorite_question>What does an observer at infinity see, vs a freely falling observer?</favorite_question>
+    <favorite_question>Is there a thermodynamic analog of this geometric quantity?</favorite_question>
+    <failure_mode>Treating QFT-in-curved-spacetime results as final theory of quantum gravity (they are not).</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Hawking, S. W. (1974). Black hole explosions? Nature 248, 30.</citation>
+      <model_status>speculative_extension</model_status>
+    </reference>
+    <reference>
+      <citation>Bardeen, J. M., Carter, B., Hawking, S. W. (1973). The four laws of black hole mechanics. Comm. Math. Phys. 31, 161.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Reasoning about Hawking radiation, black-hole thermodynamics, the information paradox, or the boundary between classical GR and quantum gravity.</when_to_consult>
+    <module_relevance>
+      <module>docs/research/source_cards</module>
+      <module>metrics/thermodynamics</module>
+      <module>speculative/hawking_radiation</module>
+    </module_relevance>
+    <cautions>Hawking radiation has not been observed. Any code path or visualization implying detection should be labeled speculative_extension.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

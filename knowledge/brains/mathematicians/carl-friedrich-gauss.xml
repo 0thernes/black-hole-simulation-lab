@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="carl-friedrich-gauss" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="mathematician">
+    <name>Carl Friedrich Gauss</name>
+    <lifespan>1777-1855</lifespan>
+    <nationality>German</nationality>
+    <primary_field>Mathematics</primary_field>
+    <secondary_fields>
+      <field>Number theory</field>
+      <field>Differential geometry</field>
+      <field>Astronomy</field>
+      <field>Statistics</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Intrinsic curvature (Theorema Egregium)</title>
+      <year>1827</year>
+      <description>Showed that the Gaussian curvature of a surface is an intrinsic invariant, independent of embedding.</description>
+      <relevance_to_blackhole_ds>Foundation for the modern notion of curvature in Riemannian geometry, which GR inherits.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Method of least squares</title>
+      <year>1809</year>
+      <description>Statistical estimation method for orbit determination and other inverse problems.</description>
+      <relevance_to_blackhole_ds>Useful for fitting model parameters to observational data (EHT, gravitational wave catalogs).</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Compute carefully and exhaustively; check special cases against the general result.</proof_standard>
+    <favorite_question>What is intrinsic to this object, independent of how we describe it?</favorite_question>
+    <favorite_question>What does a careful asymptotic expansion say?</favorite_question>
+    <failure_mode>Famously slow to publish, so others sometimes got the credit.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Gauss, C. F. (1828). Disquisitiones generales circa superficies curvas. Commentationes Soc. Reg. Sci. Gott. Recent. 6, 99.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Anything involving intrinsic curvature, coordinate-independent geometric quantities, or parameter estimation.</when_to_consult>
+    <module_relevance>
+      <module>core/geometry</module>
+      <module>data/parameter_fitting</module>
+    </module_relevance>
+    <cautions>Modern conventions differ from Gauss's; translate carefully.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

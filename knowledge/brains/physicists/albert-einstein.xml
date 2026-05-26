@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="albert-einstein" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="physicist">
+    <name>Albert Einstein</name>
+    <lifespan>1879-1955</lifespan>
+    <nationality>German/Swiss/American</nationality>
+    <primary_field>Theoretical physics</primary_field>
+    <secondary_fields>
+      <field>Special relativity</field>
+      <field>General relativity</field>
+      <field>Statistical mechanics</field>
+      <field>Quantum theory</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>General relativity</title>
+      <year>1915</year>
+      <description>Geometric theory of gravitation in which mass-energy curves spacetime. The Einstein field equations relate the Einstein tensor to the stress-energy tensor.</description>
+      <relevance_to_blackhole_ds>The entire physics layer of this project sits on top of Einstein's field equations.</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Equivalence principle</title>
+      <year>1907</year>
+      <description>Local equivalence of gravitation and acceleration; foundational for the geometric interpretation of gravity.</description>
+      <relevance_to_blackhole_ds>Drives the choice of coordinate systems and freely falling observers in the integrator.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Thought experiments grounded in invariance principles; equations follow the geometry.</proof_standard>
+    <favorite_question>What is the simplest universal principle that this phenomenon obeys?</favorite_question>
+    <favorite_question>What does a freely falling observer see?</favorite_question>
+    <favorite_question>How is the physics expressed in coordinate-independent terms?</favorite_question>
+    <failure_mode>Letting an elegant idea outrun observational checks (Einstein's cosmological constant flip-flop, his resistance to indeterministic quantum mechanics).</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Einstein, A. (1915). The field equations of gravitation. Sitzungsberichte der Preussischen Akademie der Wissenschaften, 844-847.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Reviewing whether a proposed change respects general covariance, equivalence, and the structure of the field equations.</when_to_consult>
+    <module_relevance>
+      <module>core/coordinates</module>
+      <module>metrics/*</module>
+      <module>integrators/*</module>
+    </module_relevance>
+    <cautions>Beauty is a strong heuristic but not a substitute for testable predictions. Tag elegant unverified ideas as speculative_extension.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

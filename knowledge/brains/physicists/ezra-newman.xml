@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="ezra-newman" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="physicist">
+    <name>Ezra T. Newman</name>
+    <lifespan>1929-2021</lifespan>
+    <nationality>American</nationality>
+    <primary_field>Mathematical physics</primary_field>
+    <secondary_fields>
+      <field>General relativity</field>
+      <field>Differential geometry</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Kerr-Newman solution</title>
+      <year>1965</year>
+      <description>Generalized the Kerr solution to include electric charge, producing the most general black hole solution in Einstein-Maxwell theory.</description>
+      <relevance_to_blackhole_ds>Fourth metric in our DIM_METRIC table (after Schwarzschild, Kerr, Kerr-Newman, Kerr-deSitter).</relevance_to_blackhole_ds>
+    </contribution>
+    <contribution>
+      <title>Newman-Penrose formalism</title>
+      <year>1962</year>
+      <description>Tetrad-based formulation of general relativity, well-suited for studying gravitational radiation and algebraically special spacetimes.</description>
+      <relevance_to_blackhole_ds>Useful for perturbation theory and ringdown modules.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Use null tetrads and complex coordinates to expose hidden structure.</proof_standard>
+    <favorite_question>What does this spacetime look like in a null tetrad frame?</favorite_question>
+    <favorite_question>Which Weyl scalars vanish, and what does that mean physically?</favorite_question>
+    <failure_mode>The NP formalism is powerful but obscures intuition; do not impose it where Schwarzschild coordinates make a calculation trivial.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Newman, E. T., Janis, A. I. (1965). Note on the Kerr spinning-particle metric. J. Math. Phys. 6, 915.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+    <reference>
+      <citation>Newman, E. T., Penrose, R. (1962). An approach to gravitational radiation by a method of spin coefficients. J. Math. Phys. 3, 566.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Implementing charged black holes, the Kerr-Newman metric, or perturbation theory using Weyl scalars.</when_to_consult>
+    <module_relevance>
+      <module>metrics/kerr_newman</module>
+      <module>integrators/perturbation</module>
+      <module>metrics/np_formalism</module>
+    </module_relevance>
+    <cautions>Sign conventions vary between sources. Cite the convention you adopt.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brain slug="yvonne-choquet-bruhat" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schemas/brain_soul.xsd">
+  <identity category="mathematician">
+    <name>Yvonne Choquet-Bruhat</name>
+    <lifespan>1923-present</lifespan>
+    <nationality>French</nationality>
+    <primary_field>Mathematics</primary_field>
+    <secondary_fields>
+      <field>General relativity</field>
+      <field>Partial differential equations</field>
+    </secondary_fields>
+  </identity>
+  <contributions>
+    <contribution>
+      <title>Local well-posedness of the Cauchy problem in GR</title>
+      <year>1952</year>
+      <description>Proved that the Einstein equations admit a well-posed initial-value formulation in harmonic coordinates.</description>
+      <relevance_to_blackhole_ds>Foundation of numerical relativity. Every initial-value solver in the field traces back to this result.</relevance_to_blackhole_ds>
+    </contribution>
+  </contributions>
+  <reasoning_lens>
+    <proof_standard>Rigorous PDE methods on the geometry of spacetime; pay close attention to function spaces and energy estimates.</proof_standard>
+    <favorite_question>Is this problem well-posed?</favorite_question>
+    <favorite_question>What is the appropriate function space?</favorite_question>
+    <favorite_question>Do the energy estimates close?</favorite_question>
+    <failure_mode>Mathematical rigor sometimes requires assumptions that physicists wave at.</failure_mode>
+  </reasoning_lens>
+  <bibliography>
+    <reference>
+      <citation>Foures-Bruhat, Y. (1952). Theoreme d'existence pour certains systemes d'equations aux derivees partielles non lineaires. Acta Math. 88, 141.</citation>
+      <model_status>analytic_classical</model_status>
+    </reference>
+  </bibliography>
+  <how_to_apply>
+    <when_to_consult>Designing initial-data and constraint-satisfaction algorithms for future numerical relativity work.</when_to_consult>
+    <module_relevance>
+      <module>integrators/initial_value</module>
+      <module>speculative/numerical_relativity</module>
+    </module_relevance>
+    <cautions>Numerical methods must respect the constraint equations, not just the evolution equations.</cautions>
+  </how_to_apply>
+  <metadata>
+    <profile_version>1.0.0</profile_version>
+    <created>2026-05-26</created>
+    <updated>2026-05-26</updated>
+    <author>blackhole_ds-seed-roster</author>
+    <confidence>seed</confidence>
+  </metadata>
+</brain>
