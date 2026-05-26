@@ -47,7 +47,7 @@ The script:
 
 - archives the selected package into `_incoming/packages/`
 - extracts it into `_incoming/extracted/`
-- selects the newest valid repo package
+- selects the newest matching repo package from `-SourceDirectory`, or uses `-PackagePath` when supplied
 - creates a backup branch before syncing
 - copies files into the live repo without copying `.git`
 - runs `scripts/Validate-ResearchOS.py` when present
@@ -79,6 +79,15 @@ To validate and commit locally without pushing:
 ```powershell
 powershell.exe -ExecutionPolicy Bypass -File .\scripts\local\Sync-OppengrokLocalRepo.ps1 `
   -SourceDirectory "$env:USERPROFILE\Downloads"
+```
+
+If Downloads contains unrelated archives, pass the package explicitly:
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File .\scripts\local\Sync-OppengrokLocalRepo.ps1 `
+  -PackagePath "$env:USERPROFILE\Downloads\oppengrok-blackhole-sim-v5-research-os.zip" `
+  -RemoteUrl "https://github.com/OWNER/REPO.git" `
+  -Push
 ```
 
 To skip CMake temporarily while checking the rest of the workflow:

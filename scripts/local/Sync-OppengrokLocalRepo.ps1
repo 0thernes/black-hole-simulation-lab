@@ -2,6 +2,8 @@
 param(
     [string]$Workspace,
     [string]$SourceDirectory = (Join-Path $env:USERPROFILE "Downloads"),
+    [string]$PackagePath,
+    [string]$PackageNamePattern = '(?i)(oppengrok|black[-_ ]?hole|blackhole|research[-_ ]?os)',
     [string]$RemoteUrl,
     [string]$MainBranch = "main",
     [switch]$Prune,
@@ -96,7 +98,10 @@ function Assert-UnderRepo {
 }
 
 function Get-CandidatePackages {
-    param([Parameter(Mandatory = $true)][string]$Root)
+    param(
+        [Parameter(Mandatory = $true)][string]$Root,
+        [Parameter(Mandatory = $true)][string]$NamePattern
+    )
 
     if (-not (Test-Path -LiteralPath $Root)) {
         Write-Note "Source directory does not exist: $Root"
@@ -105,8 +110,27 @@ function Get-CandidatePackages {
 
     $archivePattern = '\.(zip|tar|tgz|tar\.gz)$'
     return @(Get-ChildItem -LiteralPath $Root -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -match $archivePattern } |
+        Where-Object { $_.Name -match $archivePattern -and $_.Name -match $NamePattern } |
         Sort-Object LastWriteTimeUtc -Descending)
+}
+
+function Get-ExplicitPackage {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        throw "PackagePath does not exist: $Path"
+    }
+
+    $item = Get-Item -LiteralPath $Path -Force
+    if ($item.PSIsContainer) {
+        throw "PackagePath must be an archive file, not a directory: $Path"
+    }
+
+    if ($item.Name -notmatch '\.(zip|tar|tgz|tar\.gz)$') {
+        throw "PackagePath must point to .zip, .tar, .tgz, or .tar.gz: $Path"
+    }
+
+    return $item
 }
 
 function Copy-PackageArchive {
@@ -371,6 +395,9 @@ Write-Step "Preparing direct local repo workflow"
 Write-Note "Repo root: $RepoRoot"
 Write-Note "Workspace: $Workspace"
 Write-Note "Source directory: $SourceDirectory"
+if ($PackagePath) {
+    Write-Note "Explicit package: $PackagePath"
+}
 
 if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot ".git"))) {
     throw "This script must live inside a real Git repository: $RepoRoot"
@@ -384,7 +411,12 @@ New-Item -ItemType Directory -Path $incomingPackages, $extractRoot -Force | Out-
 $backupBranch = New-BackupBranch
 Write-Note "Backup branch created: $backupBranch"
 
-$packages = Get-CandidatePackages -Root $SourceDirectory
+$packages = if ($PackagePath) {
+    @(Get-ExplicitPackage -Path $PackagePath)
+}
+else {
+    Get-CandidatePackages -Root $SourceDirectory -NamePattern $PackageNamePattern
+}
 if ($packages.Count -gt 0) {
     $package = $packages[0]
     Write-Step "Selected newest repo package"
@@ -399,7 +431,8 @@ if ($packages.Count -gt 0) {
     Sync-RepoContents -SourceRoot $selectedRoot
 }
 else {
-    Write-Note "No supported packages found in source directory; validating current repo tree."
+    Write-Note "No matching supported packages found; validating current repo tree."
+    Write-Note "Use -PackagePath for an exact archive, or adjust -PackageNamePattern if needed."
 }
 
 Set-OriginRemote -Url $RemoteUrl
