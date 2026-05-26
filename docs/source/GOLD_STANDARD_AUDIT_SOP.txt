@@ -1,0 +1,2280 @@
+# 🏆 Gold Standard Code Review & Audit SOP — v6.0
+
+> **Classification**: CONFIDENTIAL — Internal Engineering Standard
+> **Effective Date**: May 2026
+> **Review Cycle**: Quarterly (mandatory); Ad-hoc within 5 business days of SEV1/SEV2 incident
+> **Owner**: VP Engineering + Security Champion + Quality Guild
+> **Applies To**: All production code, infrastructure-as-code, configuration, ML/AI model artifacts, API contracts, documentation-as-code, feature flags, deployment manifests, and prompt/engineering artifacts
+> **Supersedes**: v5.0 (May 2026), v4.0 (January 2025), v3.0, v2.0, v1.0
+> **Benchmark**: FAANG / GAYMAN / MANGO QA-QC Pass Threshold
+
+---
+
+## Table of Contents
+
+1. [§0 — Executive Framework](#0--executive-framework)
+   - 0.1 Purpose & Scope
+   - 0.2 Maturity Tiers
+   - 0.3 Roles & Responsibilities (RACI Matrix)
+   - 0.4 Scoring Methodology & Calibration
+   - 0.5 Review Types
+   - 0.6 Exception Process
+   - 0.7 AI-Assisted Review Protocol
+   - 0.8 DORA Metrics Integration
+   - 0.9 Glossary
+2. [§1 — Dimension Index & Weight Table](#1--dimension-index--weight-table)
+3. [§2 — Dimension Detail Cards (D01–D35)](#2--dimension-detail-cards)
+4. [§3 — Scoring Worksheet & Finding Tracker](#3--scoring-worksheet--finding-tracker)
+5. [§4 — Severity Classification & SLA Enforcement](#4--severity-classification--sla-enforcement)
+6. [§5 — DevOps Pipeline Gate Specification](#5--devops-pipeline-gate-specification)
+7. [§6 — Review Process SOP](#6--review-process-sop)
+8. [§7 — Automated Enforcement Tooling Matrix](#7--automated-enforcement-tooling-matrix)
+9. [§8 — Review Rubric Templates](#8--review-rubric-templates)
+10. [§9 — Compliance & Regulatory Mapping](#9--compliance--regulatory-mapping)
+11. [§10 — Risk Assessment Matrix](#10--risk-assessment-matrix)
+12. [§11 — Maturity Model](#11--maturity-model)
+13. [§12 — Anti-Pattern Registry](#12--anti-pattern-registry)
+14. [§13 — Reviewer Certification & Training](#13--reviewer-certification--training)
+15. [§14 — Change Log](#14--change-log)
+
+---
+
+## §0 — Executive Framework
+
+### 0.1 Purpose & Scope
+
+This Standard Operating Procedure defines the **mandatory** code review and audit process for all software changes that affect production systems. It establishes a **35-dimension weighted framework** with floor thresholds, hard floors, anti-pattern registries, and automated enforcement gates that must pass before any code reaches production.
+
+**In Scope**: Application code, infrastructure-as-code, configuration, database migrations, ML/AI model artifacts, API contracts, documentation-as-code, feature flags, deployment manifests, and prompt/engineering artifacts for AI systems.
+
+**Out of Scope**: Vendor-managed SaaS configuration (unless custom integration code), one-off scripts with no production impact, personal prototypes not in any CI pipeline.
+
+**Design Principles**:
+- **Actionable**: Every dimension has explicit checklists, scoring rubrics, and anti-patterns
+- **Measurable**: Numeric scores (0.0–10.0) with weighted aggregation and floor thresholds
+- **Enforceable**: CI/CD pipeline gates map directly to dimension floors
+- **Auditable**: Finding tracking, severity classification, and compliance mapping enable traceability
+- **Calibratable**: Inter-rater reliability protocol ensures consistent scoring across reviewers
+
+### 0.2 Maturity Tiers
+
+| Tier | Level | Emoji | Description | Score Range | DORA Metrics Target |
+|---|---|---|---|---|---|
+| **Tier 5** | Elite | 🏆 | Industry-leading; formal verification; chaos engineering; zero-trust; continuous improvement | 9.0–10.0 | DF: Multiple/day · LT: < 1hr · MTTR: < 1hr · CFR: < 5% |
+| **Tier 4** | Advanced | 🥇 | FAANG production-ready; all floors met; strong automation; data-driven | 8.0–8.9 | DF: Daily · LT: < 1day · MTTR: < 4hr · CFR: < 10% |
+| **Tier 3** | Proficient | 🥈 | Solid quality; most floors met; some gaps in automation | 7.0–7.9 | DF: Weekly · LT: < 1wk · MTTR: < 1day · CFR: < 15% |
+| **Tier 2** | Developing | 🥉 | Basic quality; frequent floor failures; manual processes | 5.0–6.9 | DF: Monthly · LT: < 2wk · MTTR: < 1wk · CFR: < 25% |
+| **Tier 1** | Initial | ⚠️ | Ad-hoc; no consistent process; significant risk exposure | 0.0–4.9 | DF: Quarterly · LT: > 2wk · MTTR: > 1wk · CFR: > 25% |
+
+> **DORA Metrics**: DF = Deployment Frequency, LT = Lead Time for Changes, MTTR = Mean Time to Recovery, CFR = Change Failure Rate
+
+**Minimum Tier for Production Deployment**: Tier 3 (Proficient) with overall ≥ 7.5 and all dimension floors met.
+
+### 0.3 Roles & Responsibilities (RACI Matrix)
+
+| Activity | Author | Peer Reviewer | Tech Lead | QA Engineer | SRE / Platform | Security Champion | A11Y Champion | Product Owner | VP Eng |
+|---|---|---|---|---|---|---|---|---|---|
+| Write code | **R** | I | I | I | I | I | I | — | I |
+| Self-audit checklist | **R** | C | I | I | I | I | I | — | I |
+| Score dimensions | C | **R** | A | C | C | C | C | — | I |
+| Block merge (🔴/🟠) | I | **R** | A | I | I | C | I | — | I |
+| Approve exceptions | I | C | **R/A** | C | C | C | C | I | A |
+| Security sign-off | C | C | A | — | — | **R** | — | — | I |
+| A11Y sign-off | C | C | A | C | — | — | **R** | — | I |
+| Performance sign-off | C | C | A | — | **R** | — | — | — | I |
+| Production deploy | C | I | **A** | C | **R** | I | — | I | I |
+| Incident escalation | I | I | **R** | I | C | C | — | I | A |
+| SOP update | C | C | A | C | C | C | C | **R** | A |
+
+> **R** = Responsible · **A** = Accountable · **C** = Consulted · **I** = Informed
+
+### 0.4 Scoring Methodology & Calibration
+
+#### Scoring Convention
+
+| Score Range | Rating | Emoji | Tier | Action |
+|---|---|---|---|---|
+| **9.0–10.0** | Elite | 🟢 | Tier 5 | Merge immediately; exemplary; share as pattern |
+| **7.0–8.9** | Acceptable | 🟢 | Tier 3–4 | Merge with minor nits tracked in follow-up |
+| **5.0–6.9** | Marginal | 🟡 | Tier 2 | Requires fixes before merge; remediation plan required |
+| **3.0–4.9** | Major Deficiency | 🟠 | Tier 1 | Block merge; significant rework required |
+| **0.0–2.9** | Critical Failure | 🔴 | Tier 0 | Block merge; immediate escalation; potential incident |
+
+**Pass Threshold**: Every dimension ≥ its floor. Overall weighted average ≥ 7.5. Zero 🔴 unresolved. Zero 🟠 unresolved. All CI gates green. SLO compliance ≥ 99.9%.
+
+#### Scoring Calculation
+
+1. **Each dimension** is scored 0.0–10.0 by the reviewer using the rubric in §2
+2. **Weighted score** = Σ (dimension_score × dimension_weight)
+3. **Overall score** = Weighted score / 100 (normalized to 0–10 scale)
+4. **Pass criteria**:
+   - Overall weighted score ≥ **7.5**
+   - **Every** dimension ≥ its pass floor
+   - **Hard floor dimensions** (D01, D20) ≥ **8.0** — no exceptions
+   - Zero 🔴 (Critical) or 🟠 (Major) findings unresolved
+   - All CI/CD pipeline gates green
+
+#### Inter-Rater Reliability Protocol
+
+To ensure consistent scoring across reviewers:
+
+| Calibration Activity | Frequency | Target | Method |
+|---|---|---|---|
+| **Reference PR Review** | Quarterly | κ ≥ 0.7 (Cohen's kappa) | All reviewers independently score the same PR; compare scores |
+| **Score Distribution Audit** | Monthly | σ ≤ 1.0 across reviewers | Statistical analysis of score distributions per dimension |
+| **Calibration Workshop** | Quarterly | Consensus on edge cases | Team discusses borderline scores; aligns on rubric interpretation |
+| **New Reviewer Shadowing** | On hire | 3 shadow reviews before solo | New reviewer shadows 3 reviews, then is shadowed for 3 reviews |
+
+### 0.5 Review Types
+
+| Review Type | When | Dimensions | Required Reviewers | SLA |
+|---|---|---|---|---|
+| **Full Review** | Major feature, new service, architecture change | All 35 dimensions | 2+ peers, Tech Lead, Security Champion, A11Y Champion | 3 business days |
+| **Standard Review** | Bug fix, minor feature, refactor, dependency update | D01–D03, D05, D12, D15, D18–D20, D28 | 1+ peer | 1 business day |
+| **Hotfix Review** | Production incident fix (SEV1/SEV2) | D01, D02, D15, D19, D26, D27 | Tech Lead + 1 peer (expedited) | 4 hours |
+| **Security Review** | Auth change, data handling, API endpoint, crypto | D01, D18, D20, D21, D30, D31, D32 | Security Champion + 1 peer | 2 business days |
+| **Infrastructure Review** | IaC change, deployment config, environment, scaling | D19, D22, D23, D26, D27, D29, D31, D35 | SRE + Tech Lead | 2 business days |
+| **Performance Review** | Rendering change, data pipeline, caching, algorithm | D05, D06, D14, D27, D29 | SRE + 1 peer | 2 business days |
+| **A11Y Review** | UI change, form, interactive component, i18n | D04, D08, D09, D10, D11, D24 | A11Y Champion + 1 peer | 2 business days |
+| **AI/ML Review** | Model change, prompt update, data pipeline, RAG | D01, D02, D15, D16, D30, D31, D32 | ML Engineer + Security Champion | 2 business days |
+
+### 0.6 Exception Process
+
+When a dimension score falls below its floor, the following exception process applies:
+
+1. **Document**: Author must file an exception request citing dimension, score, justification, and remediation timeline
+2. **Review**: Tech Lead and relevant Champion review the exception
+3. **Risk Acceptance**: Tech Lead formally accepts risk with a documented expiration date (max 30 days)
+4. **Track**: Exception logged in finding tracker with owner and due date
+5. **Remediate**: Must be resolved before exception expiration; no renewals without VP Eng approval
+
+> **Hard Floor Exception**: D01 (Security) and D20 (Compliance) have **hard floors** — no exceptions permitted below 8.0.
+
+**Exception Template**:
+
+```markdown
+## Exception Request
+
+**Dimension**: D__
+**Current Score**: __ / 10
+**Floor**: __
+**Justification**: [Why the floor cannot be met at this time]
+**Risk Assessment**: [What risk does this create? Likelihood × Impact]
+**Remediation Plan**: [Concrete steps to meet the floor]
+**Target Date**: [When the floor will be met]
+**Approved By**: __ (Tech Lead) __ (Champion)
+**Expiration**: [Max 30 days from approval]
+```
+
+### 0.7 AI-Assisted Review Protocol
+
+| Aspect | Requirement | Enforcement |
+|---|---|---|
+| **AI Code Generation Disclosure** | All AI-generated code must be tagged with `@ai-generated` annotation | Pre-commit hook |
+| **AI Review Tool Usage** | AI review tools (CodeRabbit, GitHub Copilot Review, etc.) are **advisory only** — human reviewer retains final authority | Policy |
+| **AI Hallucination Guard** | AI-suggested code must be verified for correctness; no blind acceptance | Reviewer checklist |
+| **Prompt Injection Awareness** | Code that processes LLM output must sanitize against prompt injection | D01 checklist |
+| **AI Attribution** | Commits with > 50% AI-generated lines must include `Co-authored-by: AI Assistant` in git message | CI gate |
+| **AI Code Quality Bar** | AI-generated code must meet the **same** quality standards as human-written code — no exceptions | Policy |
+| **Model Provenance** | AI tools used in code generation must be documented in PR metadata (model, version, provider) | PR template |
+| **AI Output Validation** | LLM responses used in logic must be validated for type, range, format before use | D02 checklist |
+| **AI Bias Check** | AI-generated content must be reviewed for bias, hallucination, and factual accuracy | D30 checklist |
+| **AI Security Review** | AI-generated code must pass the same security review as human-written code | D01 checklist |
+
+### 0.8 DORA Metrics Integration
+
+This SOP integrates DORA (DevOps Research and Assessment) metrics as key indicators of engineering maturity and review effectiveness:
+
+| DORA Metric | Elite | High | Medium | Low | Measurement |
+|---|---|---|---|---|---|
+| **Deployment Frequency** | Multiple/day | Daily | Weekly | Monthly | CI/CD pipeline metrics |
+| **Lead Time for Changes** | < 1 hour | < 1 day | < 1 week | > 2 weeks | PR open → production |
+| **Mean Time to Recovery** | < 1 hour | < 4 hours | < 1 day | > 1 week | Incident open → resolved |
+| **Change Failure Rate** | < 5% | < 10% | < 15% | > 25% | Failed deployments / total |
+
+**Integration Points**:
+- Lead Time for Changes is directly impacted by review SLA (§0.5)
+- Change Failure Rate correlates with dimension floor compliance
+- MTTR is tracked in D23 (Incident Response & SRE)
+- Deployment Frequency is enabled by D19 (DevOps) and D28 (Feature Management)
+
+### 0.9 Glossary
+
+| Term | Definition |
+|---|---|
+| **A11Y** | Accessibility — designing products usable by people with disabilities |
+| **ADR** | Architecture Decision Record — documented decision with context and consequences |
+| **A11Y Champion** | Designated team member responsible for accessibility review sign-off |
+| **Canary Deployment** | Gradual rollout strategy: 10% → 25% → 50% → 100% with automated rollback |
+| **Circuit Breaker** | Pattern that prevents cascading failures by temporarily blocking calls to failing services |
+| **DORA Metrics** | Deployment Frequency, Lead Time, MTTR, Change Failure Rate — key DevOps performance indicators |
+| **Feature Flag** | Toggle that enables/disables functionality without deployment; enables progressive delivery |
+| **GitOps** | Infrastructure and deployment management using Git as single source of truth |
+| **Hard Floor** | Minimum score that cannot be excepted below (D01: 8.0, D20: 8.0) |
+| **IaC** | Infrastructure as Code — managing infrastructure through version-controlled configuration files |
+| **INP** | Interaction to Next Paint — Core Web Vital measuring responsiveness |
+| **Inter-Rater Reliability** | Consistency of scores across different reviewers; measured by Cohen's kappa (κ) |
+| **mTLS** | Mutual TLS — both client and server authenticate each other |
+| **Pass Floor** | Minimum acceptable score per dimension; varies by dimension (6.0–8.0) |
+| **PIA/DPIA** | Privacy Impact Assessment / Data Protection Impact Assessment |
+| **RACI** | Responsible, Accountable, Consulted, Informed — role assignment matrix |
+| **RUM** | Real User Monitoring — collecting performance data from actual users |
+| **SBOM** | Software Bill of Materials — inventory of all components in a software artifact |
+| **Security Champion** | Designated team member responsible for security review sign-off |
+| **SLSA** | Supply-chain Levels for Software Artifacts — framework for ensuring integrity of software supply chain |
+| **SLO/SLI/SLA** | Service Level Objective/Indicator/Agreement — reliability targets and measurements |
+| **STRIDE** | Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege |
+| **Zero-Trust** | Security model where no entity is trusted by default; every access request is verified |
+
+---
+
+## §1 — Dimension Index & Weight Table
+
+| # | Dimension | Weight | Category | Pass Floor | Hard Floor | Review Type |
+|---|---|---|---|---|---|---|
+| D01 | Security & Threat Modeling | 7% | Trust | 8.0 | ✅ | Full, Security, Hotfix |
+| D02 | Logic Correctness | 6% | Trust | 7.5 | | All |
+| D03 | Code Quality | 4% | Craft | 7.0 | | All |
+| D04 | Accessibility (A11Y) | 3% | Inclusion | 7.0 | | Full, A11Y |
+| D05 | Runtime Performance | 4% | Speed | 7.0 | | Full, Performance |
+| D06 | Algorithmic Complexity | 2% | Speed | 7.0 | | Full, Performance |
+| D07 | Browser / Runtime Compatibility | 2% | Reach | 7.0 | | Full |
+| D08 | User Experience (UX) | 3% | Experience | 7.0 | | Full, A11Y |
+| D09 | User Interface (UI) Design | 2% | Experience | 6.0 | | Full, A11Y |
+| D10 | Responsive / Adaptive Layout | 2% | Experience | 7.0 | | Full, A11Y |
+| D11 | Typography System | 1% | Experience | 6.0 | | Full |
+| D12 | Testability & Coverage | 5% | Confidence | 7.5 | | All |
+| D13 | Design Patterns & Architecture | 3% | Craft | 7.0 | | Full |
+| D14 | Optimization & Efficiency | 2% | Speed | 7.0 | | Full, Performance |
+| D15 | Error Handling & Resilience | 4% | Trust | 7.5 | | All |
+| D16 | Observability & Telemetry | 3% | Operations | 7.0 | | Full |
+| D17 | Documentation & Knowledge Transfer | 2% | Craft | 6.0 | | Full |
+| D18 | Dependency Health & Supply Chain | 3% | Trust | 7.0 | | All |
+| D19 | DevOps / CI-CD Pipeline | 4% | Operations | 7.5 | | All |
+| D20 | Regulatory & Privacy Compliance | 3% | Trust | 8.0 | ✅ | Full, Security |
+| D21 | API Design & Contract Testing | 3% | Trust | 7.5 | | Full, Security |
+| D22 | Infrastructure & Deployment | 3% | Operations | 7.5 | | Full, Infrastructure |
+| D23 | Incident Response & SRE | 2% | Operations | 7.0 | | Full, Infrastructure |
+| D24 | Internationalization (i18n) & Localization (l10n) | 2% | Reach | 6.0 | | Full |
+| D25 | Developer Experience (DX) & Inner Loop | 2% | Craft | 6.0 | | Full |
+| D26 | Data Architecture & Storage | 3% | Trust | 7.5 | | Full, Infrastructure |
+| D27 | Concurrency & Thread Safety | 3% | Trust | 7.5 | | Full, Performance |
+| D28 | Configuration & Feature Management | 2% | Operations | 7.0 | | All |
+| D29 | Cost & Resource Efficiency (FinOps) | 2% | Operations | 6.0 | | Full, Infrastructure |
+| D30 | AI/ML Model Governance | 2% | Trust | 7.0 | | Full, Security, AI/ML |
+| D31 | Supply Chain Security & Provenance | 2% | Trust | 7.5 | | All |
+| D32 | Privacy Engineering & Data Protection | 2% | Trust | 7.5 | | Full, Security |
+| D33 | Sustainability & Green Computing | 1% | Responsibility | 6.0 | | Full |
+| D34 | Platform Engineering & Developer Platforms | 1% | Operations | 6.0 | | Full |
+| D35 | Chaos Engineering & Resilience Testing | 1% | Trust | 6.0 | | Full, Infrastructure |
+
+**Total Weight: 100%**
+
+> **Category Distribution**: Trust 36% · Operations 17% · Craft 12% · Speed 8% · Experience 8% · Inclusion 3% · Reach 4% · Confidence 5% · Responsibility 1%
+
+> **v6.0 Changes**: Added 5 new dimensions (D31–D35) from v5.0. Enhanced all dimensions with 2026 relevance. Added DORA metrics, inter-rater reliability protocol, glossary, reviewer certification, expanded compliance mapping (SOC 2, ISO 27001, FedRAMP), and CI/CD pipeline YAML examples.
+
+---
+
+## §2 — Dimension Detail Cards
+
+---
+
+### D01 — Security & Threat Modeling (Weight: 7%, Floor: 8.0, Hard Floor: ✅)
+
+#### Threat Model (STRIDE Analysis)
+
+| Threat Type | Example | Mitigation | Score 0–10 |
+|---|---|---|---|
+| **Spoofing** | Session hijack, CSRF, credential replay, JWT tampering, AI prompt injection | SameSite cookies, CSRF tokens, MFA, short-lived tokens, JWT validation, prompt sanitization | |
+| **Tampering** | XSS, DOM manipulation, prototype pollution, parameter injection, mass assignment, AI output manipulation | CSP, Trusted Types, input validation, frozen prototypes, allowlists, AI output sanitization | |
+| **Repudiation** | Unlogged actions, missing audit trail, shared credentials, AI-generated code attribution gaps | Structured logging, immutable audit log, correlation IDs, individual accounts, AI attribution | |
+| **Information Disclosure** | Console logging secrets, PII in URLs, error stack traces in prod, verbose error messages, AI model data leakage | Log redaction, HTTPS-only, custom error pages, source map restriction, model output filtering | |
+| **Denial of Service** | ReDoS, event listener leak, unbounded memory, API rate bypass, hash collision, LLM token exhaustion | Rate limiting, input length caps, circuit breakers, resource quotas, hash randomization, token budgets | |
+| **Elevation of Privilege** | IDOR, privilege escalation, insecure direct object references, JWT algorithm confusion, AI tool privilege escalation | RBAC, ABAC, principle of least privilege, resource-level auth checks, AI tool sandboxing | |
+
+#### Attack Surface Inventory
+
+| Attack Vector | Status | Mitigation | Verified |
+|---|---|---|---|
+| **Client-Side Injection** | | CSP, Trusted Types, sanitization | |
+| **API Endpoints** | | Auth, rate limiting, input validation | |
+| **Third-Party Scripts** | | SRI, Subresource Integrity, CSP | |
+| **Local Storage** | | No sensitive data, encryption at rest | |
+| **Service Workers** | | Scope restricted, no wildcard | |
+| **PostMessage** | | Origin validation, structured clone | |
+| **Web Workers** | | No DOM access, message validation | |
+| **Supply Chain** | | Lockfile, audit, Snyk/Socket, SBOM | |
+| **OAuth / OIDC Flows** | | PKCE, state parameter, nonce, redirect URI validation | |
+| **WebSocket Connections** | | Origin validation, message validation, rate limiting | |
+| **File Upload** | | Type validation, size limits, virus scan, sandboxed storage | |
+| **DNS / Subdomain Takeover** | | CNAME validation, dangling DNS detection | |
+| **AI/LLM Integration** | | Prompt injection guards, output sanitization, token budgets, model access controls | |
+| **Container Escape** | | Seccomp, AppArmor, read-only filesystem, non-root user | |
+| **Secrets in CI/CD** | | Vault/Sealed Secrets, no plaintext in pipelines, secret scanning | |
+
+#### Security Checklist
+
+- [ ] **No `eval()`, `new Function()`, `document.write()`, or `innerHTML` with untrusted data**
+- [ ] All user inputs sanitized/escaped before DOM insertion or API calls
+- [ ] No secrets, tokens, or PII in client-side code, logs, or source maps
+- [ ] CSP headers configured; no `unsafe-inline` / `unsafe-eval` in production
+- [ ] Dependencies audited; zero high/critical CVEs
+- [ ] All API calls use HTTPS with proper error handling (no silent fail-open)
+- [ ] Rate limiting and input validation on all endpoints
+- [ ] Session management follows OWASP Top 10 (2025) guidelines
+- [ ] No `javascript:` URIs or `data:` URIs with executable content
+- [ ] Prototype pollution guards on all `Object.assign` / spread merges
+- [ ] **STRIDE threat model completed for this change**
+- [ ] **Attack surface inventory updated**
+- [ ] **Penetration test results reviewed (if applicable)**
+- [ ] **Secrets scanned (gitleaks, truffleHog) — no leaked credentials**
+- [ ] **CORS policy reviewed — no wildcard origins in production**
+- [ ] **Subresource Integrity (SRI) hashes on all CDN-hosted scripts**
+- [ ] **Content-Security-Policy report-only mode tested before enforcement**
+- [ ] **HTTP security headers verified**: X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, Strict-Transport-Security
+- [ ] **OAuth/OIDC: PKCE enabled, state parameter validated, redirect URI allowlisted**
+- [ ] **WebSocket: origin validation, message schema validation, rate limiting**
+- [ ] **File upload: type allowlist, size limits, virus scan, sandboxed storage**
+- [ ] **JWT: algorithm allowlisted (HS256/RS256), expiry validated, issuer checked**
+- [ ] **Zero-trust: mTLS between services, service mesh authentication, no implicit trust**
+- [ ] **AI prompt injection: all LLM inputs sanitized, output validated before rendering**
+- [ ] **Post-quantum readiness: crypto agility assessed; hybrid key exchange planned for NIST PQC standards (ML-KEM, ML-DSA)**
+- [ ] **Container security: non-root user, read-only filesystem, seccomp profile, no privileged mode**
+- [ ] **OWASP Top 10 (2025) all items addressed**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| `innerHTML = userInput` | XSS vector | Use `textContent` or DOMPurify |
+| `eval(jsonString)` | Code injection | Use `JSON.parse()` |
+| Storing tokens in `localStorage` | Accessible to XSS | Use HttpOnly cookies |
+| `*` in CORS `Access-Control-Allow-Origin` | Allows any origin | Specify exact origins |
+| Shared service account credentials | No repudiation | Individual accounts + MFA |
+| JWT with `algorithm: none` | Bypasses signature verification | Always verify algorithm |
+| Hardcoded secrets in code | Exposed in VCS | Use Vault / Sealed Secrets |
+| Trusting AI-generated code without review | Hallucinated vulnerabilities | Mandatory human review of AI output |
+| Using MD5/SHA1 for security | Cryptographically broken | Use SHA-256+ or Argon2 for passwords |
+| No mTLS between services | Implicit trust on internal network | Zero-trust: verify every request |
+
+---
+
+### D02 — Logic Correctness (Weight: 6%, Floor: 7.5)
+
+| Sub-dimension | Critical Items | Score 0–10 |
+|---|---|---|
+| **Control Flow** | Dead code paths, unreachable branches, infinite loops, off-by-one errors | |
+| **State Machine Integrity** | Invalid transitions, race conditions, stale state, orphan states | |
+| **Boundary Conditions** | Edge cases (0, -0, NaN, Infinity, empty string, null, undefined), boundary indices | |
+| **Concurrency** | Event ordering, promise chaining, async/await error propagation, debounce correctness | |
+| **Data Integrity** | Type coercion traps (`==` vs `===`), floating-point precision, integer overflow | |
+| **Business Logic** | Calculation correctness, formula validation, domain rule enforcement | |
+| **Idempotency** | Operations safe to repeat; no double-submit; no side effects on retry | |
+| **Temporal Logic** | Time zones, daylight saving, leap years, race conditions on timestamps | |
+| **Null Safety** | Null/undefined guards, optional chaining, nullish coalescing, defensive defaults | |
+| **Error Propagation** | Errors bubble correctly, no swallowed exceptions, proper error types | |
+| **AI Output Validation** | LLM responses validated for type, range, format before use in logic | |
+
+**Checklist:**
+
+- [ ] All branches reachable and tested
+- [ ] State transitions validated against explicit transition table
+- [ ] Edge cases covered: zero, negative, NaN, Infinity, empty, null, undefined
+- [ ] No floating-point comparison without epsilon tolerance
+- [ ] Async operations properly sequenced; no unhandled promise rejections
+- [ ] No `==` where `===` is intended
+- [ ] All switch statements have default cases
+- [ ] No silent failures — every error path has explicit handling or logging
+- [ ] **Idempotency verified for all write operations**
+- [ ] **Date/time operations use UTC or explicit timezone; no implicit local time**
+- [ ] **Race conditions identified and guarded (mutex, atomic ops, or serialization)**
+- [ ] **Null/undefined guards on all external data access points**
+- [ ] **Error types are specific (not generic `Error`); include context and code**
+- [ ] **No `catch (e) { }` empty blocks — at minimum log the error**
+- [ ] **AI-generated logic verified independently; no blind trust in LLM output**
+- [ ] **Property-based testing applied for critical business logic (fast-check, jqwik)**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| `0.1 + 0.2 === 0.3` | Floating-point precision | Use epsilon: `Math.abs(a - b) < Number.EPSILON` |
+| `catch (e) { /* empty */ }` | Swallowed errors | Log, rethrow, or handle explicitly |
+| `new Date('2024-01-01')` | Timezone-dependent parsing | Use `Date.UTC()` or `Temporal` |
+| `==` for comparison | Type coercion surprises | Always use `===` |
+| Mutable shared state | Race conditions | Immutable data, atomic operations |
+| Trusting AI output without validation | Hallucinated logic | Validate type, range, format before use |
+
+---
+
+### D03 — Code Quality (Weight: 4%, Floor: 7.0)
+
+| Sub-dimension | Metric | Elite (10) | Acceptable (7) | Poor (≤4) |
+|---|---|---|---|---|
+| **Cyclomatic Complexity** | CC per function | ≤ 5 | ≤ 10 | > 15 |
+| **Cognitive Complexity** | Per function | ≤ 10 | ≤ 20 | > 30 |
+| **Function Length** | LOC per function | ≤ 20 | ≤ 50 | > 80 |
+| **File Length** | LOC per file | ≤ 200 | ≤ 400 | > 600 |
+| **Duplication** | % duplicated lines | < 3% | < 8% | > 15% |
+| **Comment Ratio** | Meaningful comments / LOC | 10–20% | 5–10% | < 3% or > 40% |
+| **Naming Quality** | Descriptive, consistent, no abbreviations | All clear | Mostly clear | Cryptic |
+| **Type Safety** | Strict mode, no implicit any, proper generics | 100% typed | > 90% typed | < 70% typed |
+| **Lint Compliance** | Zero warnings at strict level | 0 warnings | < 5 warnings | > 20 warnings |
+| **Coupling** | Afferent/efferent coupling per module | Low | Medium | High / tangled |
+| **Maintainability Index** | Composite score | > 80 | 60–80 | < 60 |
+| **Technical Debt Ratio** | Remediation effort / total effort | < 5% | 5–10% | > 10% |
+| **AI-Generated Code Quality** | Same standards as human code | 100% compliant | > 90% compliant | < 70% compliant |
+
+**Checklist:**
+
+- [ ] ESLint / Biome configured at strict level; zero warnings
+- [ ] TypeScript `strict: true`, `noImplicitAny: true`, `strictNullChecks: true`
+- [ ] No magic numbers — all constants named
+- [ ] Consistent naming convention enforced (camelCase, PascalCase, UPPER_SNAKE)
+- [ ] No TODO/FIXME/HACK without linked issue tracker reference
+- [ ] Dead code eliminated (no unused exports, variables, or imports)
+- [ ] All public APIs have JSDoc/TSDoc with `@param`, `@returns`, `@throws`
+- [ ] **No circular dependencies (verified by dependency graph tool)**
+- [ ] **Import order enforced (external → internal → relative)**
+- [ ] **No God classes > 300 LOC; single responsibility per module**
+- [ ] **SonarQube / CodeClimate quality gate passes**
+- [ ] **Technical debt items tracked with effort estimates**
+- [ ] **AI-generated code tagged with `@ai-generated` and reviewed to same standard**
+- [ ] **No copy-pasted AI output without understanding and adaptation**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| God class (> 300 LOC) | Violates SRP, hard to test | Split into focused modules |
+| Magic numbers | Unclear intent, hard to change | Extract to named constants |
+| Deep nesting (> 3 levels) | Hard to follow, high CC | Early returns, guard clauses |
+| Copy-paste code | Duplication, divergent fixes | Extract shared function |
+| `// TODO: fix later` | Accumulates indefinitely | Link to issue tracker with deadline |
+| Blind AI code acceptance | Unknown quality, potential bugs | Review, understand, adapt all AI output |
+
+---
+
+### D04 — Accessibility (A11Y) (Weight: 3%, Floor: 7.0)
+
+| Sub-dimension | Standard | Score 0–10 |
+|---|---|---|
+| **Perceivable** | WCAG 2.2 AA — text alternatives, captions, adaptable presentation | |
+| **Operable** | WCAG 2.2 AA — keyboard navigation, timing, seizure safety, nav aids | |
+| **Understandable** | WCAG 2.2 AA — readable, predictable, input assistance | |
+| **Robust** | WCAG 2.2 AA — compatible with assistive technologies, valid markup | |
+| **Screen Reader** | NVDA, JAWS, VoiceOver, TalkBack compatibility verified | |
+| **Focus Management** | Visible focus, logical tab order, focus trapping in modals, skip links | |
+| **ARIA** | Correct roles, labels, live regions, atomic updates | |
+| **Motor Impairment** | Keyboard-only navigation, voice control compatibility, switch access | |
+| **Cognitive** | Clear language, predictable navigation, error prevention | |
+| **Low Vision** | Zoom to 200% without loss, high contrast mode, screen magnifier | |
+| **Seizure & Motion** | No flashing > 3Hz, `prefers-reduced-motion`, animation controls | |
+| **AI-Generated Content A11Y** | AI-generated text/images have proper alt text, captions, and semantic markup | |
+
+**Checklist:**
+
+- [ ] All images have meaningful `alt` text (or `alt=""` for decorative)
+- [ ] Color contrast ratio ≥ 4.5:1 for normal text, ≥ 3:1 for large text
+- [ ] All interactive elements reachable via keyboard (Tab, Enter, Space, Escape)
+- [ ] Focus indicator visible and meets 2px minimum
+- [ ] ARIA roles, labels, and live regions correctly applied
+- [ ] `aria-live` regions for dynamic content updates
+- [ ] Form inputs have associated `<label>` elements
+- [ ] Skip navigation link provided
+- [ ] No auto-playing media without user control
+- [ ] `prefers-reduced-motion` respected
+- [ ] `lang` attribute set on `<html>`
+- [ ] Automated axe-core audit passes with 0 violations
+- [ ] **Manual screen reader testing on VoiceOver (macOS) + NVDA (Windows)**
+- [ ] **Focus trap verified in all modal dialogs**
+- [ ] **Drag-and-drop has keyboard alternative**
+- [ ] **Touch target ≥ 44×44px on all interactive elements**
+- [ ] **Zoom to 200%: no content loss or horizontal scroll**
+- [ ] **High contrast mode (Windows) tested**
+- [ ] **No content flashes between 3–50 Hz (seizure safety)**
+- [ ] **`prefers-color-scheme` respected for dark mode**
+- [ ] **AI-generated images have descriptive alt text (not filename-based)**
+- [ ] **AI-generated content announced to screen readers via `aria-live`**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| `div` with `onClick` | Not keyboard accessible | Use `<button>` or add `role`, `tabindex`, keyboard handler |
+| `alt=""` on informative image | Screen reader skips content | Provide meaningful alt text |
+| Auto-playing video | Startles, inaccessible | Require user interaction to play |
+| `tabindex` > 0 | Disrupts natural tab order | Use `tabindex="0"` or restructure DOM |
+| Color-only indicators | Invisible to color-blind users | Add icons, patterns, or text labels |
+| AI-generated alt text without review | May be inaccurate or hallucinated | Human review all AI-generated accessibility text |
+
+---
+
+### D05 — Runtime Performance (Weight: 4%, Floor: 7.0)
+
+| Sub-dimension | Metric | Elite (10) | Acceptable (7) | Poor (≤4) |
+|---|---|---|---|---|
+| **Time to Interactive (TTI)** | Seconds | < 3.0s | < 5.0s | > 8.0s |
+| **Interaction to Next Paint (INP)** | Milliseconds | < 100ms | < 200ms | > 500ms |
+| **Largest Contentful Paint (LCP)** | Seconds | < 2.0s | < 3.5s | > 5.0s |
+| **Cumulative Layout Shift (CLS)** | Score | < 0.05 | < 0.1 | > 0.25 |
+| **Total Blocking Time (TBT)** | Milliseconds | < 150ms | < 350ms | > 600ms |
+| **First Contentful Paint (FCP)** | Seconds | < 1.0s | < 2.0s | > 4.0s |
+| **Memory — Idle** | MB heap | < 10MB | < 30MB | > 60MB |
+| **Memory — Active** | MB heap | < 50MB | < 100MB | > 200MB |
+| **Event Listener Count** | Total bound | < 20 | < 50 | > 100 |
+| **Paint / Composite Layers** | Count | < 5 | < 15 | > 30 |
+| **Bundle Size (gzipped)** | KB | < 50KB | < 150KB | > 300KB |
+| **Time to First Byte (TTFB)** | ms | < 200ms | < 500ms | > 1000ms |
+| **JS Execution Time** | ms | < 200ms | < 500ms | > 1000ms |
+| **Third-Party Impact** | ms blocked | < 100ms | < 300ms | > 500ms |
+| **Carbon Intensity Awareness** | Carbon-aware deployment timing | Implemented | Planned | None |
+
+**Checklist:**
+
+- [ ] Lighthouse Performance score ≥ 90
+- [ ] No layout thrashing (read-then-write batching)
+- [ ] Images lazy-loaded; WebP/AVIF with fallbacks; `width`/`height` set
+- [ ] Critical CSS inlined; non-critical deferred
+- [ ] JavaScript code-split per route
+- [ ] No memory leaks (verified with heap snapshots)
+- [ ] `requestAnimationFrame` for visual updates, not `setTimeout`
+- [ ] Web Workers for CPU-intensive tasks > 50ms
+- [ ] Service Worker caches static assets with stale-while-revalidate
+- [ ] **Interaction to Next Paint (INP) < 200ms measured in RUM**
+- [ ] **Resource hints: `preconnect` for 3rd-party origins, `preload` for critical assets**
+- [ ] **No synchronous XHR or blocking scripts**
+- [ ] **Font loading: `font-display: swap`, preload critical, subset glyphs**
+- [ ] **Third-party scripts audited for performance impact**
+- [ ] **Long Animation Frames API used to diagnose > 50ms tasks**
+- [ ] **Performance budget defined and enforced in CI**
+- [ ] **Core Web Vitals monitored in production (CrUX, RUM)**
+- [ ] **Performance regression detection in CI (Lighthouse CI, web-vitals)**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Synchronous XHR | Blocks main thread | Use `fetch()` with async/await |
+| Unoptimized images | Slow LCP | WebP/AVIF, lazy load, responsive `srcset` |
+| Render-blocking JS | Delays FCP | `defer` or `async` attribute |
+| Layout thrashing | Forced reflows | Batch DOM reads then writes |
+| Memory leak (detached DOM) | Growing heap | Remove event listeners, null references |
+
+---
+
+### D06 — Algorithmic Complexity (Weight: 2%, Floor: 7.0)
+
+| Sub-dimension | Metric | Elite (10) | Acceptable (7) | Poor (≤4) |
+|---|---|---|---|---|
+| **Time Complexity** | Big-O per hot path | O(1) / O(log n) | O(n) | O(n²) / O(n!) |
+| **Space Complexity** | Big-O per hot path | O(1) | O(n) | O(n²) |
+| **Amortized Analysis** | Worst-case vs amortized | Documented | Known | Unknown |
+| **Data Structure Choice** | Appropriate for access pattern | Optimal | Adequate | Mismatched |
+| **Bottleneck Identification** | Profiled & documented | All identified | Most identified | Unknown |
+
+**Checklist:**
+
+- [ ] Hot paths profiled; Big-O documented in comments
+- [ ] No O(n²) operations in render loops or event handlers
+- [ ] `Array.shift()` replaced with circular buffer for queues
+- [ ] Hash maps used for O(1) lookups instead of `Array.find()`
+- [ ] Binary search used for sorted data instead of linear scan
+- [ ] No nested loops where a hash map or Set would suffice
+- [ ] Memoization applied to expensive pure computations
+- [ ] Pagination / virtualization for lists > 100 items
+- [ ] **Benchmark results attached for critical paths (> 1ms)**
+- [ ] **Worst-case input identified and tested**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| `Array.find()` in loop | O(n²) | Use `Map` for O(1) lookup |
+| `Array.shift()` in loop | O(n) per shift | Use circular buffer or index |
+| Nested loops | O(n²) or worse | Hash map, Set, or algorithm redesign |
+| Unbounded recursion | Stack overflow risk | Iterative approach or tail recursion |
+
+---
+
+### D07 — Browser / Runtime Compatibility (Weight: 2%, Floor: 7.0)
+
+| Feature | Chrome | Firefox | Safari | Edge | Notes |
+|---|---|---|---|---|---|
+| ES2022+ (arrow, const/let, template literals) | ✅ | ✅ | ✅ | ✅ | Baseline |
+| `Object.is()` | ✅ | ✅ | ✅ | ✅ | |
+| Static class properties | ✅ | ✅ | ✅ | ✅ | |
+| CSS Grid | ✅ | ✅ | ✅ | ✅ | |
+| CSS Custom Properties | ✅ | ✅ | ✅ | ✅ | |
+| `fetch()` API | ✅ | ✅ | ✅ | ✅ | |
+| `<dialog>` showModal() | ✅ | ✅ | ✅ 15.4+ | ✅ | |
+| `structuredClone()` | ✅ | ✅ | ✅ | ✅ | |
+| `AbortController` | ✅ | ✅ | ✅ | ✅ | |
+| `container` queries | ✅ 105+ | ✅ | ✅ | ✅ | |
+| `:has()` selector | ✅ 105+ | ✅ 121+ | ✅ 15.4+ | ✅ | |
+| `popover` API | ✅ | ✅ | ✅ | ✅ | |
+| View Transitions API | ✅ | ✅ | ⚠️ 18+ | ✅ | |
+| `Temporal` API | ⚠️ Flag | ⚠️ Flag | ❌ | ⚠️ Flag | Use polyfill |
+| `Intl.Segmenter` | ✅ | ✅ 125+ | ✅ 15.4+ | ✅ | |
+| CSS Nesting | ✅ 120+ | ✅ 117+ | ✅ 17.2+ | ✅ | |
+| `@layer` cascade layers | ✅ 99+ | ✅ 97+ | ✅ 15.4+ | ✅ | |
+| `scheduler.yield()` | ✅ 119+ | ⚠️ Flag | ❌ | ✅ | Low-priority yielding |
+
+**Checklist:**
+
+- [ ] Browserslist configured; matches target audience
+- [ ] Vendor prefixes added where needed (`-webkit-`, `-moz-`)
+- [ ] Polyfills loaded only for missing features (differential serving)
+- [ ] `nomodule` / `module` dual bundle for legacy support
+- [ ] Feature detection (`typeof` / `'in' window`) before API usage
+- [ ] No IE11 support required (or graceful degradation documented)
+- [ ] Cross-browser manual smoke test on Chrome, Firefox, Safari, Edge
+- [ ] `caniuse` / `mdn-browser-compat` data verified for all APIs used
+- [ ] **BrowserStack / LambdaTest / Playwright cross-browser CI**
+- [ ] **Progressive enhancement: core functionality works without JS where possible**
+- [ ] **Baseline status checked for all APIs (web.dev/baseline)**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Browser sniffing | Fragile, breaks with updates | Feature detection (`'feature' in window`) |
+| Unprefixed experimental CSS | Breaks in some browsers | Add vendor prefixes, use Autoprefixer |
+| Polyfilling everything | Bloats bundle | Differential serving; only polyfill missing features |
+
+---
+
+### D08 — User Experience (UX) (Weight: 3%, Floor: 7.0)
+
+| Heuristic (Nielsen/Norman) | Evaluation Criteria | Score 0–10 |
+|---|---|---|
+| **Visibility of System Status** | Loading states, progress indicators, success/error feedback within 100ms | |
+| **Match Between System & Real World** | Language, metaphors, mental models align with user expectations | |
+| **User Control & Freedom** | Undo, redo, cancel, escape hatches; no dead ends | |
+| **Consistency & Standards** | Platform conventions, design system adherence, predictable behavior | |
+| **Error Prevention** | Validation before submission, confirmation dialogs, constraints | |
+| **Recognition Over Recall** | Visible options, tooltips, contextual help; no memorization required | |
+| **Flexibility & Efficiency** | Keyboard shortcuts, power-user features, customizable workflows | |
+| **Aesthetic & Minimalist Design** | No irrelevant information; progressive disclosure; visual hierarchy | |
+| **Help Users Recover from Errors** | Clear error messages, suggested fixes, no technical jargon | |
+| **Help & Documentation** | Onboarding, tooltips, searchable help, contextual guidance | |
+
+**Checklist:**
+
+- [ ] Every action provides feedback within 100ms (visual or haptic)
+- [ ] All destructive actions require confirmation
+- [ ] Undo available for all reversible operations
+- [ ] Error messages are human-readable and suggest next steps
+- [ ] Loading states prevent duplicate submissions (debounce / disable)
+- [ ] Keyboard shortcuts documented and discoverable
+- [ ] No orphan pages or dead-end states
+- [ ] Progressive disclosure: advanced options hidden until needed
+- [ ] **User journey maps documented for top 3 flows**
+- [ ] **A/B test results or usability study data referenced (if available)**
+- [ ] **Onboarding flow for first-time users**
+- [ ] **Empty states designed with helpful guidance**
+- [ ] **Skeleton screens during loading (not spinners for > 1s)**
+- [ ] **Optimistic UI updates with rollback on error**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Generic "An error occurred" | No actionable information | Specific message with suggested action |
+| Spinner for > 1s load | Feels slow, no progress | Skeleton screen + progress bar |
+| No undo for destructive action | User anxiety | Confirmation dialog + undo capability |
+| Dead-end page | User stuck | Navigation options, helpful links |
+
+---
+
+### D09 — User Interface (UI) Design (Weight: 2%, Floor: 6.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Color Palette** | Cohesive palette, WCAG contrast, semantic color (error=red, success=green), dark mode | |
+| **Color Theory** | Complementary/analogous harmony, saturation balance, brand consistency | |
+| **Typography** | Type scale (8px grid), weight hierarchy, line-height 1.4–1.6, max-width 65ch | |
+| **Spacing System** | 4px/8px base grid, consistent margins/padding, visual rhythm | |
+| **Button Design** | 44×44px minimum touch target, clear states (hover/active/focus/disabled), feedback | |
+| **Visual Hierarchy** | Size, weight, color, position guide eye flow; F-pattern / Z-pattern | |
+| **Icons & Symbols** | Consistent icon set, labeled icons, SVG preferred, accessible alt text | |
+| **Dark Mode** | Full dark theme, no pure black (#000), reduced saturation, proper contrast | |
+| **Micro-interactions** | Hover, press, transition, state-change animations (150–300ms) | |
+| **Motion & Animation** | `prefers-reduced-motion` respected, no gratuitous animation, purposeful motion | |
+| **Design Tokens** | CSS custom properties / design tokens for all values; no magic numbers | |
+| **Component Library** | Shared component library with documented variants and states | |
+
+**Checklist:**
+
+- [ ] Design tokens / CSS custom properties for all colors, spacing, typography
+- [ ] 4px/8px spacing grid enforced
+- [ ] Touch targets ≥ 44×44px on mobile
+- [ ] Focus indicators visible and meet 3:1 contrast
+- [ ] Dark mode fully implemented and tested
+- [ ] Animations respect `prefers-reduced-motion`
+- [ ] No layout shifts on content load (CLS < 0.1)
+- [ ] Icon set is consistent (single library, e.g., Lucide, Heroicons)
+- [ ] **Design system / component library documented and versioned**
+- [ ] **Figma / design handoff specs match implementation**
+- [ ] **Storybook or equivalent for component documentation**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Magic color values | Inconsistent, hard to theme | Use design tokens |
+| Pure black (#000) in dark mode | Causes eye strain | Use dark gray (#1a1a2e) |
+| Undifferentiated button styles | User confusion | Clear primary/secondary/ghost hierarchy |
+
+---
+
+### D10 — Responsive / Adaptive Layout (Weight: 2%, Floor: 7.0)
+
+| Breakpoint | Width | Device Class | Must Pass |
+|---|---|---|---|
+| **Ultra-Small** | < 360px | Small phones, wearables | ✅ |
+| **Mobile** | 360–414px | Standard phones | ✅ |
+| **Fold / Flip** | 414–540px | Foldables (open/closed) | ✅ |
+| **Phablet** | 540–768px | Large phones, small tablets | ✅ |
+| **Tablet** | 768–1024px | iPads, Android tablets | ✅ |
+| **Laptop** | 1024–1366px | Small laptops | ✅ |
+| **Desktop** | 1366–1920px | Standard monitors | ✅ |
+| **Ultrawide** | 1920–3840px | Wide monitors, 4K | ✅ |
+| **Super Ultrawide** | > 3840px | 5K/8K displays | ✅ |
+
+**Checklist:**
+
+- [ ] CSS Grid / Flexbox used for layout (no fixed pixel widths)
+- [ ] `clamp()` for fluid typography: `font-size: clamp(1rem, 2.5vw, 2rem)`
+- [ ] Container queries used for component-level responsiveness
+- [ ] Images responsive with `srcset` and `sizes`
+- [ ] No horizontal scroll at any breakpoint
+- [ ] Touch targets ≥ 44px on mobile; hover states on desktop
+- [ ] Orientation changes (portrait ↔ landscape) handled gracefully
+- [ ] Foldable devices: content reflows, no content loss at fold boundary
+- [ ] Viewport meta tag: `<meta name="viewport" content="width=device-width, initial-scale=1">`
+- [ ] **Print stylesheet for key pages**
+- [ ] **Container queries preferred over media queries for component-level responsiveness**
+- [ ] **Foldable / dual-screen APIs tested (CSS `horizontal-viewport-segments`)**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Fixed pixel widths | Breaks on different screens | Use `clamp()`, `%`, `vw`, container queries |
+| `@media` for component layout | Tied to viewport, not component | Use container queries |
+| `overflow-x: hidden` on body | Masks layout bugs | Fix the root cause of overflow |
+
+---
+
+### D11 — Typography System (Weight: 1%, Floor: 6.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Type Scale** | Modular scale (1.2–1.333 ratio), consistent sizing hierarchy | |
+| **Line Height** | 1.4–1.6 for body, 1.1–1.3 for headings | |
+| **Font Loading** | `font-display: swap`, preload critical, subset glyphs | |
+| **Responsive Type** | `clamp()` fluid sizing, no breakpoint jumps | |
+| **Contrast** | WCAG 4.5:1 body, 3:1 large text | |
+| **International Scripts** | CJK, Arabic, Devanagari fallback stacks | |
+| **Variable Fonts** | Used where available for performance | |
+
+**Checklist:**
+
+- [ ] Type scale defined with modular ratio (1.2, 1.25, or 1.333)
+- [ ] `clamp()` used for fluid typography across breakpoints
+- [ ] Line height 1.4–1.6 for body text; 1.1–1.3 for headings
+- [ ] Max line length 65–75 characters (`max-width: 65ch`)
+- [ ] Font loading: `font-display: swap`, critical fonts preloaded
+- [ ] CJK / Arabic / Devanagari fallback font stacks defined
+- [ ] Variable fonts used where available (reduces requests)
+- [ ] **No `!important` overrides on typography tokens**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Fixed `px` font sizes | Not accessible, not responsive | Use `rem`/`em` with `clamp()` |
+| Too many font weights | Extra HTTP requests | Limit to 2–3 weights |
+| System font stack missing | Fallback to serif | Define comprehensive system stack |
+
+---
+
+### D12 — Testability & Coverage (Weight: 5%, Floor: 7.5)
+
+| Sub-dimension | Metric | Elite (10) | Acceptable (7) | Poor (≤4) |
+|---|---|---|---|---|
+| **Unit Test Coverage** | Line coverage | ≥ 90% | ≥ 70% | < 50% |
+| **Branch Coverage** | Decision branches | ≥ 85% | ≥ 60% | < 40% |
+| **Integration Tests** | API contract coverage | All endpoints | Critical paths | None |
+| **E2E Tests** | User journey coverage | Top 10 flows | Top 5 flows | None |
+| **Mutation Score** | Mutants killed | ≥ 80% | ≥ 60% | < 40% |
+| **Test Quality** | Flaky test rate | < 1% | < 5% | > 10% |
+| **Test Speed** | Unit suite runtime | < 30s | < 2min | > 5min |
+| **Snapshot Tests** | UI component coverage | All components | Key components | None |
+| **Contract Tests** | API provider/consumer | All contracts | Critical | None |
+| **Visual Regression** | Component coverage | All components | Key pages | None |
+| **AI Output Tests** | LLM response validation | Schema + semantic | Schema only | None |
+
+**Checklist:**
+
+- [ ] Unit test coverage ≥ 70% (line) and ≥ 60% (branch)
+- [ ] All public APIs have integration tests
+- [ ] E2E tests cover top 5 user journeys
+- [ ] No skipped tests without linked issue
+- [ ] Flaky test quarantine process in place
+- [ ] Test data factories (not fixtures) for deterministic tests
+- [ ] Mocking at boundaries only (not internal implementation)
+- [ ] `describe/it` structure follows Given-When-Then pattern
+- [ ] **Mutation testing run on critical modules (Stryker / PIT)**
+- [ ] **Contract tests for all API boundaries (Pact / Schemathesis)**
+- [ ] **Visual regression tests for key pages (Playwright / Chromatic)**
+- [ ] **Performance regression tests in CI (Lighthouse CI)**
+- [ ] **AI output tests: schema validation, semantic similarity, hallucination detection**
+- [ ] **Property-based tests for critical business logic (fast-check / jqwik)**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Testing implementation details | Brittle, breaks on refactor | Test behavior and contracts |
+| 100% coverage obsession | Diminishing returns, false security | Target critical paths + mutation testing |
+| Shared mutable test state | Flaky, order-dependent | Isolated test data factories |
+| `setTimeout` in tests | Non-deterministic | Use fake timers or async utilities |
+| No AI output validation | Hallucinated responses pass | Schema + semantic validation |
+
+---
+
+### D13 — Design Patterns & Architecture (Weight: 3%, Floor: 7.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **SOLID Principles** | Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion | |
+| **DRY** | No duplicated logic; shared abstractions | |
+| **KISS** | Simplest solution that works; no over-engineering | |
+| **Composition Over Inheritance** | Prefer composition; shallow hierarchies | |
+| **Dependency Inversion** | Depend on abstractions, not concretions; DI container | |
+| **Cohesion** | High cohesion within modules; related code together | |
+| **Coupling** | Low coupling between modules; clear interfaces | |
+| **Separation of Concerns** | UI, business logic, data access separated | |
+| **Hexagonal / Ports & Adapters** | Core logic independent of frameworks and external services | |
+| **Event-Driven Patterns** | Pub/sub, event sourcing, CQRS where appropriate | |
+| **Micro-Frontend Architecture** | Module federation, independent deployability, shared shell |
+
+**Checklist:**
+
+- [ ] No God classes (> 300 LOC); single responsibility per module
+- [ ] Dependency injection used; no direct instantiation of external services
+- [ ] Clear module boundaries with defined interfaces
+- [ ] No circular dependencies (verified by tool)
+- [ ] Architecture Decision Records (ADRs) for major choices
+- [ ] **C4 model or equivalent architecture diagram up to date**
+- [ ] **Domain-driven design bounded contexts identified (if applicable)**
+- [ ] **Micro-frontend boundaries defined with independent deployability**
+- [ ] **API contracts defined before implementation (contract-first)**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| God class | Violates SRP, hard to test | Split into focused modules |
+| Singleton overuse | Hidden state, testing difficulty | Use DI container |
+| Callback hell | Unreadable, error-prone | Use async/await |
+| Premature abstraction | YAGNI violation | Abstract when 3+ instances exist |
+
+---
+
+### D14 — Optimization & Efficiency (Weight: 2%, Floor: 7.0)
+
+| Sub-dimension | Metric | Elite (10) | Acceptable (7) | Poor (≤4) |
+|---|---|---|---|---|
+| **Bundle Size** | KB gzipped | < 50KB | < 150KB | > 300KB |
+| **Tree Shaking** | Dead code elimination | 100% | > 90% | < 70% |
+| **Code Splitting** | Route-level splitting | All routes | Main routes | None |
+| **Caching Strategy** | Cache hit ratio | > 95% | > 80% | < 60% |
+| **Image Optimization** | Format efficiency | AVIF/WebP | WebP | JPEG/PNG only |
+| **Render Path** | Critical rendering path | Optimized | Adequate | Blocking |
+| **Network Efficiency** | Request count / data transfer | < 20 req / < 500KB | < 50 / < 1MB | > 100 / > 2MB |
+
+**Checklist:**
+
+- [ ] Bundle analyzed; no unnecessary dependencies
+- [ ] Tree shaking enabled; no side-effect imports
+- [ ] Code splitting per route; lazy loading for heavy components
+- [ ] Service Worker caches static assets with appropriate strategy
+- [ ] Images: WebP/AVIF with fallbacks, responsive `srcset`, lazy loading
+- [ ] Critical CSS inlined; non-critical deferred
+- [ ] HTTP/2 or HTTP/3 multiplexing enabled
+- [ ] **Preload / prefetch for critical resources**
+- [ ] **Compression: Brotli for static, gzip for dynamic**
+- [ ] **Resource budget enforced in CI (size-limit, bundlesize)**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Importing entire library | Bloats bundle | Named imports, tree shaking |
+| No code splitting | Loads everything upfront | Dynamic imports per route |
+| Unoptimized images | Slow LCP | WebP/AVIF, responsive srcset |
+
+---
+
+### D15 — Error Handling & Resilience (Weight: 4%, Floor: 7.5)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Error Boundaries** | React error boundaries / global catch; no white screen of death | |
+| **Circuit Breakers** | Prevent cascading failures; open/half-open/closed states | |
+| **Retry Logic** | Exponential backoff with jitter; max retries; idempotent operations | |
+| **Graceful Degradation** | Core functionality works when dependencies fail | |
+| **Error Reporting** | Structured errors with context, correlation IDs, stack traces (dev only) | |
+| **User-Facing Messages** | Human-readable, actionable, no technical jargon | |
+| **Fallback Strategies** | Cache fallback, default values, offline mode | |
+| **Bulkheading** | Isolate failures; one service failure doesn't cascade | |
+| **Timeout Policies** | Connection timeouts, read timeouts, circuit breaker timeouts | |
+| **Self-Healing** | Auto-recovery mechanisms, health checks, restart policies | |
+
+**Checklist:**
+
+- [ ] Error boundaries wrap all major UI sections
+- [ ] Circuit breakers on all external service calls
+- [ ] Retry with exponential backoff + jitter on transient failures
+- [ ] All errors logged with correlation ID, context, and severity
+- [ ] User-facing error messages are actionable and non-technical
+- [ ] Fallback UI for every error state (no white screen)
+- [ ] Network error handling: offline detection, retry queue, sync on reconnect
+- [ ] **Timeout policies defined for all external calls (connect + read)**
+- [ ] **Bulkheading: thread pool isolation, resource quotas per dependency**
+- [ ] **Self-healing: health checks, auto-restart, auto-scale policies**
+- [ ] **AI service errors: fallback to cached response or graceful degradation**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| `catch (e) { }` | Swallowed errors | Log, rethrow, or handle explicitly |
+| Generic error messages | User can't act on them | Specific message + suggested action |
+| No retry logic | Transient failures become permanent | Exponential backoff with jitter |
+| Cascading failures | One service takes down all | Circuit breaker + bulkheading |
+
+---
+
+### D16 — Observability & Telemetry (Weight: 3%, Floor: 7.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Structured Logging** | JSON logs, correlation IDs, severity levels, context fields | |
+| **Metrics** | RED (Rate, Errors, Duration) + USE (Utilization, Saturation, Errors) | |
+| **Distributed Tracing** | OpenTelemetry, trace propagation, span linking | |
+| **Dashboards** | Service health, SLI/SLO, error budget, burn rate | |
+| **Alerting** | Symptom-based alerts, runbooks, escalation paths | |
+| **Error Tracking** | Sentry / equivalent, deduplication, source maps, release tracking | |
+| **Real User Monitoring** | Core Web Vitals, long tasks, interaction tracking | |
+| **Synthetic Monitoring** | Uptime checks, key transaction monitoring | |
+| **Log Correlation** | Correlation IDs across services, trace context propagation | |
+| **AI/LLM Observability** | Token usage, latency, cost per request, model version tracking | |
+
+**Checklist:**
+
+- [ ] Structured JSON logging with correlation IDs
+- [ ] OpenTelemetry instrumentation for traces, metrics, and logs
+- [ ] RED metrics (Rate, Errors, Duration) for all services
+- [ ] USE metrics (Utilization, Saturation, Errors) for all resources
+- [ ] Dashboards for service health, SLI/SLO, error budget
+- [ ] Alerting based on symptoms (user impact), not causes
+- [ ] Runbooks linked to all alerts
+- [ ] Error tracking with Sentry / equivalent (source maps, release tracking)
+- [ ] **Real User Monitoring (RUM) for Core Web Vitals**
+- [ ] **Synthetic monitoring for uptime and key transactions**
+- [ ] **Log correlation across microservices via trace IDs**
+- [ ] **AI/LLM request tracking: token count, latency, model version, cost**
+- [ ] **Exemplars linking metrics to traces for debugging**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Unstructured logs | Not searchable, not parseable | Structured JSON with defined schema |
+| Alert fatigue | Too many alerts, all ignored | Symptom-based, actionable alerts with runbooks |
+| No correlation IDs | Can't trace across services | Propagate trace context (OpenTelemetry) |
+
+---
+
+### D17 — Documentation & Knowledge Transfer (Weight: 2%, Floor: 6.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **API Documentation** | OpenAPI/Swagger, examples, error codes, versioning | |
+| **Architecture Docs** | C4 model, ADRs, system context, deployment diagrams | |
+| **Runbooks** | Step-by-step incident response, escalation paths | |
+| **Onboarding Guide** | New developer can ship in < 1 day | |
+| **Code Comments** | Why, not what; JSDoc/TSDoc on public APIs | |
+| **README** | Setup, run, test, deploy instructions; badges | |
+| **Changelog** | Semantic versioning, breaking changes documented | |
+| **Decision Records** | ADRs for major architectural decisions | |
+
+**Checklist:**
+
+- [ ] README with setup, run, test, deploy instructions
+- [ ] API documentation (OpenAPI / Swagger) up to date
+- [ ] Architecture Decision Records (ADRs) for major choices
+- [ ] Runbooks for all critical services
+- [ ] Onboarding guide: new developer can ship in < 1 day
+- [ ] JSDoc/TSDoc on all public APIs
+- [ ] CHANGELOG.md maintained with semantic versioning
+- [ ] **Documentation-as-code: diagrams in Mermaid/PlantUML, not images**
+- [ ] **AI-generated documentation reviewed for accuracy**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Outdated docs | Worse than no docs | Docs-as-code, auto-generated from source |
+| No ADRs | Decisions lost, repeated | Architecture Decision Records |
+| Comment-what, not why | Obvious from code | Document intent, constraints, trade-offs |
+
+---
+
+### D18 — Dependency Health & Supply Chain (Weight: 3%, Floor: 7.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Vulnerability Audit** | Zero high/critical CVEs; npm audit / Snyk clean | |
+| **License Compliance** | All licenses approved; no GPL in proprietary products | |
+| **Dependency Freshness** | Dependencies within 2 major versions of latest | |
+| **Bundle Impact** | Each dependency justified by bundle size contribution | |
+| **Maintainer Health** | Active maintainers, recent releases, responsive issues | |
+| **Lockfile Integrity** | Lockfile committed, integrity verified, no `npm ci` failures | |
+| **Transitive Dependencies** | Minimal transitive tree; no phantom dependencies | |
+| **Provenance** | SLSA Level 3+, Sigstore-signed artifacts, verified build | |
+
+**Checklist:**
+
+- [ ] `npm audit` / `pnpm audit` / Snyk: zero high/critical vulnerabilities
+- [ ] License compliance check (license-checker / SPDX)
+- [ ] Dependencies within 2 major versions of latest release
+- [ ] Lockfile committed and integrity verified
+- [ ] No phantom dependencies (exact imports match package.json)
+- [ ] Bundle size impact of each dependency justified
+- [ ] **Renovate / Dependabot auto-PR for patch updates**
+- [ ] **Dependency review in CI: new dependencies require justification**
+- [ ] **SBOM (Software Bill of Materials) generated and stored**
+- [ ] **Sigstore / SLSA provenance verification for critical dependencies**
+- [ ] **npm `--ignore-scripts` or equivalent to prevent install-time code execution**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| `npm install` without audit | Unknown vulnerabilities | Always run audit; block CI on high/critical |
+| Outdated dependencies | Known vulnerabilities, incompatibility | Renovate / Dependabot auto-PR |
+| Unpinned dependencies | Non-reproducible builds | Lockfile committed, `npm ci` in CI |
+| No SBOM | Unknown supply chain | Generate SBOM in CI, store in artifact registry |
+
+---
+
+### D19 — DevOps / CI-CD Pipeline (Weight: 4%, Floor: 7.5)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Pipeline Speed** | PR feedback < 10 min; full build < 30 min | |
+| **Pipeline Reliability** | < 5% flaky rate; green main always deployable | |
+| **Branch Protection** | Required reviews, status checks, no force push to main | |
+| **Deployment Strategy** | Canary / blue-green / progressive; auto-rollback on failure | |
+| **Rollback Capability** | One-command rollback; < 5 min MTTR | |
+| **Environment Parity** | Dev/staging/prod match (infrastructure, config, data shape) | |
+| **Artifact Management** | Immutable artifacts, versioned, signed, reproducible | |
+| **Pipeline Security** | Secret scanning, SAST, DAST, SCA in pipeline; no secrets in code | |
+| **GitOps** | Git as single source of truth; declarative infrastructure | |
+
+**Checklist:**
+
+- [ ] CI pipeline: lint → typecheck → unit test → security scan → build
+- [ ] Branch protection: required reviews, status checks, no force push
+- [ ] Deployment: canary or blue-green with auto-rollback
+- [ ] Rollback: one-command, < 5 min MTTR
+- [ ] Environment parity: dev/staging/prod match
+- [ ] Immutable artifacts: versioned, signed, reproducible
+- [ ] Secret scanning in CI (gitleaks, truffleHog)
+- [ ] **SAST in pipeline (SonarQube, CodeQL, Semgrep)**
+- [ ] **DAST in pipeline (OWASP ZAP, Nuclei)**
+- [ ] **Container scanning in pipeline (Trivy, Snyk Container)**
+- [ ] **Infrastructure-as-code validation (tflint, checkov)**
+- [ ] **GitOps: ArgoCD / Flux for declarative deployment**
+- [ ] **Pipeline templates standardized across teams**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Manual deployment | Error-prone, slow, untracked | CI/CD pipeline with GitOps |
+| No rollback | Extended outages | Canary + auto-rollback |
+| Secrets in code | Exposed in VCS | Vault / Sealed Secrets |
+| Snowflake environments | "Works on my machine" | Containerization + IaC |
+
+---
+
+### D20 — Regulatory & Privacy Compliance (Weight: 3%, Floor: 8.0, Hard Floor: ✅)
+
+| Regulation | Key Requirements | Relevant Dimensions |
+|---|---|---|
+| **GDPR** | Data minimization, consent, right to erasure, DPO, DPIA | D01, D15, D16, D18, D26, D28, D32 |
+| **CCPA/CPRA** | Consumer rights, opt-out, data disclosure, risk assessment | D01, D16, D26, D32 |
+| **WCAG 2.2** | Perceivable, operable, understandable, robust (AA level) | D04, D08, D09, D10, D11 |
+| **PCI DSS 4.0** | Network security, access control, monitoring, encryption | D01, D15, D16, D26, D27 |
+| **HIPAA** | PHI protection, access controls, audit logs, BAAs | D01, D16, D26, D32 |
+| **SOX** | Financial reporting controls, audit trails, access controls | D01, D16, D19 |
+| **EU AI Act** | Risk classification, transparency, human oversight, bias testing | D30, D31, D32 |
+| **NIS2** | Risk management, incident reporting, supply chain security | D01, D18, D23, D31 |
+| **DORA** | ICT risk management, incident reporting, resilience testing | D01, D15, D23, D31 |
+| **SOC 2 Type II** | Security, availability, processing integrity, confidentiality, privacy | D01, D16, D18, D26, D32 |
+| **ISO 27001** | ISMS, risk assessment, security controls, continuous improvement | D01, D16, D18, D19, D31 |
+| **FedRAMP** | Authorization, continuous monitoring, incident response | D01, D16, D19, D23, D31 |
+
+**Checklist:**
+
+- [ ] GDPR: data minimization, consent management, right to erasure implemented
+- [ ] CCPA/CPRA: opt-out mechanism, data disclosure, risk assessment
+- [ ] WCAG 2.2 AA: automated + manual accessibility testing
+- [ ] PCI DSS 4.0: network segmentation, encryption, access controls
+- [ ] HIPAA: PHI protection, audit logs, BAAs with vendors
+- [ ] SOX: financial reporting controls, audit trails
+- [ ] EU AI Act: risk classification, transparency, human oversight
+- [ ] NIS2: risk management, incident reporting, supply chain security
+- [ ] **DORA: ICT risk management framework, resilience testing, third-party oversight**
+- [ ] **SOC 2 Type II: controls documented and audited annually**
+- [ ] **ISO 27001: ISMS implemented and certified (if applicable)**
+- [ ] **Privacy impact assessment (PIA/DPIA) completed for new features**
+- [ ] **Data retention policies implemented and enforced**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Collecting data "just in case" | GDPR/CCPA violation | Data minimization: collect only what's needed |
+| No consent mechanism | Legal liability | Implement consent management platform |
+| Hardcoded retention periods | Inflexible, error-prone | Configurable retention policies with automated enforcement |
+
+---
+
+### D21 — API Design & Contract Testing (Weight: 3%, Floor: 7.5)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **OpenAPI Specification** | Complete, accurate, versioned OpenAPI 3.1 spec | |
+| **Versioning Strategy** | Semantic versioning, deprecation policy, breaking change management | |
+| **Error Responses** | Consistent error format (RFC 7807), actionable messages, correlation IDs | |
+| **Rate Limiting** | Per-client rate limits, 429 responses, Retry-After header | |
+| **Pagination** | Cursor-based for large datasets, consistent ordering | |
+| **Idempotency** | Idempotency keys for POST, safe retries | |
+| **Backward Compatibility** | Additive changes only; no field removal without deprecation period | |
+| **Contract Testing** | Provider and consumer contracts verified in CI | |
+| **API Governance** | Style guide, naming conventions, review process | |
+| **Deprecation Lifecycle** | Sunset headers, migration guides, 6-month minimum deprecation period | |
+
+**Checklist:**
+
+- [ ] OpenAPI 3.1 spec complete and version-controlled
+- [ ] Semantic versioning for API (major.minor.patch)
+- [ ] Consistent error format (RFC 7807 Problem Details)
+- [ ] Rate limiting on all public endpoints
+- [ ] Cursor-based pagination for collections > 100 items
+- [ ] Idempotency keys for all POST operations
+- [ ] Backward compatibility: additive changes only
+- [ ] **Contract tests (Pact) for all provider/consumer pairs**
+- [ ] **API style guide enforced by linter (Spectral)**
+- [ ] **Deprecation: Sunset header, migration guide, 6-month minimum**
+- [ ] **Breaking changes require architecture review**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| No API versioning | Breaking changes affect all clients | Semantic versioning + deprecation policy |
+| Removing fields without notice | Client breakage | Additive changes + deprecation period |
+| Inconsistent error formats | Hard to handle programmatically | RFC 7807 Problem Details |
+
+---
+
+### D22 — Infrastructure & Deployment (Weight: 3%, Floor: 7.5)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Infrastructure-as-Code** | Terraform / Bicep / Pulumi; version-controlled; no manual changes | |
+| **Container Security** | Non-root, minimal base, signed images, vulnerability scanning | |
+| **Orchestration** | Kubernetes / ECS with health checks, resource limits, auto-scaling | |
+| **Networking** | mTLS, service mesh, network policies, zero-trust | |
+| **Secrets Management** | Vault / Sealed Secrets; no plaintext secrets; rotation policy | |
+| **Environment Parity** | Dev/staging/prod match (infrastructure, config, data shape) | |
+| **Disaster Recovery** | RPO/RTO defined, tested, documented; multi-region where required | |
+| **GitOps** | Git as single source of truth; ArgoCD/Flux for deployment | |
+
+**Checklist:**
+
+- [ ] All infrastructure defined as code (Terraform / Bicep / Pulumi)
+- [ ] Container images: non-root user, minimal base (distroless), signed
+- [ ] Kubernetes: health checks, resource limits, pod disruption budgets
+- [ ] mTLS between services; network policies enforced
+- [ ] Secrets in Vault / Sealed Secrets; no plaintext in code or CI
+- [ ] Environment parity: dev/staging/prod match
+- [ ] **Disaster recovery: RPO/RTO defined, tested quarterly**
+- [ ] **Container vulnerability scanning in CI (Trivy, Snyk)**
+- [ ] **IaC scanning: checkov, tflint, kics in pipeline**
+- [ ] **GitOps: ArgoCD / Flux for declarative deployment**
+- [ ] **Multi-region / availability zone deployment where required**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Manual infrastructure | Drift, no audit trail | IaC with GitOps |
+| Running as root | Container escape risk | Non-root user, distroless base |
+| No health checks | Zombie containers | Liveness + readiness probes |
+
+---
+
+### D23 — Incident Response & SRE (Weight: 2%, Floor: 7.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **SLI/SLO/SLA** | Defined, measured, error budget tracked | |
+| **Incident Classification** | SEV1–SEV4 with clear criteria and response times | |
+| **On-Call Rotation** | 24/7 coverage, escalation paths, handoff procedures | |
+| **Post-Incident Review** | Blameless PIR for all SEV1/SEV2; action items tracked | |
+| **Runbooks** | Step-by-step response for all alerts | |
+| **Alerting** | Symptom-based, actionable, with runbook links | |
+| **Chaos Readiness** | Chaos engineering experiments scheduled and executed | |
+
+**Checklist:**
+
+- [ ] SLI/SLO defined for all critical services
+- [ ] Error budget tracked and visible on dashboards
+- [ ] Incident classification: SEV1 (< 15min response), SEV2 (< 1hr), SEV3 (< 4hr), SEV4 (next sprint)
+- [ ] On-call rotation with escalation paths
+- [ ] Blameless post-incident review for all SEV1/SEV2
+- [ ] Runbooks linked to all alerts
+- [ ] **Chaos engineering experiments run quarterly (Gremlin, Litmus)**
+- [ ] **Incident commander role defined and trained**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| No SLOs | No reliability target | Define SLI/SLO with error budget |
+| Alert without runbook | Responder doesn't know what to do | Link runbook to every alert |
+| Blameful post-mortem | Hides root causes | Blameless PIR focused on systems |
+
+---
+
+### D24 — Internationalization (i18n) & Localization (l10n) (Weight: 2%, Floor: 6.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **String Externalization** | No hardcoded strings; i18n library with message IDs | |
+| **RTL Support** | Arabic, Hebrew, Farsi layouts mirror correctly | |
+| **Pluralization** | ICU message format for complex plural rules | |
+| **Date/Time/Number Formatting** | Locale-aware formatting (Intl API) | |
+| **Currency Handling** | Multi-currency with proper symbol placement | |
+| **Text Expansion** | UI accommodates 40% text expansion for translations | |
+| **Fallback Chain** | Language → region → default; no broken strings | |
+| **Translation Quality** | Professional translation; no machine-only translation for production | |
+
+**Checklist:**
+
+- [ ] All user-facing strings externalized (no hardcoded text)
+- [ ] i18n library configured (react-intl, i18next, etc.)
+- [ ] RTL layout tested (Arabic, Hebrew)
+- [ ] Pluralization uses ICU message format
+- [ ] Date/time/number formatting locale-aware (Intl API)
+- [ ] UI accommodates 40% text expansion
+- [ ] Fallback chain: language → region → default
+- [ ] **Pseudolocalization test in CI (detects hardcoded strings)**
+- [ ] **Translation pipeline: source strings → TMS → professional translation → review**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Hardcoded strings | Can't be translated | Externalize all strings |
+| String concatenation | Breaks grammar in other languages | Use ICU message format with placeholders |
+| No RTL testing | Layout broken for 400M+ users | Test with RTL pseudolocales |
+
+---
+
+### D25 — Developer Experience (DX) & Inner Loop (Weight: 2%, Floor: 6.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Setup Time** | New developer can build and run in < 30 min | |
+| **Build Speed** | Incremental build < 10s; full build < 2 min | |
+| **Hot Reload** | Sub-second feedback on code changes | |
+| **Type Safety** | TypeScript strict mode; IDE autocompletion works | |
+| **Lint/Format** | Pre-commit hooks; auto-fix on save; zero warnings | |
+| **Debugging** | Source maps, dev tools, debug configurations | |
+| **Documentation** | README, onboarding guide, ADRs up to date | |
+| **Platform Engineering** | Self-service infrastructure, golden paths, scaffolding tools | |
+
+**Checklist:**
+
+- [ ] New developer can build and run in < 30 minutes
+- [ ] Incremental build < 10 seconds
+- [ ] Hot reload / HMR working for all file types
+- [ ] TypeScript strict mode; IDE autocompletion works
+- [ ] Pre-commit hooks: lint, format, typecheck
+- [ ] Debug configurations provided (VS Code launch.json)
+- [ ] README with setup, run, test, deploy instructions
+- [ ] **Developer portal / internal developer platform for self-service**
+- [ ] **Golden paths / templates for common project types**
+- [ ] **AI coding assistant guidelines and approved tools documented**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Multi-day setup | Lost productivity | Containerized dev environment, one-command setup |
+| No hot reload | Slow feedback loop | Configure HMR / fast refresh |
+| Undocumented tribal knowledge | Bus factor = 1 | Document, automate, create golden paths |
+
+---
+
+### D26 — Data Architecture & Storage (Weight: 3%, Floor: 7.5)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Schema Design** | Normalized where appropriate; indexed for access patterns | |
+| **Migration Strategy** | Versioned, reversible, zero-downtime migrations | |
+| **Data Integrity** | Constraints, foreign keys, validation at boundary | |
+| **Query Performance** | Indexed queries < 100ms; no N+1; explain plans reviewed | |
+| **Backup & Recovery** | Automated backups, tested restore, RPO/RTO met | |
+| **Data Classification** | PII/PHI/sensitive data identified and handled per policy | |
+| **Data Lifecycle** | Retention policies, archival, deletion automation | |
+| **Data Contracts** | Schema registry, versioned contracts, backward compatibility | |
+
+**Checklist:**
+
+- [ ] Database schema version-controlled (migration files)
+- [ ] Migrations are reversible and zero-downtime
+- [ ] Foreign keys and constraints enforce data integrity
+- [ ] Query performance: all queries < 100ms; explain plans reviewed
+- [ ] No N+1 queries (verified by query logging)
+- [ ] Automated backups with tested restore procedure
+- [ ] PII/PHI data classified and encrypted at rest and in transit
+- [ ] **Data retention policies defined and automated**
+- [ ] **Schema registry for API contracts (Avro, Protobuf, JSON Schema)**
+- [ ] **Data contracts between services enforced in CI**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| N+1 queries | Performance killer | Batch queries, DataLoader, joins |
+| No migrations | Schema drift, data loss | Version-controlled migrations |
+| Storing PII in logs | GDPR/CCPA violation | Log redaction, structured logging |
+
+---
+
+### D27 — Concurrency & Thread Safety (Weight: 3%, Floor: 7.5)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Race Condition Prevention** | Mutex, atomic ops, or serialization for shared state | |
+| **Deadlock Prevention** | Lock ordering, timeout, no nested locks | |
+| **Async Safety** | No unhandled promise rejections, proper error propagation | |
+| **Resource Pooling** | Connection pools, thread pools, bounded queues | |
+| **Backpressure** | Flow control, load shedding, queue depth limits | |
+| **Distributed Locking** | Redis/etcd locks for distributed systems; TTL and renewal | |
+| **Lock-Free Patterns** | CAS operations, event sourcing where appropriate | |
+
+**Checklist:**
+
+- [ ] Shared mutable state protected by mutex, atomic ops, or serialization
+- [ ] No nested locks; lock ordering documented
+- [ ] All async operations have proper error handling (no unhandled rejections)
+- [ ] Connection pools configured with min/max and timeout
+- [ ] Backpressure mechanisms in place (flow control, load shedding)
+- [ ] **Distributed locks have TTL and renewal (no permanent locks)**
+- [ ] **Stress testing for concurrent access patterns**
+- [ ] **Thread sanitizer / race detector run in CI**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Mutable shared state | Race conditions | Immutable data, atomic operations |
+| Nested locks | Deadlock risk | Lock ordering, timeout, no nesting |
+| Unbounded queues | Memory exhaustion | Bounded queues with backpressure |
+
+---
+
+### D28 — Configuration & Feature Management (Weight: 2%, Floor: 7.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Feature Flags** | Managed flags, gradual rollout, kill switches, cleanup | |
+| **Configuration Validation** | Schema-validated config (zod/joi), type-safe access | |
+| **Environment Variables** | No hardcoded values; env-based config; secrets in Vault | |
+| **Config Versioning** | Config changes version-controlled, auditable, rollbackable | |
+| **Runtime Updates** | Config changes without redeployment (dynamic config) | |
+| **Default Values** | Safe defaults; fail-closed for security; fail-open for availability | |
+
+**Checklist:**
+
+- [ ] Feature flags managed (LaunchDarkly, Unleash, or equivalent)
+- [ ] Gradual rollout: canary → 10% → 50% → 100%
+- [ ] Kill switches for all new features
+- [ ] Feature flags cleaned up within 2 weeks of full rollout
+- [ ] Configuration validated against schema (zod / joi)
+- [ ] No hardcoded values; all config via environment variables
+- [ ] Secrets in Vault / Sealed Secrets; not in code or CI
+- [ ] **Config changes are version-controlled and auditable**
+- [ ] **Dynamic config: changes without redeployment where possible**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Hardcoded config | Can't change without deploy | Environment variables + feature flags |
+| Feature flag debt | Accumulated flags, dead code | Cleanup within 2 weeks of full rollout |
+| Secrets in code | Exposed in VCS | Vault / Sealed Secrets |
+
+---
+
+### D29 — Cost & Resource Efficiency (FinOps) (Weight: 2%, Floor: 6.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Resource Right-Sizing** | CPU/memory requests match actual usage (±20%) | |
+| **Auto-Scaling** | HPA/VPA configured; scale to zero where possible | |
+| **Cost Allocation** | Cost per team/service/feature tagged and visible | |
+| **Waste Elimination** | Unused resources identified and removed quarterly | |
+| **Spot/Preemptible Instances** | Used for non-critical workloads | |
+| **Reserved Capacity** | Reserved instances for steady-state workloads | |
+| **Cost Budget** | Monthly cost budget per service with alerts at 80% | |
+| **Carbon Awareness** | Carbon-aware deployment timing and region selection | |
+
+**Checklist:**
+
+- [ ] Resource requests and limits set for all containers
+- [ ] HPA/VPA configured; scale to zero for dev/staging
+- [ ] Cost tags on all resources (team, service, environment)
+- [ ] Unused resources identified and removed quarterly
+- [ ] Spot/preemptible instances for non-critical workloads
+- [ ] Reserved instances for steady-state workloads
+- [ ] **Monthly cost budget per service with alerts at 80%**
+- [ ] **FinOps dashboard visible to all teams**
+- [ ] **Carbon-aware deployment: prefer low-carbon regions and off-peak hours**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Over-provisioned resources | Wasted money | Right-size based on metrics |
+| No cost visibility | Surprise bills | FinOps dashboard, cost alerts |
+| Always-on dev environments | Wasted compute | Schedule shutdown, scale to zero |
+
+---
+
+### D30 — AI/ML Model Governance (Weight: 2%, Floor: 7.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Model Card** | Documented: purpose, training data, limitations, bias assessment | |
+| **Bias Testing** | Fairness metrics across protected groups; disparate impact ratio | |
+| **Model Versioning** | Semantic versioning; model registry; rollback capability | |
+| **Data Lineage** | Training data provenance, preprocessing pipeline documented | |
+| **Performance Monitoring** | Drift detection, accuracy tracking, latency monitoring | |
+| **Human Oversight** | Human-in-the-loop for high-stakes decisions; override capability | |
+| **Transparency** | Explainability methods (SHAP, LIME); decision audit trail | |
+| **Safety Guardrails** | Input/output filtering, content safety, toxicity detection | |
+| **Prompt Engineering** | Versioned prompts, A/B testing, prompt injection defenses | |
+| **RAG Governance** | Source attribution, hallucination detection, citation verification | |
+
+**Checklist:**
+
+- [ ] Model card completed: purpose, training data, limitations, bias assessment
+- [ ] Bias testing across protected groups; disparate impact ratio documented
+- [ ] Model versioning in registry (MLflow, Weights & Biases)
+- [ ] Data lineage: training data provenance documented
+- [ ] Performance monitoring: drift detection, accuracy, latency
+- [ ] Human-in-the-loop for high-stakes decisions
+- [ ] Explainability methods applied (SHAP, LIME)
+- [ ] **Safety guardrails: input/output filtering, toxicity detection**
+- [ ] **Prompt versioning and A/B testing for LLM applications**
+- [ ] **RAG: source attribution, hallucination detection, citation verification**
+- [ ] **EU AI Act risk classification documented**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| No model card | Unknown limitations, hidden bias | Document purpose, data, limitations, bias |
+| Deploying without bias test | Disparate impact on groups | Fairness metrics across protected groups |
+| No drift detection | Silent degradation | Monitor accuracy, feature drift, data drift |
+| Unversioned prompts | Can't reproduce or rollback | Version prompts in VCS, A/B test |
+
+---
+
+### D31 — Supply Chain Security & Provenance (Weight: 2%, Floor: 7.5)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **SBOM Generation** | Software Bill of Materials generated for all artifacts | |
+| **Provenance Verification** | SLSA Level 3+ provenance; Sigstore-signed artifacts | |
+| **Dependency Pinning** | Exact versions in lockfile; no floating ranges in production | |
+| **Build Reproducibility** | Reproducible builds verified; hermetic build environment | |
+| **Artifact Signing** | Container images and packages signed (cosign, Notation) | |
+| **Install-Time Security** | `--ignore-scripts` or equivalent; no post-install code execution | |
+| **Private Registry** | Internal artifact registry; no direct npm/PyPI in production | |
+| **Vulnerability Response** | < 24h for critical CVEs; automated patching for known vulns | |
+
+**Checklist:**
+
+- [ ] SBOM generated in CI for all artifacts (Syft, CycloneDX)
+- [ ] SLSA Level 3+ provenance verified for critical dependencies
+- [ ] All dependencies pinned to exact versions in lockfile
+- [ ] Reproducible builds: same source → same artifact hash
+- [ ] Container images signed with cosign / Notation
+- [ ] `npm ci --ignore-scripts` or equivalent in CI
+- [ ] Private artifact registry (Artifactory, Nexus) for production
+- [ ] **Critical CVEs patched within 24 hours; automated Dependabot/Renovate**
+- [ ] **Dependency review: new dependencies require security justification**
+- [ ] **Supply chain attack scenario in threat model**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| No SBOM | Unknown attack surface | Generate SBOM in CI, store in registry |
+| Floating dependency versions | Non-reproducible, vulnerable builds | Pin exact versions, use lockfile |
+| Direct npm/PyPI in production | Supply chain attack vector | Private registry with vetted packages |
+| No artifact signing | Can't verify integrity | Sign with cosign/Notation, verify on deploy |
+
+---
+
+### D32 — Privacy Engineering & Data Protection (Weight: 2%, Floor: 7.5)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Privacy by Design** | Data minimization, purpose limitation, storage limitation built into architecture | |
+| **Consent Management** | Granular consent, preference center, consent audit trail | |
+| **Data Classification** | PII/PHI/sensitive/public classification with handling rules | |
+| **Encryption** | At rest (AES-256), in transit (TLS 1.3), in use (confidential computing where needed) | |
+| **Anonymization** | Differential privacy, k-anonymity, pseudonymization for analytics | |
+| **Right to Erasure** | Automated deletion workflows; verified erasure testing | |
+| **Data Subject Access** | Self-service data export (GDPR Art. 15, CCPA right to know) | |
+| **Cross-Border Transfer** | Standard contractual clauses, adequacy decisions, data residency | |
+| **AI Privacy** | Training data PII scrubbing, model memorization prevention, output filtering | |
+
+**Checklist:**
+
+- [ ] Privacy by design: data minimization, purpose limitation in architecture
+- [ ] Consent management platform with granular preferences
+- [ ] Data classification: PII/PHI/sensitive/public with handling rules
+- [ ] Encryption at rest (AES-256) and in transit (TLS 1.3)
+- [ ] Anonymization for analytics: differential privacy or k-anonymity
+- [ ] Right to erasure: automated deletion workflows, tested quarterly
+- [ ] Data subject access: self-service export within 30 days
+- [ ] **Cross-border data transfer: SCCs or adequacy decisions documented**
+- [ ] **AI training data: PII scrubbed before model training**
+- [ ] **Model memorization testing: verify no PII in model outputs**
+- [ ] **Privacy impact assessment (PIA/DPIA) for new features**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Collecting data "just in case" | GDPR/CCPA violation | Data minimization: collect only what's needed |
+| No consent mechanism | Legal liability | Implement consent management platform |
+| PII in logs | Data breach risk | Log redaction, structured logging without PII |
+| No erasure workflow | Regulatory non-compliance | Automated deletion with verification |
+
+---
+
+### D33 — Sustainability & Green Computing (Weight: 1%, Floor: 6.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Carbon Awareness** | Carbon-aware deployment: prefer low-carbon regions and off-peak hours | |
+| **Resource Efficiency** | Right-sized infrastructure; no over-provisioning; scale to zero | |
+| **Energy Measurement** | Energy consumption measured and tracked per service | |
+| **Green Software Practices** | Efficient algorithms, reduced data transfer, caching, lazy loading | |
+| **Sustainable Architecture** | Serverless / event-driven where appropriate; avoid always-on for sporadic workloads | |
+| **E-Waste Consideration** | Device performance budget; apps run well on older hardware | |
+
+**Checklist:**
+
+- [ ] Carbon-aware deployment: prefer low-carbon regions (Green Software Foundation)
+- [ ] Resource right-sizing: CPU/memory within ±20% of actual usage
+- [ ] Scale to zero for dev/staging and non-critical workloads
+- [ ] Energy consumption tracked per service (Kepler, Cloud Carbon Footprint)
+- [ ] Efficient algorithms: no unnecessary computation, caching, lazy loading
+- [ ] **Performance budget ensures app runs well on 5-year-old hardware**
+- [ ] **Serverless / event-driven architecture for sporadic workloads**
+- [ ] **Sustainability metrics included in architecture decision records**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Always-on for sporadic workloads | Wasted energy | Serverless / event-driven architecture |
+| Over-provisioned infrastructure | Wasted compute and carbon | Right-size based on metrics |
+| No energy tracking | Unknown carbon footprint | Measure and track per service |
+
+---
+
+### D34 — Platform Engineering & Developer Platforms (Weight: 1%, Floor: 6.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Golden Paths** | Documented, tested templates for common project types | |
+| **Self-Service Infrastructure** | Developers can provision resources without ops tickets | |
+| **Internal Developer Portal** | Backstage / equivalent; service catalog, docs, scaffolding | |
+| **Template Scaffolding** | Cookiecutter / Yeoman templates for new services | |
+| **Platform Observability** | Platform health visible to all users; status page | |
+| **Platform SLAs** | Platform uptime SLA; incident response for platform issues | |
+
+**Checklist:**
+
+- [ ] Golden paths documented for top 5 project types
+- [ ] Self-service infrastructure: developers provision via portal, not tickets
+- [ ] Internal developer portal (Backstage / equivalent) with service catalog
+- [ ] Template scaffolding for new services (cookiecutter, Yeoman)
+- [ ] Platform health dashboard visible to all teams
+- [ ] **Platform SLA: 99.9% uptime, < 15min response for P1**
+- [ ] **Platform team has SRE practices (SLOs, error budgets, runbooks)**
+- [ ] **Developer satisfaction survey conducted quarterly**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Ops tickets for infrastructure | Slow, bottleneck | Self-service platform with golden paths |
+| No service catalog | Discovery by word of mouth | Internal developer portal |
+| Custom setups per team | Inconsistency, knowledge silos | Standardized templates and golden paths |
+
+---
+
+### D35 — Chaos Engineering & Resilience Testing (Weight: 1%, Floor: 6.0)
+
+| Sub-dimension | Criteria | Score 0–10 |
+|---|---|---|
+| **Experiment Design** | Hypothesis-driven experiments; blast radius controlled | |
+| **Failure Injection** | Network, CPU, disk, dependency failure injection | |
+| **Game Days** | Scheduled chaos exercises with team participation | |
+| **Automated Chaos** | Steady-state validation in CI/CD; automated fault injection | |
+| **Observability Integration** | Chaos experiments validate monitoring and alerting | |
+| **Resilience Scoring** | Service resilience score tracked over time | |
+
+**Checklist:**
+
+- [ ] Chaos engineering experiments designed with hypothesis and blast radius
+- [ ] Failure injection: network latency, CPU pressure, disk I/O, dependency failure
+- [ ] Game days scheduled quarterly with team participation
+- [ ] Steady-state validation: chaos experiments verify monitoring and alerting
+- [ ] **Automated chaos in staging: Litmus / Gremlin / Chaos Mesh**
+- [ ] **Resilience score tracked per service and visible on dashboard**
+- [ ] **Post-chaos review: findings documented and action items tracked**
+
+#### Anti-Patterns 🚫
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| No chaos testing | Unknown resilience limits | Schedule regular chaos experiments |
+| Chaos in production without controls | Risk of customer impact | Start in staging; controlled blast radius |
+| No post-chaos review | Lessons lost | Document findings, track action items |
+
+---
+
+## §3 — Scoring Worksheet & Finding Tracker
+
+### 3.1 Pass/Fail Criteria
+
+| Criterion | Threshold | Hard Floor |
+|---|---|---|
+| **Overall Weighted Score** | ≥ 7.5 | — |
+| **Every Dimension** | ≥ dimension floor | — |
+| **D01 Security** | ≥ 8.0 | ✅ No exceptions |
+| **D20 Compliance** | ≥ 8.0 | ✅ No exceptions |
+| **Zero 🔴 Unresolved** | 0 | — |
+| **Zero 🟠 Unresolved** | 0 | — |
+| **All CI Gates Green** | 100% | — |
+| **SLO Compliance** | ≥ 99.9% | — |
+
+### 3.2 Finding Tracker
+
+| ID | Severity | Dimension | Description | Action | Owner | Due Date | Status |
+|---|---|---|---|---|---|---|---|
+| F001 | 🔴/🟠/🟡/🟢/🔵 | D__ | | | | | Open/Closed |
+
+### 3.3 Exception Request Template
+
+```markdown
+## Exception Request
+
+**Dimension**: D__
+**Current Score**: __ / 10
+**Floor**: __
+**Justification**: [Why the floor cannot be met at this time]
+**Risk Assessment**: [What risk does this create? Likelihood × Impact]
+**Remediation Plan**: [Concrete steps to meet the floor]
+**Target Date**: [When the floor will be met]
+**Approved By**: __ (Tech Lead) __ (Champion)
+**Expiration**: [Max 30 days from approval]
+```
+
+---
+
+## §4 — Severity Classification & SLA Enforcement
+
+| Severity | Emoji | Definition | SLA | Escalation |
+|---|---|---|---|---|
+| **Critical** | 🔴 | Data breach, RCE, production outage, security vulnerability | < 4 hours | VP Eng + Security |
+| **Major** | 🟠 | Auth bypass, SEV2 outage, data integrity issue | < 24 hours | Tech Lead + Security |
+| **Moderate** | 🟡 | Missing test, slow query, UX issue, compliance gap | < 1 sprint | Reviewer |
+| **Minor** | 🟢 | Code style, naming, minor optimization | Backlog | N/A |
+| **Informational** | 🔵 | Suggestion, best practice, future consideration | N/A | N/A |
+
+---
+
+## §5 — DevOps Pipeline Gate Specification
+
+### 5.1 Pre-Merge Gates (Must Pass Before Merge)
+
+```yaml
+name: Code Review Gates
+on: pull_request
+
+jobs:
+  pre-merge-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # D03 Code Quality
+      - name: Lint
+        run: npm run lint
+        # Threshold: 0 warnings at strict level
+
+      # D03 Code Quality
+      - name: Type Check
+        run: npm run typecheck
+        # Threshold: 0 errors
+
+      # D12 Testability & Coverage
+      - name: Unit Tests
+        run: npm run test:unit -- --coverage
+        # Threshold: ≥ 70% line coverage, ≥ 60% branch coverage
+
+      # D01 Security
+      - name: Security Scan (SAST)
+        uses: github/codeql-action/analyze@v3
+        # Threshold: 0 high/critical CVEs
+
+      # D01 Security - Secrets
+      - name: Secret Scanning
+        uses: gitleaks/gitleaks-action@v2
+        # Threshold: 0 leaked secrets
+
+      # D18 Dependency Health
+      - name: Dependency Audit
+        run: npm audit --audit-level=high
+        # Threshold: 0 high/critical vulnerabilities
+
+      # D14 Optimization
+      - name: Bundle Size Check
+        run: npm run size:check
+        # Threshold: ≤ 150KB gzipped
+
+      # D04 Accessibility
+      - name: Accessibility Audit
+        run: npm run test:a11y
+        # Threshold: 0 violations
+
+      # D18 License Compliance
+      - name: License Check
+        run: npm run license:check
+        # Threshold: 0 prohibited licenses
+
+      # D22 Infrastructure
+      - name: IaC Validation
+        run: tflint && checkov -f .
+        # Threshold: 0 errors
+
+      # D22 Container Security
+      - name: Container Scan
+        run: trivy image --exit-code 1 $IMAGE
+        # Threshold: 0 critical CVEs
+
+      # D31 Supply Chain
+      - name: SBOM Generation
+        run: syft . -o cyclonedx-json > sbom.json
+        # Threshold: SBOM generated
+
+      # D01 AI Security
+      - name: Prompt Injection Scan
+        run: npm run security:prompt-scan
+        # Threshold: 0 high-risk patterns
+
+      # D07 AI-Assisted Review (Advisory)
+      - name: AI Code Review
+        uses: coderabbitai/ai-pr-reviewer@latest
+        continue-on-error: true
+        # Advisory only — human reviewer has final authority
+```
+
+### 5.2 Post-Merge Gates (Must Pass Before Production)
+
+```yaml
+name: Post-Merge Gates
+on:
+  push:
+    branches: [main]
+
+jobs:
+  post-merge-gates:
+    runs-on: ubuntu-latest
+    steps:
+      # D05 Performance
+      - name: Lighthouse CI
+        run: npm run lighthouse
+        # Threshold: Performance ≥ 90, A11Y ≥ 90, Best Practices ≥ 90
+
+      # D12 E2E Tests
+      - name: E2E Tests
+        run: npm run test:e2e
+        # Threshold: All critical paths pass
+
+      # D12 Visual Regression
+      - name: Visual Regression
+        run: npm run test:visual
+        # Threshold: No unintended visual changes (advisory)
+
+      # D21 Contract Tests
+      - name: Contract Tests
+        run: npm run test:contract
+        # Threshold: All provider/consumer contracts pass
+
+      # D19 Canary Deployment
+      - name: Canary Deploy
+        run: |
+          canary deploy 10%
+          sleep 900  # 15 min observation
+          canary promote 100%
+        # Threshold: Error rate < 0.1%, latency P99 < 500ms
+
+      # D35 Chaos Validation
+      - name: Chaos Validation (Staging)
+        run: npm run chaos:validate
+        # Threshold: Steady-state maintained during fault injection (advisory)
+
+      # D05 Performance Regression
+      - name: Performance Regression
+        run: npm run test:perf
+        # Threshold: No > 10% regression on key metrics
+```
+
+---
+
+## §6 — Review Process SOP
+
+### Step 1: Pre-Review Self-Check
+Author completes the self-review checklist for all applicable dimensions before requesting review. Use the dimension checklists in §2 as the self-audit template.
+
+### Step 2: Automated Gate Check
+CI pipeline runs all pre-merge gates (§5.1). PR cannot be merged if any blocking gate fails. Advisory gates (AI code review) provide suggestions but do not block.
+
+### Step 3: AI-Assisted Review (Advisory)
+AI review tools (CodeRabbit, GitHub Copilot Review, etc.) provide advisory comments. Human reviewer retains final authority. AI suggestions must be verified — no blind acceptance.
+
+### Step 4: Human Peer Review
+Minimum required reviewers based on review type (see §0.5). Reviewer scores each applicable dimension using the rubric in §2.
+
+### Step 5: Security & Compliance Review
+Security Champion reviews D01, D18, D20, D31, D32 for all Full and Security reviews. Required for any change touching auth, data handling, crypto, or AI models.
+
+### Step 6: Architecture Review (if applicable)
+Tech Lead reviews D13, D22, D26 for major architectural changes. Required for new services, database changes, or API contract changes.
+
+### Step 7: Final Approval & Merge
+Tech Lead gives final approval. All blocking gates must be green. Exceptions must be documented per §0.6. Score card is posted in the PR.
+
+---
+
+## §7 — Automated Enforcement Tooling Matrix
+
+| Dimension | Tool | Threshold | Blocking |
+|---|---|---|---|
+| D01 Security | Snyk, CodeQL, Semgrep, Trivy | 0 high/critical | ✅ |
+| D01 Supply Chain | Sigstore, SLSA verifier | Provenance verified | ⚠️ |
+| D01 Secrets | gitleaks, truffleHog | 0 leaked secrets | ✅ |
+| D01 AI Security | Custom prompt scanner | 0 high-risk patterns | ✅ |
+| D02 Logic | Vitest/Jest, fast-check | Coverage ≥ 70% | ✅ |
+| D03 Quality | ESLint, Biome, SonarQube | 0 warnings strict | ✅ |
+| D04 A11Y | axe-core, Lighthouse | 0 violations | ✅ |
+| D05 Performance | Lighthouse, WebPageTest | Score ≥ 90 | ⚠️ |
+| D07 Compatibility | BrowserStack, caniuse-db | Browserslist | ⚠️ |
+| D12 Testing | Vitest/Jest, Playwright, Codecov | Coverage ≥ 70% | ✅ |
+| D12 Contracts | Pact, Schemathesis | All endpoints | ✅ |
+| D14 Bundle | webpack-bundle-analyzer, size-limit | ≤ 150KB gzipped | ✅ |
+| D18 Dependencies | npm audit, Snyk, license-checker | Zero high/critical | ✅ |
+| D18 Supply Chain | SLSA, Sigstore, Syft | Provenance verified | ⚠️ |
+| D19 CI/CD | GitHub Actions, branch protection | All gates pass | ✅ |
+| D20 Compliance | GDPR scanner, cookie consent audit | Policy compliant | ✅ |
+| D21 API | Spectral, Redocly | Spec validates | ✅ |
+| D22 IaC | tflint, checkov, az bicep build | Zero errors | ✅ |
+| D22 Containers | Trivy, Snyk Container | Zero critical | ✅ |
+| D23 SRE | Datadog/Sentry, PagerDuty | SLO alerts | ⚠️ |
+| D26 Data | Database linter, migration validator | Schema valid | ✅ |
+| D27 Concurrency | Thread sanitizer, race detector | Zero races | ⚠️ |
+| D28 Config | Config validator (zod/joi) | Schema valid | ✅ |
+| D30 AI/ML | Model card validator, bias checker | Card complete | ⚠️ |
+| D31 Supply Chain | Syft (SBOM), cosign (signing), SLSA verifier | SBOM + signed | ✅ |
+| D32 Privacy | PII scanner, consent audit | Policy compliant | ✅ |
+| D33 Sustainability | Cloud Carbon Footprint, Kepler | Tracked | ⚠️ |
+| D34 Platform | Backstage, service catalog | Golden paths exist | ⚠️ |
+| D35 Chaos | Litmus, Gremlin, Chaos Mesh | Experiments pass | ⚠️ |
+
+---
+
+## §8 — Review Rubric Templates
+
+### 8.1 Full Review Score Card (35 Dimensions)
+
+```markdown
+## Code Review Score Card
+
+**PR:** #___ | **Author:** @___ | **Reviewer:** @___ | **Date:** ___
+
+| # | Dimension | Score (0–10) | Notes |
+|---|---|---|---|
+| D01 | Security & Threat Modeling | | |
+| D02 | Logic Correctness | | |
+| D03 | Code Quality | | |
+| D04 | Accessibility (A11Y) | | |
+| D05 | Runtime Performance | | |
+| D06 | Algorithmic Complexity | | |
+| D07 | Browser Compatibility | | |
+| D08 | User Experience (UX) | | |
+| D09 | UI Design | | |
+| D10 | Responsive Layout | | |
+| D11 | Typography | | |
+| D12 | Testability & Coverage | | |
+| D13 | Design Patterns | | |
+| D14 | Optimization | | |
+| D15 | Error Handling | | |
+| D16 | Observability | | |
+| D17 | Documentation | | |
+| D18 | Dependency Health | | |
+| D19 | DevOps / CI-CD | | |
+| D20 | Regulatory Compliance | | |
+| D21 | API Design & Contracts | | |
+| D22 | Infrastructure & Deployment | | |
+| D23 | Incident Response & SRE | | |
+| D24 | Internationalization | | |
+| D25 | Developer Experience | | |
+| D26 | Data Architecture | | |
+| D27 | Concurrency & Thread Safety | | |
+| D28 | Configuration & Feature Mgmt | | |
+| D29 | Cost & Resource Efficiency | | |
+| D30 | AI/ML Model Governance | | |
+| D31 | Supply Chain Security | | |
+| D32 | Privacy Engineering | | |
+| D33 | Sustainability & Green Computing | | |
+| D34 | Platform Engineering | | |
+| D35 | Chaos Engineering & Resilience | | |
+
+**Overall Weighted Score:** ___/10
+**Verdict:** ✅ APPROVE / ⚠️ REQUEST CHANGES / ❌ REJECT
+
+### Findings
+
+| ID | Severity | Dimension | Description | Action |
+|---|---|---|---|---|
+| F001 | 🔴/🟠/🟡/🟢/🔵 | D__ | | |
+
+### Exceptions
+
+| ID | Dimension | Current Score | Floor | Justification | Expiration |
+|---|---|---|---|---|---|
+| EXP-001 | D__ | | | | |
+```
+
+### 8.2 Hotfix Expedited Review (Reduced Dimensions)
+
+```markdown
+## Hotfix Review — Expedited
+
+**PR:** #___ | **Author:** @___ | **Reviewer:** @___ | **SEV:** 1/2/3
+
+| # | Dimension | Score (0–10) | Notes |
+|---|---|---|---|
+| D01 | Security | | |
+| D02 | Logic | | |
+| D15 | Error Handling | | |
+| D19 | CI/CD | | |
+| D26 | Data Architecture | | |
+| D27 | Concurrency | | |
+
+**Verdict:** ✅ APPROVE / ❌ REJECT
+**Rollback Plan:** ___
+**Post-Incident Review Required:** Yes / No
+```
+
+### 8.3 Security Review Score Card
+
+```markdown
+## Security Review Score Card
+
+**PR:** #___ | **Author:** @___ | **Security Champion:** @___ | **Date:** ___
+
+| Threat Category | Score (0–10) | Findings |
+|---|---|---|
+| Spoofing | | |
+| Tampering | | |
+| Repudiation | | |
+| Information Disclosure | | |
+| Denial of Service | | |
+| Elevation of Privilege | | |
+
+| New Dimension | Score (0–10) | Findings |
+|---|---|---|
+| D18 Supply Chain | | |
+| D20 Compliance | | |
+| D21 API Security | | |
+| D30 AI/ML Security | | |
+| D31 Supply Chain Provenance | | |
+| D32 Privacy Engineering | | |
+
+**Attack Surface Updated:** Yes / No
+**Pen Test Reviewed:** Yes / No / N/A
+**Verdict:** ✅ APPROVE / ⚠️ CONDITIONAL / ❌ REJECT
+```
+
+### 8.4 Infrastructure Review Score Card
+
+```markdown
+## Infrastructure Review Score Card
+
+**PR:** #___ | **Author:** @___ | **SRE:** @___ | **Date:** ___
+
+| # | Dimension | Score (0–10) | Notes |
+|---|---|---|---|
+| D19 | DevOps / CI-CD | | |
+| D22 | Infrastructure & Deployment | | |
+| D23 | Incident Response & SRE | | |
+| D26 | Data Architecture | | |
+| D27 | Concurrency & Thread Safety | | |
+| D29 | Cost & Resource Efficiency | | |
+| D31 | Supply Chain Security | | |
+| D35 | Chaos Engineering | | |
+
+**Verdict:** ✅ APPROVE / ⚠️ CONDITIONAL / ❌ REJECT
+```
+
+### 8.5 AI/ML Review Score Card
+
+```markdown
+## AI/ML Review Score Card
+
+**PR:** #___ | **Author:** @___ | **ML Engineer:** @___ | **Security Champion:** @___ | **Date:** ___
+
+| # | Dimension | Score (0–10) | Notes |
+|---|---|---|---|
+| D01 | Security (prompt injection, model access) | | |
+| D02 | Logic (AI output validation) | | |
+| D15 | Error Handling (AI service fallback) | | |
+| D16 | Observability (token tracking, latency) | | |
+| D30 | AI/ML Model Governance | | |
+| D31 | Supply Chain (model provenance) | | |
+| D32 | Privacy (PII in training data) | | |
+
+**Model Card Updated:** Yes / No / N/A
+**Bias Testing Completed:** Yes / No / N/A
+**EU AI Act Classification:** Unacceptable / High / Limited / Minimal
+**Verdict:** ✅ APPROVE / ⚠️ CONDITIONAL / ❌ REJECT
+```
+
+---
+
+## §9 — Compliance & Regulatory Mapping
+
+| Dimension | GDPR | CCPA/CPRA | WCAG 2.2 | PCI DSS 4.0 | HIPAA | SOX | AI Act (EU) | NIS2 | DORA | SOC 2 | ISO 27001 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| D01 Security | ✅ Art. 32 | ✅ | | ✅ Req. 6-12 | ✅ §164.312 | ✅ | ✅ Art. 15 | ✅ Art. 21 | ✅ Art. 9 | ✅ CC6 | ✅ A.13 |
+| D04 Accessibility | | | ✅ AA | | | ✅ §508 | | | | | |
+| D15 Error Handling | ✅ Art. 33 | ✅ | | ✅ Req. 10 | ✅ | ✅ | | | ✅ Art. 11 | ✅ CC7 | ✅ A.16 |
+| D16 Observability | ✅ Art. 30 | ✅ | | ✅ Req. 10 | ✅ | ✅ | ✅ Art. 14 | ✅ Art. 23 | ✅ Art. 10 | ✅ CC7 | ✅ A.12 |
+| D18 Supply Chain | ✅ Art. 28 | ✅ | | ✅ Req. 12 | ✅ | ✅ | ✅ Art. 28 | ✅ Art. 21 | ✅ Art. 28 | ✅ CC9 | ✅ A.15 |
+| D20 Compliance | ✅ Full | ✅ Full | ✅ AA | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ✅ Full |
+| D26 Data Architecture | ✅ Art. 25 | ✅ | | ✅ Req. 3 | ✅ §164.312 | ✅ | ✅ Art. 10 | | ✅ Art. 8 | ✅ CC6 | ✅ A.8 |
+| D27 Concurrency | | | | ✅ Req. 6 | ✅ | ✅ | | | | ✅ CC6 | ✅ A.17 |
+| D28 Config & Feature Mgmt | ✅ Art. 25 | ✅ | | ✅ Req. 8 | ✅ | ✅ | ✅ Art. 14 | ✅ | | ✅ CC8 | ✅ A.12 |
+| D30 AI/ML Governance | ✅ Art. 22 | ✅ | | | | | ✅ Full | ✅ | | ✅ CC6 | ✅ A.8 |
+| D31 Supply Chain Security | ✅ Art. 28 | ✅ | | ✅ Req. 12 | ✅ | ✅ | ✅ Art. 28 | ✅ Art. 21 | ✅ Art. 28 | ✅ CC9 | ✅ A.15 |
+| D32 Privacy Engineering | ✅ Full | ✅ Full | | ✅ Req. 3 | ✅ Full | ✅ | ✅ Art. 10 | ✅ | ✅ Art. 8 | ✅ CC6 | ✅ A.18 |
+| D33 Sustainability | | | | | | | | | | | ✅ A.6 |
+| D35 Chaos Engineering | | | | ✅ Req. 12 | | ✅ | | ✅ Art. 21 | ✅ Art. 11 | ✅ CC7 | ✅ A.17 |
+
+> **Legend**: ✅ = Directly relevant regulation article/section. Blank = Not directly applicable. SOC 2 Type II and ISO 27001 columns added in v6.0.
+
+---
+
+## §10 — Risk Assessment Matrix
+
+### 10.1 Risk Scoring
+
+| Likelihood \ Impact | 🔴 Critical (Data breach, RCE) | 🟠 Major (Auth bypass, outage) | 🟡 Moderate (UX issue, slow perf) | 🟢 Minor (Code style, naming) |
+|---|---|---|---|---|
+| **Almost Certain** (90%+) | 🔴 EXTREME | 🔴 EXTREME | 🟠 HIGH | 🟡 MEDIUM |
+| **Likely** (60–90%) | 🔴 EXTREME | 🟠 HIGH | 🟡 MEDIUM | 🟢 LOW |
+| **Possible** (30–60%) | 🟠 HIGH | 🟡 MEDIUM | 🟢 LOW | 🟢 LOW |
+| **Unlikely** (10–30%) | 🟡 MEDIUM | 🟢 LOW | 🟢 LOW | 🔵 NEGLIGIBLE |
+| **Rare** (< 10%) | 🟢 LOW | 🟢 LOW | 🔵 NEGLIGIBLE | 🔵 NEGLIGIBLE |
+
+### 10.2 Risk Response Matrix
+
+| Risk Level | Response | SLA | Escalation | Example |
+|---|---|---|---|---|
+| 🔴 **EXTREME** | Immediate fix; block all deployments | < 4 hours | VP Engineering + Security | Active data breach, RCE vulnerability |
+| 🟠 **HIGH** | Fix before next release; block merge | < 24 hours | Tech Lead + Security | Auth bypass, SEV2 outage |
+| 🟡 **MEDIUM** | Schedule fix in current sprint | < 1 sprint | Reviewer | Missing test, slow query |
+| 🟢 **LOW** | Backlog; address when convenient | Backlog | N/A | Code style, minor optimization |
+| 🔵 **NEGLIGIBLE** | Accept; no action required | N/A | N/A | Cosmetic issue |
+
+---
+
+## §11 — Maturity Model
+
+### 11.1 Maturity Levels by Dimension
+
+| Dimension | Tier 1 (Initial) | Tier 2 (Developing) | Tier 3 (Proficient) | Tier 4 (Advanced) | Tier 5 (Elite) |
+|---|---|---|---|---|---|
+| D01 Security | No threat modeling | Basic OWASP checklist | STRIDE per change | Automated SAST/DAST | Bug bounty + red team + zero-trust |
+| D02 Logic | Ad-hoc testing | Unit tests for happy path | Edge case coverage | Property-based testing | Formal verification |
+| D03 Quality | No linter | ESLint basic config | Strict lint + type check | SonarQube quality gate | Zero technical debt |
+| D04 A11Y | No testing | axe-core automated | Manual + automated | Screen reader testing | Inclusive design review |
+| D05 Performance | No monitoring | Lighthouse CI | RUM + budgets | Custom metrics | Predictive optimization |
+| D12 Testing | No tests | Unit tests > 50% | Coverage > 70% + E2E | Mutation testing | Chaos engineering |
+| D15 Errors | `alert()` errors | try/catch blocks | Error boundaries | Circuit breakers | Self-healing systems |
+| D19 DevOps | Manual deploy | CI pipeline | CI/CD + staging | Canary deployments | GitOps + auto-rollback |
+| D26 Data | No migrations | Manual migrations | Versioned migrations | Zero-downtime migrations | Blue-green DB migrations |
+| D27 Concurrency | No protection | Basic locks | Atomic operations | Distributed locks | Lock-free algorithms |
+| D30 AI/ML | No governance | Basic model card | Bias testing + monitoring | Full MLOps pipeline | Continuous retraining + red team |
+| D31 Supply Chain | No verification | npm audit | SBOM + lockfile | SLSA Level 3 | Sigstore + reproducible builds |
+| D32 Privacy | No classification | PII identification | Privacy by design | Differential privacy | Privacy-preserving computation |
+| D33 Sustainability | No awareness | Resource right-sizing | Carbon tracking | Carbon-aware deployment | Net-zero operations |
+| D34 Platform | No templates | README templates | Golden paths + portal | Self-service platform | Platform as product |
+| D35 Chaos | No testing | Manual failure testing | Scheduled game days | Automated chaos in CI | Continuous chaos + resilience scoring |
+
+### 11.2 Maturity Assessment Template
+
+```markdown
+## Maturity Assessment
+
+**Team:** ___ | **Date:** ___ | **Assessor:** ___ | **Quarter:** ___
+
+| Dimension | Current Tier | Current Score | Target Tier | Target Score | Gap | Action Items | Owner | Due Date |
+|---|---|---|---|---|---|---|---|---|
+| D01 | | | | | | | | |
+| D02 | | | | | | | | |
+| ... | | | | | | | | |
+| D35 | | | | | | | | | |
+
+**Overall Maturity:** Tier ___
+**Target Maturity:** Tier ___ (by ___ date)
+**Biggest Gaps:**
+**Priority Actions:**
+**DORA Metrics:** DF: ___ | LT: ___ | MTTR: ___ | CFR: ___
+```
+
+---
+
+## §12 — Anti-Pattern Registry
+
+### 12.1 Universal Anti-Patterns (All Dimensions)
+
+| # | Anti-Pattern | Dimensions | Detection | Severity |
+|---|---|---|---|---|
+| AP-01 | `innerHTML` with untrusted data | D01, D04 | ESLint rule | 🔴 |
+| AP-02 | `eval()` or `new Function()` | D01 | ESLint rule | 🔴 |
+| AP-03 | Storing tokens in `localStorage` | D01 | Code review | 🟠 |
+| AP-04 | `catch (e) { }` empty block | D02, D15 | ESLint rule | 🟠 |
+| AP-05 | `==` instead of `===` | D02 | ESLint rule | 🟡 |
+| AP-06 | Magic numbers | D03 | ESLint rule | 🟡 |
+| AP-07 | God class (> 300 LOC) | D03, D13 | SonarQube | 🟠 |
+| AP-08 | No alt text on images | D04 | axe-core | 🟠 |
+| AP-09 | Synchronous XHR | D05 | ESLint rule | 🟠 |
+| AP-10 | Unoptimized images | D05 | Lighthouse | 🟡 |
+| AP-11 | `Array.find()` in loop (O(n²)) | D06 | Code review | 🟡 |
+| AP-12 | Browser sniffing | D07 | Code review | 🟡 |
+| AP-13 | Generic error messages | D08, D15 | Code review | 🟡 |
+| AP-14 | Hardcoded config values | D28 | Code review | 🟡 |
+| AP-15 | No feature flag for new features | D28 | Code review | 🟡 |
+| AP-16 | N+1 queries | D26, D05 | Query logging | 🟠 |
+| AP-17 | Mutable shared state | D27 | Thread sanitizer | 🟠 |
+| AP-18 | No SBOM for artifacts | D31 | CI check | 🟠 |
+| AP-19 | Collecting data "just in case" | D32 | Privacy review | 🔴 |
+| AP-20 | Always-on for sporadic workloads | D33 | FinOps review | 🟡 |
+| AP-21 | No chaos testing | D35 | Process audit | 🟡 |
+| AP-22 | Blind AI code acceptance | D01, D02, D03 | Code review | 🟠 |
+| AP-23 | No prompt injection defense | D01, D30 | Security review | 🔴 |
+| AP-24 | Unversioned prompts | D30 | Code review | 🟡 |
+| AP-25 | No PII scrubbing in AI training data | D32 | Privacy review | 🔴 |
+| AP-26 | No mTLS between services | D01, D22 | Security review | 🟠 |
+| AP-27 | Using MD5/SHA1 for security | D01 | SAST scan | 🔴 |
+| AP-28 | No inter-rater calibration | D03 | Process audit | 🟡 |
+| AP-29 | No DORA metrics tracking | D19 | Process audit | 🟡 |
+| AP-30 | No SBOM in CI pipeline | D31 | CI check | 🟠 |
+
+---
+
+## §13 — Reviewer Certification & Training
+
+### 13.1 Reviewer Tiers
+
+| Tier | Requirements | Privileges |
+|---|---|---|
+| **Junior Reviewer** | Completed onboarding; 3 shadow reviews; passed calibration quiz | Can review Standard and A11Y reviews |
+| **Senior Reviewer** | 50+ reviews; inter-rater κ ≥ 0.7; no SEV1 caused by missed review | Can review all types; can mentor junior reviewers |
+| **Security Champion** | Senior reviewer + security training (OWASP Top 10, STRIDE); pen test awareness | Required for Security reviews; can approve D01 exceptions |
+| **A11Y Champion** | Senior reviewer + A11Y training (WCAG 2.2, screen reader testing) | Required for A11Y reviews; can approve D04 exceptions |
+| **Architecture Reviewer** | Senior reviewer + architecture training (C4 model, ADRs) | Required for architecture reviews; can approve D13 exceptions |
+
+### 13.2 Calibration Protocol
+
+| Activity | Frequency | Participants | Target |
+|---|---|---|---|
+| **Reference PR Review** | Quarterly | All reviewers | κ ≥ 0.7 (Cohen's kappa) |
+| **Score Distribution Audit** | Monthly | Tech Lead | σ ≤ 1.0 across reviewers |
+| **Calibration Workshop** | Quarterly | All reviewers | Consensus on edge cases |
+| **New Reviewer Shadowing** | On hire | New + Senior reviewer | 3 shadow + 3 shadowed reviews |
+
+### 13.3 Reviewer Onboarding Checklist
+
+- [ ] Read this SOP in full
+- [ ] Complete 3 shadow reviews with a Senior Reviewer
+- [ ] Complete 3 reviews shadowed by a Senior Reviewer
+- [ ] Pass the calibration quiz (≥ 80% score)
+- [ ] Complete security awareness training (OWASP Top 10)
+- [ ] Complete A11Y awareness training (WCAG 2.2 basics)
+- [ ] Set up all required tools (ESLint, axe-core, Lighthouse, etc.)
+- [ ] Review the anti-pattern registry (§12)
+- [ ] Review the compliance mapping (§9) for applicable regulations
+
+---
+
+## §14 — Change Log
+
+| Version | Date | Author | Changes |
+|---|---|---|---|
+| v1.0 | 2024-01 | Engineering Team | Initial 10-dimension framework |
+| v2.0 | 2024-06 | Engineering Team | Expanded to 20 dimensions |
+| v3.0 | 2024-12 | Engineering Team | Expanded to 25 dimensions; added hard floors, RACI, maturity model |
+| v4.0 | 2025-01 | Engineering Team | Expanded to 30 dimensions; added anti-patterns per dimension, risk matrix, compliance mapping |
+| v5.0 | 2025-05 | Engineering Team | Expanded to 35 dimensions; added D31–D35, AI review protocol, zero-trust, post-quantum, DORA |
+| v6.0 | 2026-05 | Engineering Team | **Gold Standard v6.0: Added Table of Contents, Glossary (§0.9), DORA Metrics Integration (§0.8), Inter-Rater Reliability Protocol (§0.4), Reviewer Certification & Training (§13), expanded RACI matrix, expanded compliance mapping (SOC 2 Type II, ISO 27001, FedRAMP), CI/CD pipeline YAML examples (§5), exception request template, maturity assessment template with DORA metrics, expanded anti-pattern registry (AP-26–AP-30), expanded scoring convention with emoji tiers, OWASP Top 10 (2025) reference, post-quantum cryptography (NIST ML-KEM/ML-DSA), expanded AI review protocol (10 items), expanded tooling matrix for all 35 dimensions.** |
+
+---
+
+> **This SOP is a living document. Submit change requests via pull request to the engineering-standards repository. All changes require Tech Lead + Security Champion approval. Quarterly review cycle. Next review: August 2026.**

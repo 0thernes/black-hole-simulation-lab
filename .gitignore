@@ -70,6 +70,9 @@ orca-*.log
 agent-*.state
 parallel-*.lock
 
+# Nested Orca/Git worktree that is not part of the project source tree
+Nautilus/
+
 # -----------------------------------------------------------------------------
 # Build Artifacts & Tooling (C++ primary - MSVC, CMake, vcpkg, Ninja, etc.)
 # -----------------------------------------------------------------------------

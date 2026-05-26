@@ -2,15 +2,16 @@
 
 This repository is the source of truth. Do not use a downloaded ZIP as the final workflow. Incoming repo packages are only staging inputs; the live local Git repo owns validation, commits, rebases, and pushes.
 
-## Expected Location
+## Canonical Location
 
-The intended repo location is:
+The current canonical local repo location is:
 
 ```powershell
-Z:\Orca\Workspaces\Stress Test Agents Maxxxing\oppengrok-blackhole-sim
+Z:\Orca\Workspaces\Stress Test Agents Maxxxing
 ```
 
-If this repo is currently one directory higher, move or clone it into that folder before treating the path as final.
+If the project is later moved to a nested `oppengrok-blackhole-sim` folder, move
+the Git repo deliberately and update this document in the same commit.
 
 ## One-Time Remote Check
 
@@ -18,16 +19,16 @@ The repo must point to GitHub, not a sandbox-local path:
 
 ```powershell
 git remote -v
-git remote set-url origin "https://github.com/OWNER/REPO.git"
+git remote set-url origin "https://github.com/0thernes/Stress-Test-Agents-Maxxxing.git"
 ```
 
 If `origin` does not exist:
 
 ```powershell
-git remote add origin "https://github.com/OWNER/REPO.git"
+git remote add origin "https://github.com/0thernes/Stress-Test-Agents-Maxxxing.git"
 ```
 
-Replace `OWNER/REPO` with the actual GitHub repository.
+Use a different URL only if the GitHub repository is intentionally changed.
 
 ## Normal Sync
 
@@ -39,7 +40,7 @@ cd "Z:\Orca\Workspaces\Stress Test Agents Maxxxing\oppengrok-blackhole-sim"
 powershell.exe -ExecutionPolicy Bypass -File .\scripts\local\Sync-OppengrokLocalRepo.ps1 `
   -Workspace "Z:\Orca\Workspaces\Stress Test Agents Maxxxing" `
   -SourceDirectory "$env:USERPROFILE\Downloads" `
-  -RemoteUrl "https://github.com/OWNER/REPO.git" `
+  -RemoteUrl "https://github.com/0thernes/Stress-Test-Agents-Maxxxing.git" `
   -Push
 ```
 
@@ -65,7 +66,7 @@ Use `-Prune` only when the selected incoming package should become the exact liv
 powershell.exe -ExecutionPolicy Bypass -File .\scripts\local\Sync-OppengrokLocalRepo.ps1 `
   -Workspace "Z:\Orca\Workspaces\Stress Test Agents Maxxxing" `
   -SourceDirectory "$env:USERPROFILE\Downloads" `
-  -RemoteUrl "https://github.com/OWNER/REPO.git" `
+  -RemoteUrl "https://github.com/0thernes/Stress-Test-Agents-Maxxxing.git" `
   -Prune `
   -Push
 ```
@@ -86,7 +87,7 @@ If Downloads contains unrelated archives, pass the package explicitly:
 ```powershell
 powershell.exe -ExecutionPolicy Bypass -File .\scripts\local\Sync-OppengrokLocalRepo.ps1 `
   -PackagePath "$env:USERPROFILE\Downloads\oppengrok-blackhole-sim-v5-research-os.zip" `
-  -RemoteUrl "https://github.com/OWNER/REPO.git" `
+  -RemoteUrl "https://github.com/0thernes/Stress-Test-Agents-Maxxxing.git" `
   -Push
 ```
 
