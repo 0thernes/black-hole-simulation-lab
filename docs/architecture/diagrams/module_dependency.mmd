@@ -1,0 +1,35 @@
+%% C++ Module Dependency Graph (target shape after Iteration 7)
+%% Read left-to-right. An edge A --> B means A depends on B.
+
+flowchart LR
+    CLI[src/cli/<br/>main, argument parsing]
+    CORE[src/core/<br/>geometry, validators]
+    METRICS[src/metrics/<br/>Schwarzschild, Kerr, ...]
+    INT[src/integrators/<br/>geodesics, RK45]
+    DATA[src/data/<br/>CSV, JSON, SQLite exporters]
+    UNITS[include/blackhole_ds/units.hpp]
+
+    TESTS[tests/<br/>unit, smoke, property, integration]
+    HARNESS[tools/blackhole_ds_harness.py]
+
+    CLI --> CORE
+    CLI --> METRICS
+    CLI --> INT
+    CLI --> DATA
+
+    METRICS --> CORE
+    INT --> CORE
+    INT --> METRICS
+    DATA --> CORE
+
+    CORE --> UNITS
+    METRICS --> UNITS
+    INT --> UNITS
+    DATA --> UNITS
+
+    TESTS --> CORE
+    TESTS --> METRICS
+    TESTS --> INT
+    TESTS --> DATA
+
+    HARNESS -.-> DATA

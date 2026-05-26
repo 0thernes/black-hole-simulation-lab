@@ -3,6 +3,26 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-05-26 (Iteration 3: Vision, mission, and ERM documents)
+
+- `docs/vision/VISION.md`: long-term aim, what the project is, what it is
+  not, and a three-year horizon.
+- `docs/vision/MISSION.md`: 12-month mission with six pillars and quarterly
+  objectives for Q1 through Q4.
+- `docs/vision/SCIENTIFIC_INTEGRITY_CHARTER.md`: project constitution with
+  the six truth tiers (analytic_classical, numerical_approximation,
+  observational_constraint, visualization_metaphor, pedagogical_simplification,
+  speculative_extension), source discipline rules, units and numerics rules,
+  reproducibility rules, and AI-assisted code policy.
+- `docs/architecture/ERD.md` + `docs/architecture/diagrams/erd.mmd`: human
+  and Mermaid views of the canonical SQLite star schema.
+- `docs/architecture/SYSTEM_DIAGRAM.md` +
+  `docs/architecture/diagrams/system_pipeline.mmd`: end-to-end pipeline
+  from research layer through contracts, kernel, data, visualization, and
+  audit.
+- `docs/architecture/diagrams/module_dependency.mmd`: target C++ module
+  dependency graph for after Iteration 7.
+
 ## 2026-05-26 (Iteration 2: Repo skeleton for daily work)
 
 - Added the module directory skeleton matching the architecture doc:

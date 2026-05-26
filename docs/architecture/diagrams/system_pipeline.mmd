@@ -1,0 +1,81 @@
+%% BlackHoleDS End-to-End Pipeline
+%% Read top-to-bottom. Solid arrows are data flow.
+%% Dashed arrows are validation/feedback.
+
+flowchart TD
+    subgraph Research[Research Layer]
+        SC[Source Cards<br/>docs/research/source_cards]
+        BR[Brain/Soul XML<br/>knowledge/brains]
+        PI[Paper Index<br/>knowledge/papers]
+    end
+
+    subgraph Contracts[Contracts and Types]
+        UN[units.hpp<br/>Strong-typed quantities]
+        SQ[data/schema.sql<br/>Star schema contract]
+        XS[schemas/<br/>XML / JSON Schemas]
+    end
+
+    subgraph Kernel[Physics Kernel C++]
+        M[metrics/<br/>Schwarzschild, Kerr, Kerr-Newman]
+        I[integrators/<br/>Geodesic and GRMHD]
+        C[core/<br/>Geometry, validators]
+    end
+
+    subgraph Data[Data Layer]
+        EX[data/ exporters<br/>CSV, JSON, SQLite]
+        HX[tools/blackhole_ds_harness.py<br/>Reference Python harness]
+    end
+
+    subgraph Viz[Visualization Layer]
+        VV[viz/ renderer<br/>ray tracing, photon ring]
+        PB[Power BI / Excel<br/>analytics dashboards]
+    end
+
+    subgraph External[External Ecosystem]
+        TS[tsotchke/eshkol<br/>Scientific DSL]
+        TQ[tsotchke/quantum_geometric_tensor]
+        TL[tsotchke/libirrep<br/>SO 3 / SU 2 / SE 3]
+        TP[tsotchke/PINN]
+        ET[Einstein Toolkit<br/>BHAC, iharm3D, BHPT]
+    end
+
+    subgraph Audit[Quality and Audit]
+        AT[CTest<br/>tests/]
+        VA[Validate-ResearchOS.py]
+        AU[AUDIT-250-POINT-GOLD-STANDARD.md]
+        AD[docs/log/DECISIONS.md ADRs]
+    end
+
+    SC --> M
+    BR --> M
+    BR --> Audit
+    PI --> SC
+
+    UN --> M
+    UN --> I
+    UN --> C
+    XS --> BR
+    XS --> PI
+    SQ --> EX
+    SQ --> HX
+
+    C --> M
+    M --> I
+    I --> EX
+    M --> EX
+
+    EX --> HX
+    EX --> VV
+    HX --> PB
+
+    TL -.-> M
+    TS -.-> I
+    TQ -.-> I
+    TP -.-> I
+    ET -.-> AT
+
+    M -.-> VA
+    I -.-> AT
+    EX -.-> AT
+    AT -.-> AU
+    AD -.-> AU

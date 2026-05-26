@@ -1,0 +1,107 @@
+%% BlackHoleDS Entity-Relationship Diagram
+%% Mirrors data/schema.sql. Rebuild after any schema change.
+%% Render with the Mermaid VS Code extension or the Mermaid CLI.
+
+erDiagram
+    DIM_METRIC ||--o{ RUNS : "describes spacetime"
+    DIM_OBSERVER ||--o{ RUNS : "defines viewpoint"
+    DIM_ENSEMBLE ||--o{ RUNS : "groups runs"
+    RUNS ||--o{ TRAJECTORIES : "produces"
+    RUNS ||--|| CHAOS_STATS : "summarizes"
+
+    DIM_METRIC {
+        int metric_id PK
+        string name "Schwarzschild | Kerr | Kerr-Newman | Kerr-deSitter"
+        bool has_spin
+        bool has_charge
+        bool cosmological
+        string notes
+    }
+
+    DIM_OBSERVER {
+        int observer_id PK
+        real inclination_deg
+        real distance_rg
+        real phi_offset_deg
+    }
+
+    DIM_ENSEMBLE {
+        int ensemble_id PK
+        string name
+        int n_runs
+        int base_seed
+        text created_at
+        string theory_version "git SHA or tag"
+        string notes
+    }
+
+    RUNS {
+        int run_id PK
+        int ensemble_id FK
+        int metric_id FK
+        int observer_id FK
+        real mass_Msun
+        real mass_rg
+        real spin_a_over_M
+        real charge_q_over_M
+        real accretion_rate_eddington
+        real disk_inner_edge_rg
+        real magnetic_beta
+        real photon_sphere_rg
+        real isco_rg
+        real shadow_diameter_rg
+        real hawking_temp_kelvin
+        real lyapunov_max
+        text lyapunov_spectrum
+        real correlation_dim
+        int causal_graph_vertices
+        real causal_graph_centrality_max
+        int rng_seed
+        string integrator
+        real integrator_tol
+        int n_steps
+        real wall_time_s
+        string git_commit
+        text created_at
+    }
+
+    TRAJECTORIES {
+        int traj_id PK
+        int run_id FK
+        string particle_type "photon | timelike | accretion-fluid | Hawking-quantum"
+        real initial_r_rg
+        real initial_theta
+        real initial_phi
+        real initial_pr
+        real initial_pphi
+        text t_series_json
+        text r_series_json
+        text theta_series_json
+        text phi_series_json
+        real min_r_rg
+        real max_r_rg
+        real mean_r_rg
+        bool escaped
+        int n_crossings_horizon
+        int n_crossings_photon_sphere
+        real local_lyapunov_estimate
+        int poincare_section_count
+        text created_at
+    }
+
+    CHAOS_STATS {
+        int stat_id PK
+        int run_id FK
+        real lyapunov_max
+        text lyapunov_spectrum_json
+        real correlation_dimension
+        real hurst_exponent
+        real mutual_information
+        int graph_node_count
+        int graph_edge_count
+        int graph_diameter
+        real graph_betweenness_max
+        int persistent_homology_betti_0
+        int persistent_homology_betti_1
+        text created_at
+    }
