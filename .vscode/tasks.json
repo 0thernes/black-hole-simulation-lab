@@ -1,0 +1,81 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Validate Research OS",
+      "type": "shell",
+      "command": "python",
+      "args": ["scripts/Validate-ResearchOS.py"],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build (g++)",
+      "type": "shell",
+      "command": "C:/Program Files/CodeBlocks/MinGW/bin/g++.exe",
+      "args": [
+        "-std=c++20",
+        "-Wall", "-Wextra", "-Wpedantic", "-O2",
+        "-I", "${workspaceFolder}/include",
+        "${workspaceFolder}/src/BlackHoleDS.cpp",
+        "-o", "${workspaceFolder}/build/blackhole_ds.exe"
+      ],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Build smoke tests (g++)",
+      "type": "shell",
+      "command": "C:/Program Files/CodeBlocks/MinGW/bin/g++.exe",
+      "args": [
+        "-std=c++20",
+        "-Wall", "-Wextra", "-Wpedantic", "-O2",
+        "-I", "${workspaceFolder}/include",
+        "${workspaceFolder}/tests/smoke_tests.cpp",
+        "-o", "${workspaceFolder}/build/blackhole_ds_smoke_tests.exe"
+      ],
+      "group": "test",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Run executable",
+      "type": "shell",
+      "command": "${workspaceFolder}/build/blackhole_ds.exe",
+      "dependsOn": ["Build (g++)"],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run smoke tests",
+      "type": "shell",
+      "command": "${workspaceFolder}/build/blackhole_ds_smoke_tests.exe",
+      "dependsOn": ["Build smoke tests (g++)"],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "CMake configure",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["-S", ".", "-B", "build", "-DCMAKE_BUILD_TYPE=Release"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "CMake build",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build", "--config", "Release"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "CTest",
+      "type": "shell",
+      "command": "ctest",
+      "args": ["--test-dir", "build", "-C", "Release", "--output-on-failure"],
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

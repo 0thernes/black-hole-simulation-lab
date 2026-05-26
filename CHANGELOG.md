@@ -3,6 +3,26 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-05-26 (Iteration 2: Repo skeleton for daily work)
+
+- Added the module directory skeleton matching the architecture doc:
+  `src/{core,metrics,integrators,data,cli}/` plus matching headers under
+  `include/blackhole_ds/`.
+- Added `knowledge/brains/{mathematicians,physicists,astronomers,coders,
+  developers,engineers,architects,scientists}/` to hold the seven 100-strong
+  reasoning-lens XML rosters that arrive in Iteration 4.
+- Added `knowledge/papers/`, `schemas/`, `external/`, `assets/diagrams/`,
+  `docs/{integrations,log,vision,research/source_cards}/`,
+  `scripts/{dev,brains,research}/`, and `docs/architecture/diagrams/`.
+- Added governance files: `CODEOWNERS`, `CONTRIBUTING.md`, `SECURITY.md`.
+- Added `docs/log/DAILY_LOG.md` (operational story) and
+  `docs/log/DECISIONS.md` (architecture decision records with ADRs 0001-0004).
+- Added `docs/architecture/HIERARCHY.md` describing the live directory map
+  and ownership semantics.
+- Added VS Code workspace under `.vscode/`: settings, recommended extensions,
+  build/test tasks for both g++ (immediate) and CMake (after install), and
+  debugging configs.
+
 ## 2026-05-26 (Iteration 1: Foundation sanity)
 
 - Rewrote `src/BlackHoleDS.cpp` to use the canonical `blackhole_ds::units`

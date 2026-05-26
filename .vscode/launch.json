@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug blackhole_ds (g++)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/blackhole_ds.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "C:/Program Files/CodeBlocks/MinGW/bin/gdb.exe",
+      "preLaunchTask": "Build (g++)",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Debug smoke tests (g++)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/blackhole_ds_smoke_tests.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "C:/Program Files/CodeBlocks/MinGW/bin/gdb.exe",
+      "preLaunchTask": "Build smoke tests (g++)",
+      "console": "integratedTerminal"
+    }
+  ]
+}

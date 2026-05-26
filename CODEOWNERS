@@ -1,0 +1,31 @@
+# CODEOWNERS for BlackHoleDS / OPPENGROK
+#
+# Pattern syntax: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-security/customizing-your-repository/about-code-owners
+# Each line is a file pattern followed by one or more GitHub usernames.
+# The last matching pattern wins.
+
+# Default owner for everything
+*       @0thernes
+
+# Build system
+/CMakeLists.txt                @0thernes
+/.github/workflows/            @0thernes
+
+# Physical-units foundation: changes here cascade through every module
+/include/blackhole_ds/units.hpp        @0thernes
+
+# Data contracts: schema changes need careful review
+/data/schema.sql               @0thernes
+/schemas/                      @0thernes
+
+# Scientific governance: model-status labels and audit gates
+/docs/architecture/            @0thernes
+/docs/log/DECISIONS.md         @0thernes
+/AUDIT-250-POINT-GOLD-STANDARD.md      @0thernes
+
+# Knowledge corpus: research and brain/soul XML profiles
+/knowledge/                    @0thernes
+/docs/research/                @0thernes
+
+# Validation and CI gates
+/scripts/Validate-ResearchOS.py        @0thernes
