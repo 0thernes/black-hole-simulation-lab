@@ -1,0 +1,248 @@
+# =============================================================================
+# BlackHoleDS - Visual Black Hole Simulation & Data Science Platform
+# Gold Standard .gitignore - Terry Davis / Maximum-Seeking / 250-Point Compliant
+# NO SECRETS EVER. GitHub will accept this repo clean. Zero violations in history.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# SECRETS, CREDENTIALS, TOKENS, KEYS (CRITICAL - GitHub acceptance & security)
+# -----------------------------------------------------------------------------
+.env
+.env.*
+*.env
+*secret*
+*secrets*
+*credential*
+*credentials*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+*.ppk
+*token*
+*api_key*
+*apikey*
+*auth*
+aws-credentials*
+gcp-credentials*
+azure-credentials*
+service-account*.json
+*.jks
+*.keystore
+*privatekey*
+*private_key*
+*access_key*
+*secret_key*
+*client_secret*
+*.ovpn
+*.htpasswd
+*.netrc
+.stripe*
+.sentry*
+.ghp_*
+ghp_*
+sk-*
+AKIA*
+AIza*
+-----BEGIN*PRIVATE*KEY*
+# Also catch common misspellings or variants that could leak
+*passwrd*
+*passwd*
+*passphrase*
+*auth_token*
+
+# -----------------------------------------------------------------------------
+# Orca / Agent / Stress-Test Workspace State (this environment)
+# -----------------------------------------------------------------------------
+.orca/
+*.orca
+orca-terminal-*
+worktree-*.comment
+sessions/
+*.log
+terminal-*.log
+orca-*.log
+# Agent coordination state (if persisted)
+agent-*.state
+parallel-*.lock
+
+# -----------------------------------------------------------------------------
+# Build Artifacts & Tooling (C++ primary - MSVC, CMake, vcpkg, Ninja, etc.)
+# -----------------------------------------------------------------------------
+build/
+out/
+dist/
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.exe
+*.pdb
+*.ilk
+*.exp
+*.map
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CMakeUserPresets.json
+compile_commands.json
+vcpkg_installed/
+vcpkg-manifest.log
+*.ninja
+.ninja_*
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.suo
+*.sdf
+*.opensdf
+ipch/
+# Xcode / other
+*.xcodeproj/
+*.xcworkspace/
+DerivedData/
+# Python data science helpers (if used for ETL/ viz glue)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+ENV/
+env/
+# Node (if any web dashboard later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# -----------------------------------------------------------------------------
+# Data Science Exports & Large Artifacts (reproducible via code, not stored)
+# -----------------------------------------------------------------------------
+exports/
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.sqlite
+*.db
+*.sqlite3
+*.pbix
+*.pbit
+*.xlsx
+*.xlsm
+*.xls
+# Keep tiny curated examples for docs and tests
+!examples/**/*.csv
+!examples/**/*.db
+!examples/**/*.xlsx
+!test/data/**/*.csv
+!test/fixtures/**/*.sqlite
+# Large simulation dumps
+sim-runs/
+ensemble-*/
+trajectories/
+# PowerBI / Excel cache
+*.tmp
+~$*.xlsx
+# Generated diagrams / viz frames (regenerable)
+frames/
+renders/
+diagrams/*.png
+diagrams/*.svg
+diagrams/*.pdf
+
+# -----------------------------------------------------------------------------
+# IDE, Editor, OS, Misc
+# -----------------------------------------------------------------------------
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.bak
+*.tmp
+*.temp
+*.log
+logs/
+# Patch files, diffs from tools
+*.patch
+*.diff
+
+# Incoming repo-package staging for direct local GitHub workflow
+_incoming/
+archives/
+# Secrets scanning / audit artifacts (we run them, do not commit raw reports with hits)
+secret-scan-*.json
+audit-*.raw
+gitleaks-report*.json
+
+# -----------------------------------------------------------------------------
+# Git & Version Control Hygiene
+# -----------------------------------------------------------------------------
+# Never commit the .git directory obviously, but also:
+.git-credentials
+.gitconfig.local
+# Large binary history prevention (use LFS or never commit)
+*.zip
+*.tar.gz
+*.tgz
+*.tar
+*.rar
+*.7z
+# But allow small test fixtures
+!test/fixtures/*.zip
+
+# -----------------------------------------------------------------------------
+# Documentation & Generated (regenerable from source + theory)
+# -----------------------------------------------------------------------------
+docs/generated/
+docs/_build/
+*.pdf
+# Except committed hand-authored or final gold versions
+!docs/*.pdf
+!docs/architecture/*.pdf
+
+# -----------------------------------------------------------------------------
+# CI / CD / Daemon State (Ralph Wiggum loops run in CI or locally, artifacts ignored)
+# -----------------------------------------------------------------------------
+.github/workflows/*-local*
+ci-artifacts/
+junit/
+coverage/
+lcov.info
+.nyc_output/
+# Scheduler / automation state files
+scheduler-*.state
+daemon-*.pid
+cron-*.lock
+
+# End of .gitignore - This file itself is part of the 250-point audit (item on hygiene).
+# Any addition of a secret pattern here is a deliberate defensive act, never an afterthought.
