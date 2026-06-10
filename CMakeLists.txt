@@ -42,6 +42,7 @@ endif()
 
 add_executable(blackhole_ds
     src/BlackHoleDS.cpp
+    src/cli/main.cpp
 )
 
 target_include_directories(blackhole_ds

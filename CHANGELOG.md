@@ -3,6 +3,31 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-05-26 (Iteration 7: C++ modularization)
+
+- Split the monolithic `src/BlackHoleDS.cpp` into focused modules:
+  - `include/blackhole_ds/core/constants.hpp`: SI constants, solar mass,
+    geometric-units conversion factor.
+  - `include/blackhole_ds/core/truth_label.hpp`: compile-time enum mirroring
+    the six Scientific Integrity Charter tiers, with `to_string` view.
+  - `include/blackhole_ds/metrics/schwarzschild.hpp`: analytic Schwarzschild
+    radius, photon sphere, and ISCO in SI meters.
+  - `include/blackhole_ds/metrics/kerr.hpp`: dimensionless Kerr ISCO and
+    photon-sphere closed forms.
+  - `include/blackhole_ds/data/csv_writer.hpp`: truth-tier-aware CSV emitter.
+  - `src/cli/main.cpp`: real CLI entry point with `--mass`, `--spin`,
+    `--format text|csv`, `--steps`, and `--help`.
+- `src/BlackHoleDS.cpp` is now an empty translation unit that preserves the
+  existing CMake target name while the real entry point lives under `src/cli/`.
+- `tests/smoke_tests.cpp` rewritten with a CHECK macro so tests work
+  identically in Debug and Release (no more silent `assert()` strip).
+  Tests now cover the new module headers, truth-label stringification,
+  and Schwarzschild/Kerr canonical values, including monotonicity checks
+  for spin direction.
+- `CMakeLists.txt`: links `src/cli/main.cpp` into the `blackhole_ds` target.
+- Verified: clean build, no warnings, `ctest` 2/2 passed, CLI flags and
+  CSV output work as documented.
+
 ## 2026-05-26 (Iteration 6: Tsotchke ecosystem integration plan)
 
 - `docs/integrations/TSOTCHKE_ECOSYSTEM.md`: full map of the tsotchke
