@@ -3,6 +3,30 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-05-26 (Iteration 6: Tsotchke ecosystem integration plan)
+
+- `docs/integrations/TSOTCHKE_ECOSYSTEM.md`: full map of the tsotchke
+  repository roster with role, language, stars, and integration tier.
+  Tier A (this iteration: documentation only), Tier B (target Q2:
+  `libirrep`), Tier C (target Q3: `eshkol` and
+  `quantum_geometric_tensor`), Tier D (target Year 2+: `moonlab`, `PINN`,
+  `quantum_rng`).
+- `docs/integrations/ESHKOL_INTEGRATION.md`: five-stage rollout plan for
+  using Eshkol as the DSL layer for metric definitions, with build
+  pipeline, risks, and parity-test gates.
+- `external/README.md`: adapter pattern rules. Adapter-only wrappers,
+  commit-SHA pins, opt-in CMake options, ADR-gated adoption.
+- `external/tsotchke/` directory placeholder for future adapters.
+- `CMakeLists.txt`: opt-in options
+  `BHDS_ENABLE_LIBIRREP / ESHKOL / QGT / MOONLAB` added with commented
+  `FetchContent_Declare` example. All default OFF; default build path is
+  unchanged.
+- `docs/log/DECISIONS.md`: ADR-0005 codifies the external-integration
+  policy (opt-in, SHA-pinned, adapter-only, ADR-gated).
+
+Verified: build, tests, and Research OS validation all still pass with
+the new options.
+
 ## 2026-05-26 (Iteration 5: Research foundation - source cards)
 
 - `schemas/source_card.json`: JSON Schema for the source-card system.

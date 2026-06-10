@@ -85,6 +85,42 @@ Numbers are assigned in order. Do not renumber.
     exist.
   - The daily workflow is: edit, validate, build, test, commit, push.
 
+## ADR-0005: External integrations are opt-in, ADR-gated, and adapter-only
+
+- Date: 2026-05-26
+- Status: accepted
+- Context: Compounding on existing scientific-computing libraries is a core
+  mission pillar (see `docs/vision/MISSION.md`). The relevant ecosystem is
+  the tsotchke family of repositories: Eshkol, libirrep,
+  quantum_geometric_tensor, PINN, quantum_rng, moonlab, etc. Adopting any
+  of them naively is risky: license drift, supply-chain trust, build-time
+  bloat, and abstraction leakage are all real costs.
+- Decision: Every external integration follows the same policy:
+  1. Documented under `external/<vendor>/<name>/README.md` with the
+     upstream URL, pinned commit SHA, license, and adapter notes.
+  2. Pulled via CMake `FetchContent` or git submodule. No upstream code
+     committed into our tree.
+  3. Pinned by commit SHA. Tracking a branch is a review-blocker.
+  4. Gated behind a CMake option `BHDS_ENABLE_<NAME>` that defaults to
+     OFF. The kernel must build and pass tests with every integration
+     disabled.
+  5. Wrapped by an adapter under
+     `include/blackhole_ds/external/<name>.hpp`. The kernel never
+     includes upstream headers directly.
+  6. Documented in an ADR before merging, including scope, blast radius,
+     license review, and rollback plan.
+- Consequences:
+  - Predictable build times for the default configuration.
+  - Easy to roll back a problematic integration without touching the
+     kernel.
+  - Requires more discipline up front; the kernel cannot casually depend
+     on an upstream feature.
+- Alternatives considered:
+  - Vendor upstream code into the repo (rejected: license risk, history
+    bloat, drift).
+  - Use a package manager like Conan or vcpkg (deferred: adds another
+    moving part. Revisit when there are >= 3 active external integrations).
+
 ## ADR-0004: License remains MIT for now; AGPLv3 upload kept as a reference
 
 - Date: 2026-05-26
