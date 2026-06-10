@@ -3,6 +3,32 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-05-26 (Iteration 5: Research foundation - source cards)
+
+- `schemas/source_card.json`: JSON Schema for the source-card system.
+  Required fields: slug, kind, title, authors, year, model_status, claims,
+  metadata. Truth-tier enumeration matches the Scientific Integrity Charter
+  and the brain XML schema. Claims include statement, tier, optional
+  equation, value, uncertainty, and where_used routing.
+- `knowledge/papers/seed_sources.json`: 20 foundational sources spanning
+  1828 to 2025:
+    analytic_classical (12): Gauss 1828 (Theorema Egregium), Schwarzschild
+      1916, Newman-Penrose 1962, Kerr 1963, Penrose 1965, Penrose 1969,
+      Bardeen-Press-Teukolsky 1972, MTW 1973, Bardeen-Carter-Hawking 1973,
+      Bekenstein 1973, Schoen-Yau 1979, Chandrasekhar 1983, Choquet-Bruhat
+      1952.
+    observational_constraint (5): Ghez 2008, LIGO GW150914 2016, EHT M87*
+      2019, EHT Sgr A* 2022, GWTC-4 2025.
+    speculative_extension (2): Hawking 1974, Strominger-Vafa 1996.
+- `scripts/research/build_source_cards.py`: deterministic generator that
+  emits one Markdown card per source, plus `knowledge/papers/INDEX.jsonl`
+  for cheap RAG lookup and `docs/research/source_cards/INDEX.md`.
+- `scripts/research/validate_source_cards.py`: structural validator that
+  checks slugs, tiers, required sections, and INDEX consistency.
+- `scripts/Validate-ResearchOS.py`: refactored to share a sub-validator
+  helper and now also runs the source-card validator when the corpus is
+  built. Brain and source-card corpora gate together.
+
 ## 2026-05-26 (Iteration 4: Brain/Soul XML system)
 
 - `schemas/brain_soul.xsd`: XML Schema for the reasoning-lens profiles.

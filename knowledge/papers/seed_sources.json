@@ -1,0 +1,424 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Seed corpus of foundational black-hole research sources. Each entry generates a source-card markdown file under docs/research/source_cards/.",
+  "sources": [
+    {
+      "slug": "1916-schwarzschild-solution",
+      "kind": "paper",
+      "title": "Uber das Gravitationsfeld eines Massenpunktes nach der Einsteinschen Theorie",
+      "authors": ["Karl Schwarzschild"],
+      "year": 1916,
+      "venue": "Sitzungsberichte der Preussischen Akademie der Wissenschaften",
+      "identifier": {"url": "https://articles.adsabs.harvard.edu/full/1916SPAW.......189S"},
+      "model_status": "analytic_classical",
+      "summary": "First exact non-trivial solution to Einstein's vacuum field equations. Describes the spacetime geometry outside a non-rotating, uncharged, spherically symmetric mass.",
+      "claims": [
+        {
+          "statement": "Outside a spherically symmetric mass M, in vacuum, the metric takes the Schwarzschild form.",
+          "tier": "analytic_classical",
+          "equation": "ds^2 = -(1 - 2GM/(rc^2)) c^2 dt^2 + (1 - 2GM/(rc^2))^{-1} dr^2 + r^2 (d\\theta^2 + \\sin^2\\theta d\\phi^2)",
+          "where_used": ["include/blackhole_ds/units.hpp", "src/BlackHoleDS.cpp", "tests/smoke_tests.cpp"]
+        },
+        {
+          "statement": "The Schwarzschild radius is r_s = 2GM/c^2.",
+          "tier": "analytic_classical",
+          "equation": "r_s = 2GM/c^2",
+          "where_used": ["src/BlackHoleDS.cpp"]
+        }
+      ],
+      "related_brains": ["karl-schwarzschild", "albert-einstein"]
+    },
+    {
+      "slug": "1963-kerr-rotating-mass",
+      "kind": "paper",
+      "title": "Gravitational field of a spinning mass as an example of algebraically special metrics",
+      "authors": ["Roy P. Kerr"],
+      "year": 1963,
+      "venue": "Physical Review Letters",
+      "identifier": {"doi": "10.1103/PhysRevLett.11.237", "url": "https://doi.org/10.1103/PhysRevLett.11.237"},
+      "model_status": "analytic_classical",
+      "summary": "Exact axially symmetric vacuum solution to Einstein's field equations describing rotating black holes.",
+      "claims": [
+        {
+          "statement": "The Kerr metric in Boyer-Lindquist coordinates depends on mass M and angular momentum per unit mass a.",
+          "tier": "analytic_classical",
+          "where_used": ["tests/smoke_tests.cpp"]
+        }
+      ],
+      "related_brains": ["roy-kerr", "ezra-newman"]
+    },
+    {
+      "slug": "1972-bardeen-press-teukolsky-rotating-bh",
+      "kind": "paper",
+      "title": "Rotating black holes: Locally nonrotating frames, energy extraction, and scalar synchrotron radiation",
+      "authors": ["James M. Bardeen", "William H. Press", "Saul A. Teukolsky"],
+      "year": 1972,
+      "venue": "Astrophysical Journal",
+      "identifier": {"doi": "10.1086/151796"},
+      "model_status": "analytic_classical",
+      "summary": "Definitive analytic treatment of equatorial geodesics in Kerr. Source of the closed-form expressions for ISCO and photon-sphere radii.",
+      "claims": [
+        {
+          "statement": "Prograde Kerr ISCO in geometric units satisfies r_ISCO = 3 + Z2 - sign(a)*sqrt((3 - Z1)(3 + Z1 + 2 Z2)).",
+          "tier": "analytic_classical",
+          "where_used": ["src/BlackHoleDS.cpp", "tests/smoke_tests.cpp"]
+        },
+        {
+          "statement": "Schwarzschild limit a -> 0 gives r_ISCO = 6.0 exactly.",
+          "tier": "analytic_classical",
+          "where_used": ["tests/smoke_tests.cpp"]
+        }
+      ],
+      "related_brains": ["subrahmanyan-chandrasekhar", "kip-thorne"]
+    },
+    {
+      "slug": "1973-misner-thorne-wheeler-gravitation",
+      "kind": "book",
+      "title": "Gravitation",
+      "authors": ["Charles W. Misner", "Kip S. Thorne", "John A. Wheeler"],
+      "year": 1973,
+      "venue": "W. H. Freeman",
+      "identifier": {"isbn": "0-7167-0344-0"},
+      "model_status": "analytic_classical",
+      "summary": "Standard graduate textbook on general relativity. Comprehensive reference for the analytic formulas used throughout the project.",
+      "claims": [
+        {
+          "statement": "Metric signature convention (-+++) and Schwarzschild metric in standard form.",
+          "tier": "analytic_classical",
+          "where_used": ["docs/architecture/ARCHITECTURE.md"]
+        }
+      ],
+      "related_brains": ["kip-thorne", "albert-einstein"]
+    },
+    {
+      "slug": "1983-chandrasekhar-mathematical-theory-of-black-holes",
+      "kind": "book",
+      "title": "The Mathematical Theory of Black Holes",
+      "authors": ["Subrahmanyan Chandrasekhar"],
+      "year": 1983,
+      "venue": "Oxford University Press",
+      "identifier": {"isbn": "0-19-851291-0"},
+      "model_status": "analytic_classical",
+      "summary": "Definitive monograph on perturbation theory of black holes (Schwarzschild, Reissner-Nordstrom, Kerr).",
+      "claims": [
+        {
+          "statement": "Quasi-normal mode equations for Schwarzschild and Kerr perturbations.",
+          "tier": "analytic_classical",
+          "where_used": ["docs/architecture/ARCHITECTURE.md"]
+        }
+      ],
+      "related_brains": ["subrahmanyan-chandrasekhar"]
+    },
+    {
+      "slug": "1965-penrose-singularity-theorem",
+      "kind": "paper",
+      "title": "Gravitational collapse and space-time singularities",
+      "authors": ["Roger Penrose"],
+      "year": 1965,
+      "venue": "Physical Review Letters",
+      "identifier": {"doi": "10.1103/PhysRevLett.14.57"},
+      "model_status": "analytic_classical",
+      "summary": "Proved that, under physically reasonable energy conditions, gravitational collapse must lead to a spacetime singularity.",
+      "claims": [
+        {
+          "statement": "Trapped-surface formation implies geodesic incompleteness.",
+          "tier": "analytic_classical",
+          "where_used": ["docs/research/source_cards", "docs/vision/SCIENTIFIC_INTEGRITY_CHARTER.md"]
+        }
+      ],
+      "related_brains": ["roger-penrose"]
+    },
+    {
+      "slug": "1973-bardeen-carter-hawking-four-laws",
+      "kind": "paper",
+      "title": "The four laws of black hole mechanics",
+      "authors": ["James M. Bardeen", "Brandon Carter", "Stephen W. Hawking"],
+      "year": 1973,
+      "venue": "Communications in Mathematical Physics",
+      "identifier": {"doi": "10.1007/BF01645742"},
+      "model_status": "analytic_classical",
+      "summary": "Formal analogy between black-hole mechanics and the laws of thermodynamics: zeroth law (constant surface gravity), first law (mass-area-angular-momentum-charge relation), second law (area non-decrease), third law (extremality limit).",
+      "claims": [
+        {
+          "statement": "Black-hole surface gravity is constant over the horizon (zeroth law).",
+          "tier": "analytic_classical",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["stephen-hawking", "jacob-bekenstein"]
+    },
+    {
+      "slug": "1973-bekenstein-entropy",
+      "kind": "paper",
+      "title": "Black holes and entropy",
+      "authors": ["Jacob D. Bekenstein"],
+      "year": 1973,
+      "venue": "Physical Review D",
+      "identifier": {"doi": "10.1103/PhysRevD.7.2333"},
+      "model_status": "analytic_classical",
+      "summary": "Proposed that black holes carry entropy proportional to their horizon area.",
+      "claims": [
+        {
+          "statement": "Black-hole entropy is S = (k_B c^3 / 4 hbar G) A.",
+          "tier": "analytic_classical",
+          "equation": "S = (k_B c^3 / 4 \\hbar G) A",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["jacob-bekenstein", "stephen-hawking"]
+    },
+    {
+      "slug": "1974-hawking-radiation",
+      "kind": "paper",
+      "title": "Black hole explosions?",
+      "authors": ["Stephen W. Hawking"],
+      "year": 1974,
+      "venue": "Nature",
+      "identifier": {"doi": "10.1038/248030a0"},
+      "model_status": "speculative_extension",
+      "summary": "Predicted that black holes emit thermal radiation due to quantum effects near the event horizon. Predicted but unobserved.",
+      "claims": [
+        {
+          "statement": "Hawking temperature T = hbar c^3 / (8 pi G M k_B).",
+          "tier": "speculative_extension",
+          "equation": "T_H = \\hbar c^3 / (8 \\pi G M k_B)",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["stephen-hawking"],
+      "notes": "Tier is speculative_extension because Hawking radiation, while theoretically well-established, has never been directly observed. Modules implementing related quantities must inherit this tier."
+    },
+    {
+      "slug": "1979-schoen-yau-positive-mass-theorem",
+      "kind": "paper",
+      "title": "On the proof of the positive mass conjecture in general relativity",
+      "authors": ["Richard Schoen", "Shing-Tung Yau"],
+      "year": 1979,
+      "venue": "Communications in Mathematical Physics",
+      "identifier": {"doi": "10.1007/BF01940959"},
+      "model_status": "analytic_classical",
+      "summary": "Proved that the ADM mass of an asymptotically flat spacetime obeying the dominant energy condition is non-negative, with equality iff the spacetime is Minkowski.",
+      "claims": [
+        {
+          "statement": "ADM mass >= 0 for asymptotically flat spacetimes obeying the dominant energy condition.",
+          "tier": "analytic_classical",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["shing-tung-yau"]
+    },
+    {
+      "slug": "2016-ligo-gw150914",
+      "kind": "paper",
+      "title": "Observation of gravitational waves from a binary black hole merger",
+      "authors": ["B. P. Abbott et al.", "LIGO Scientific Collaboration", "Virgo Collaboration"],
+      "year": 2016,
+      "venue": "Physical Review Letters",
+      "identifier": {"doi": "10.1103/PhysRevLett.116.061102"},
+      "model_status": "observational_constraint",
+      "summary": "First direct detection of gravitational waves, from the merger of two stellar-mass black holes at z ~ 0.09.",
+      "claims": [
+        {
+          "statement": "Initial component masses: 36.2 +5.2/-3.8 and 29.1 +3.7/-4.4 solar masses (source frame).",
+          "tier": "observational_constraint",
+          "value": {"m1": "36.2 Msun", "m2": "29.1 Msun"},
+          "uncertainty": "+5.2/-3.8 and +3.7/-4.4 solar masses",
+          "where_used": ["docs/research/source_cards"]
+        },
+        {
+          "statement": "Final remnant mass approximately 62.3 +3.7/-3.1 solar masses.",
+          "tier": "observational_constraint",
+          "uncertainty": "+3.7/-3.1 solar masses",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["kip-thorne"]
+    },
+    {
+      "slug": "2019-eht-m87-shadow",
+      "kind": "paper",
+      "title": "First M87 Event Horizon Telescope results. I. The shadow of the supermassive black hole",
+      "authors": ["The Event Horizon Telescope Collaboration"],
+      "year": 2019,
+      "venue": "Astrophysical Journal Letters",
+      "identifier": {"doi": "10.3847/2041-8213/ab0ec7", "arxiv_id": "1906.11238"},
+      "model_status": "observational_constraint",
+      "summary": "First horizon-scale image of a supermassive black hole, M87*. Observed an asymmetric emission ring with reported diameter 42 +/- 3 microarcseconds, consistent with the shadow predicted by Kerr black holes in general relativity.",
+      "claims": [
+        {
+          "statement": "M87* ring diameter is 42 +/- 3 microarcseconds.",
+          "tier": "observational_constraint",
+          "value": "42 microarcseconds",
+          "uncertainty": "+/- 3 microarcseconds",
+          "where_used": ["docs/research/source_cards"]
+        },
+        {
+          "statement": "M87* mass approximately 6.5 +/- 0.7 x 10^9 solar masses.",
+          "tier": "observational_constraint",
+          "value": "6.5e9 Msun",
+          "uncertainty": "+/- 0.7e9 solar masses",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["shep-doeleman", "andrea-ghez", "reinhard-genzel"]
+    },
+    {
+      "slug": "2022-eht-sgra-shadow",
+      "kind": "paper",
+      "title": "First Sagittarius A* Event Horizon Telescope results. I. The shadow of the supermassive black hole in the center of the Milky Way",
+      "authors": ["The Event Horizon Telescope Collaboration"],
+      "year": 2022,
+      "venue": "Astrophysical Journal Letters",
+      "identifier": {"doi": "10.3847/2041-8213/ac6674"},
+      "model_status": "observational_constraint",
+      "summary": "First horizon-scale image of Sgr A*, the supermassive black hole at the center of the Milky Way. Ring diameter 51.8 +/- 2.3 microarcseconds, consistent with prior mass measurements from stellar orbits.",
+      "claims": [
+        {
+          "statement": "Sgr A* ring diameter is 51.8 +/- 2.3 microarcseconds.",
+          "tier": "observational_constraint",
+          "value": "51.8 microarcseconds",
+          "uncertainty": "+/- 2.3 microarcseconds",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["shep-doeleman", "andrea-ghez", "reinhard-genzel"]
+    },
+    {
+      "slug": "2008-ghez-sgra-mass",
+      "kind": "paper",
+      "title": "Measuring distance and properties of the Milky Way's central supermassive black hole",
+      "authors": ["Andrea M. Ghez", "et al."],
+      "year": 2008,
+      "venue": "Astrophysical Journal",
+      "identifier": {"doi": "10.1086/592738"},
+      "model_status": "observational_constraint",
+      "summary": "Measured the mass of Sgr A* to approximately 4.1 x 10^6 solar masses via tracking stellar orbits at the galactic center.",
+      "claims": [
+        {
+          "statement": "Sgr A* mass approximately 4.1 +/- 0.6 x 10^6 solar masses.",
+          "tier": "observational_constraint",
+          "value": "4.1e6 Msun",
+          "uncertainty": "+/- 0.6e6 solar masses",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["andrea-ghez"]
+    },
+    {
+      "slug": "1952-choquet-bruhat-cauchy",
+      "kind": "paper",
+      "title": "Theoreme d'existence pour certains systemes d'equations aux derivees partielles non lineaires",
+      "authors": ["Yvonne Foures-Bruhat"],
+      "year": 1952,
+      "venue": "Acta Mathematica",
+      "identifier": {"doi": "10.1007/BF02392131"},
+      "model_status": "analytic_classical",
+      "summary": "Proved that the Einstein equations admit a well-posed initial-value formulation in harmonic coordinates. Foundation of numerical relativity.",
+      "claims": [
+        {
+          "statement": "Einstein's vacuum equations form a well-posed quasilinear hyperbolic system in harmonic coordinates.",
+          "tier": "analytic_classical",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["yvonne-choquet-bruhat"]
+    },
+    {
+      "slug": "1962-newman-penrose-formalism",
+      "kind": "paper",
+      "title": "An approach to gravitational radiation by a method of spin coefficients",
+      "authors": ["Ezra T. Newman", "Roger Penrose"],
+      "year": 1962,
+      "venue": "Journal of Mathematical Physics",
+      "identifier": {"doi": "10.1063/1.1724257"},
+      "model_status": "analytic_classical",
+      "summary": "Tetrad-based formulation of general relativity using null vectors and complex spin coefficients. Well-suited for studying gravitational radiation and algebraically special spacetimes.",
+      "claims": [
+        {
+          "statement": "Petrov-type-D spacetimes (such as Kerr) admit simplified equations in the Newman-Penrose formalism.",
+          "tier": "analytic_classical",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["ezra-newman", "roger-penrose"]
+    },
+    {
+      "slug": "2025-gwtc4-gwosc",
+      "kind": "preprint",
+      "title": "GWTC-4.0: Updates to the gravitational-wave transient catalog",
+      "authors": ["LIGO Scientific Collaboration", "Virgo Collaboration", "KAGRA Collaboration"],
+      "year": 2025,
+      "venue": "arXiv",
+      "identifier": {"arxiv_id": "2508.18082", "url": "https://arxiv.org/abs/2508.18082"},
+      "model_status": "observational_constraint",
+      "summary": "GWTC-4.0 adds 128 new compact-binary candidates from O4a, bringing the combined catalog to 218 candidates meeting the stated p_astro >= 0.5 and not-vetoed criteria.",
+      "claims": [
+        {
+          "statement": "GWTC-4.0 contains 218 compact-binary candidates above the stated significance threshold.",
+          "tier": "observational_constraint",
+          "value": "218 candidates",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["kip-thorne"]
+    },
+    {
+      "slug": "1969-penrose-process",
+      "kind": "paper",
+      "title": "Gravitational collapse: the role of general relativity",
+      "authors": ["Roger Penrose"],
+      "year": 1969,
+      "venue": "Rivista del Nuovo Cimento",
+      "identifier": {"doi": "10.1023/A:1016578408204"},
+      "model_status": "analytic_classical",
+      "summary": "Introduced the energy-extraction process by which a particle entering the ergosphere of a rotating black hole can split such that one fragment falls in and the other escapes with more energy than the original.",
+      "claims": [
+        {
+          "statement": "Energy can be extracted from the rotational energy of a Kerr black hole via the Penrose process.",
+          "tier": "analytic_classical",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["roger-penrose"]
+    },
+    {
+      "slug": "1996-strominger-vafa-microstates",
+      "kind": "paper",
+      "title": "Microscopic origin of the Bekenstein-Hawking entropy",
+      "authors": ["Andrew Strominger", "Cumrun Vafa"],
+      "year": 1996,
+      "venue": "Physics Letters B",
+      "identifier": {"doi": "10.1016/0370-2693(96)00345-0"},
+      "model_status": "speculative_extension",
+      "summary": "Counted the microstates of certain extremal black holes in Type II string theory and reproduced the Bekenstein-Hawking entropy. Important conceptual result, but assumes string theory.",
+      "claims": [
+        {
+          "statement": "Counting BPS-state microstates of specific extremal black holes reproduces S = A / 4 to leading order.",
+          "tier": "speculative_extension",
+          "where_used": ["docs/research/source_cards"]
+        }
+      ],
+      "related_brains": ["andrew-strominger"],
+      "notes": "Tier is speculative_extension because the result is framework-dependent (requires string theory)."
+    },
+    {
+      "slug": "1827-gauss-theorema-egregium",
+      "kind": "paper",
+      "title": "Disquisitiones generales circa superficies curvas",
+      "authors": ["Carl Friedrich Gauss"],
+      "year": 1828,
+      "venue": "Commentationes Soc. Reg. Sci. Gott. Recent.",
+      "identifier": {"url": "https://archive.org/details/disquisitionesg00gausgoog"},
+      "model_status": "analytic_classical",
+      "summary": "Established intrinsic differential geometry of surfaces and the Theorema Egregium: Gaussian curvature is an intrinsic invariant independent of embedding.",
+      "claims": [
+        {
+          "statement": "Gaussian curvature of a surface is intrinsic.",
+          "tier": "analytic_classical",
+          "where_used": ["docs/research/source_cards", "docs/architecture/ARCHITECTURE.md"]
+        }
+      ],
+      "related_brains": ["carl-friedrich-gauss", "bernhard-riemann"]
+    }
+  ]
+}

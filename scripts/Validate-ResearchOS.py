@@ -112,15 +112,12 @@ def validate_audit_seed() -> None:
             fail(f"audit missing section heading: {heading}")
 
 
-def validate_brain_corpus() -> None:
-    """Run the brain validator if the corpus exists."""
-    manifest = ROOT / "knowledge" / "brains" / "MANIFEST.json"
-    if not manifest.exists():
-        # Corpus not built yet; skip silently to allow staged adoption.
+def _run_subvalidator(rel_path: str, marker: Path) -> None:
+    if not marker.exists():
         return
-    validator = ROOT / "scripts" / "brains" / "validate_brains.py"
+    validator = ROOT / rel_path
     if not validator.exists():
-        fail("brain manifest exists but validator script is missing")
+        fail(f"{marker.name} exists but {rel_path} is missing")
     result = subprocess.run(
         [sys.executable, str(validator)],
         check=False,
@@ -130,9 +127,25 @@ def validate_brain_corpus() -> None:
     )
     if result.returncode != 0:
         fail(
-            "brain validator failed:\n"
+            f"{rel_path} failed:\n"
             + (result.stderr or result.stdout or "no output")
         )
+
+
+def validate_brain_corpus() -> None:
+    """Run the brain validator if the corpus exists."""
+    _run_subvalidator(
+        "scripts/brains/validate_brains.py",
+        ROOT / "knowledge" / "brains" / "MANIFEST.json",
+    )
+
+
+def validate_source_card_corpus() -> None:
+    """Run the source-card validator if the corpus exists."""
+    _run_subvalidator(
+        "scripts/research/validate_source_cards.py",
+        ROOT / "knowledge" / "papers" / "INDEX.jsonl",
+    )
 
 
 def main() -> int:
@@ -141,6 +154,7 @@ def main() -> int:
     validate_audit_seed()
     validate_no_forbidden_tracked_files()
     validate_brain_corpus()
+    validate_source_card_corpus()
     print("Research OS validation passed.")
     return 0
 

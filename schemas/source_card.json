@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/0thernes/Stress-Test-Agents-Maxxxing/schemas/source_card.json",
+  "title": "Source Card",
+  "description": "Structured record of a single research source used in BlackHoleDS. Each implemented formula, observational constraint, or speculative claim must trace back to a source card. See docs/research/RESEARCH_PROGRAM.md.",
+  "type": "object",
+  "required": ["slug", "kind", "title", "authors", "year", "model_status", "claims", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "URL-safe slug used for the filename. Lowercase, hyphens only."
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["paper", "preprint", "book", "review", "dataset", "thesis", "technical_note", "monograph"],
+      "description": "Type of source."
+    },
+    "title": {"type": "string"},
+    "authors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string"}
+    },
+    "year": {"type": "integer", "minimum": 1900, "maximum": 2100},
+    "venue": {"type": "string", "description": "Journal, conference, publisher, or archive."},
+    "identifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "doi": {"type": "string"},
+        "arxiv_id": {"type": "string"},
+        "isbn": {"type": "string"},
+        "ads_bibcode": {"type": "string"},
+        "url": {"type": "string", "format": "uri"}
+      }
+    },
+    "model_status": {
+      "type": "string",
+      "enum": [
+        "analytic_classical",
+        "numerical_approximation",
+        "observational_constraint",
+        "visualization_metaphor",
+        "pedagogical_simplification",
+        "speculative_extension"
+      ],
+      "description": "Truth tier of the central claim of this source."
+    },
+    "summary": {
+      "type": "string",
+      "description": "One paragraph in plain language. What the source says, why it matters."
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Specific extractable claims used (or to be used) in the project.",
+      "items": {
+        "type": "object",
+        "required": ["statement", "tier"],
+        "additionalProperties": false,
+        "properties": {
+          "statement": {"type": "string"},
+          "tier": {
+            "type": "string",
+            "enum": [
+              "analytic_classical",
+              "numerical_approximation",
+              "observational_constraint",
+              "visualization_metaphor",
+              "pedagogical_simplification",
+              "speculative_extension"
+            ]
+          },
+          "equation": {"type": "string", "description": "LaTeX of the central equation, if any."},
+          "value": {"description": "Numerical value with units, if any."},
+          "uncertainty": {"type": "string"},
+          "where_used": {
+            "type": "array",
+            "items": {"type": "string", "description": "Repo paths or module names that consume this claim."}
+          }
+        }
+      }
+    },
+    "related_brains": {
+      "type": "array",
+      "items": {"type": "string", "description": "Slugs from knowledge/brains/."}
+    },
+    "notes": {"type": "string"},
+    "metadata": {
+      "type": "object",
+      "required": ["card_version", "created", "updated", "author"],
+      "additionalProperties": false,
+      "properties": {
+        "card_version": {"type": "string"},
+        "created": {"type": "string", "format": "date"},
+        "updated": {"type": "string", "format": "date"},
+        "author": {"type": "string"},
+        "reviewed_by": {"type": "string"},
+        "confidence": {"type": "string", "enum": ["seed", "reviewed", "audited"]}
+      }
+    }
+  }
+}
