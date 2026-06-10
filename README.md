@@ -112,7 +112,29 @@ still be wrong; the data and validation decide.
 
 ## Development Workflow
 
-Normal work:
+The everyday loop is wrapped in a single script. See
+[`docs/process/DAILY_WORKFLOW.md`](docs/process/DAILY_WORKFLOW.md) for the
+full reference.
+
+```powershell
+.\scripts\dev\Daily-Commit.ps1 -Message "Short imperative subject" -Push
+```
+
+That script runs the validation gate, then build, then tests, and only
+commits and pushes when everything passes. Skip steps you do not need
+with `-SkipBuild` or `-SkipTests`.
+
+Individual helpers:
+
+```powershell
+.\scripts\dev\build.ps1                # cmake configure + build
+.\scripts\dev\test.ps1                 # ctest with output-on-failure
+.\scripts\dev\audit.ps1                # validation + corpus rebuild
+.\scripts\dev\clean.ps1                # wipe build/exports/_incoming
+.\scripts\dev\Install-PreCommitHook.ps1   # gate every git commit
+```
+
+Manual loop:
 
 ```powershell
 git status

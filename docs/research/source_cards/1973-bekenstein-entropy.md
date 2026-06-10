@@ -30,7 +30,7 @@ Proposed that black holes carry entropy proportional to their horizon area.
 ## Metadata
 
 - Card version: 1.0.0
-- Created: 2026-05-26
-- Updated: 2026-05-26
+- Created: 2026-06-10
+- Updated: 2026-06-10
 - Author: blackhole_ds-seed-corpus
 - Confidence: seed

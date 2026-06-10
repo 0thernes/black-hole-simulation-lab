@@ -30,7 +30,7 @@ GWTC-4.0 adds 128 new compact-binary candidates from O4a, bringing the combined 
 ## Metadata
 
 - Card version: 1.0.0
-- Created: 2026-05-26
-- Updated: 2026-05-26
+- Created: 2026-06-10
+- Updated: 2026-06-10
 - Author: blackhole_ds-seed-corpus
 - Confidence: seed

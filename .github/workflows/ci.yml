@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate:
-    name: Validate and test
+    name: Validate and test (windows)
     runs-on: windows-latest
 
     steps:
@@ -23,11 +23,23 @@ jobs:
       - name: Validate Research OS
         run: python scripts/Validate-ResearchOS.py
 
-      - name: Configure
+      - name: Rebuild brain corpus
+        run: python scripts/brains/build_brains.py
+
+      - name: Validate brain corpus
+        run: python scripts/brains/validate_brains.py
+
+      - name: Rebuild source-card corpus
+        run: python scripts/research/build_source_cards.py
+
+      - name: Validate source-card corpus
+        run: python scripts/research/validate_source_cards.py
+
+      - name: CMake configure
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
-      - name: Build
+      - name: CMake build
         run: cmake --build build --config Release
 
-      - name: Test
+      - name: CTest
         run: ctest --test-dir build -C Release --output-on-failure

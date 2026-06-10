@@ -3,6 +3,39 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-05-26 (Iteration 8: Daily workflow automation)
+
+Bootstrap-plan completion. Daily forward motion now has a single command.
+
+- `scripts/dev/build.ps1`: CMake configure + build with the MinGW
+  toolchain auto-detection. `-Configuration Debug|Release`, `-Clean`.
+- `scripts/dev/test.ps1`: CTest with `--output-on-failure`.
+- `scripts/dev/audit.ps1`: runs the Research OS validator and regenerates
+  the brain and source-card corpora when their seeds exist.
+- `scripts/dev/clean.ps1`: wipes `build/`, `exports/`, and
+  `_incoming/extracted/`.
+- `scripts/dev/Daily-Commit.ps1`: validate -> build -> test -> commit ->
+  push. Refuses to commit without a message or push without `-Push`.
+- `scripts/dev/Install-PreCommitHook.ps1`: installs a local pre-commit
+  hook that runs the Research OS validator before every commit.
+- `docs/process/DAILY_WORKFLOW.md`: full reference for the loop.
+- `README.md`: replaced the manual workflow section with the new wrapper
+  scripts plus a manual fallback.
+- `.github/workflows/ci.yml`: now mirrors local validation by running the
+  brain and source-card builders/validators alongside the existing
+  CMake/CTest steps. CI and the daily workflow gate on the same checks.
+- Removed obsolete `scripts/dev/.gitkeep` since the directory now has
+  content.
+
+Verified: `audit.ps1` regenerates both corpora, `test.ps1` runs CTest 2/2
+green, and the pre-commit hook installer writes a working `.git/hooks/pre-commit`.
+
+This commit closes the eight-iteration bootstrap plan. The repo now has:
+foundation sanity, repo skeleton, vision/mission/integrity charter, ERM
+diagrams, 20-profile brain corpus, 20-source research corpus, tsotchke
+integration plan with ADR-0005, a modular C++ kernel with CLI and CSV
+output, and an automated daily workflow.
+
 ## 2026-05-26 (Iteration 7: C++ modularization)
 
 - Split the monolithic `src/BlackHoleDS.cpp` into focused modules:
