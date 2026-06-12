@@ -1,68 +1,91 @@
 # OPPENGROK Black Hole Simulation Lab
 
-Research-first C++ black hole simulation workspace for building a scientifically
-auditable lab: analytic black-hole observables, future geodesic integration,
-data exports, visualization, A/B experiments, E2E validation, and review gates.
+Research-first C++20 black hole simulation lab, building toward a **visual,
+GPU-accelerated black hole simulation you can run on your own machine**.
+The development target is an RTX-class consumer GPU (reference hardware:
+NVIDIA RTX 5070 Ti 12 GB, Intel Core Ultra 9 275HX, 80 GB DDR5); the repo
+is for anyone with that class of GPU power who wants a scientifically
+honest simulation rather than a screensaver.
 
-This is the real local repository. Source code, research notes, audits, tests,
-logs, and architecture decisions belong here and get committed through Git.
-ZIP files are intake artifacts only, never the source of truth.
+The path there is deliberate: analytic observables first (done), then
+geodesic integration, then a ray-marched photon renderer that consumes the
+validated physics kernel. Every value the simulation produces is labeled
+with its scientific truth tier — beauty never outranks correctness.
+
+This is the real local repository. Source code, research notes, audits,
+tests, logs, and architecture decisions belong here and get committed
+through Git. ZIP files are intake artifacts only, never the source of truth.
 
 ## Current Status
 
-This repo is a serious starter baseline, not a completed GRMHD or numerical
-relativity solver.
+A validated analytic core with research infrastructure — not yet a GRMHD
+or numerical-relativity solver, and not yet visual.
 
 Implemented now:
 
-- C++ seed executable for analytic Schwarzschild/Kerr observables.
-- Strong physical-units header foundation in `include/blackhole_ds/units.hpp`.
-- SQLite research/data schema in `data/schema.sql`.
-- Python data-science harness in `tools/blackhole_ds_harness.py`.
-- Local package intake workflow in `scripts/local/Sync-OppengrokLocalRepo.ps1`.
-- Research, architecture, testing, planning, audit, and project-log documents.
-- CMake, CTest, CI, and local Research OS validation scaffolding.
+- C++20 modular kernel: `core/` (constants, truth labels), `metrics/`
+  (exact Schwarzschild and Kerr observables), `data/` (full-precision,
+  truth-tier-labeled CSV export).
+- CLI executable with `--mass`, `--spin`, `--format text|csv`, `--steps`.
+- Strong physical-units header (`include/blackhole_ds/units.hpp`) with
+  compile-time dimensional safety, enforced by tests.
+- Brain/Soul reasoning-lens corpus: 20 XML profiles (physicists,
+  mathematicians, astronomers) with XSD schema and validation.
+- Research source-card corpus: 20 foundational sources (1828-2025) with
+  JSON Schema, truth-tier labels, and a JSONL RAG index.
+- SQLite star schema (`data/schema.sql`) and Python data-science harness.
+- Deterministic corpus generators with a CI drift gate.
+- Vision, mission, scientific integrity charter, ADRs, ERD and system
+  diagrams, daily workflow automation, CI on GitHub Actions.
 
-Not implemented yet:
+Not implemented yet (in build order):
 
-- Full geodesic integrator.
+- Geodesic integrator (next major milestone).
+- Ray-marched photon renderer / visual layer (GPU; the headline goal).
 - GRMHD or numerical-relativity solver.
-- Photon-ring renderer or interactive visual layer.
+- Truth-tier column in the SQLite schema.
 - Production Power BI/Excel templates.
-- Large research corpus/RAG index.
-- Agent automation that runs without human review.
+- Tsotchke ecosystem integrations (planned, ADR-gated; see
+  `docs/integrations/`).
 
 ## Repository Layout
 
 ```text
 .
-|-- CMakeLists.txt
+|-- CMakeLists.txt                  C++20 build (CMake >= 3.20)
 |-- README.md
 |-- AUDIT-250-POINT-GOLD-STANDARD.md
-|-- data/
-|   `-- schema.sql
+|-- CODEOWNERS / CONTRIBUTING.md / SECURITY.md / LICENSE (AGPL-3.0)
+|-- assets/diagrams/                Source diagrams (Mermaid)
+|-- data/schema.sql                 Canonical SQLite star schema
 |-- docs/
-|   |-- architecture/
-|   |-- audits/
-|   |-- operations/
-|   |-- planning/
-|   |-- process/
-|   |-- reports/
-|   |-- research/
-|   |-- source/
-|   `-- testing/
-|-- include/
-|   `-- blackhole_ds/
+|   |-- architecture/               ARCHITECTURE, HIERARCHY, ERD, diagrams
+|   |-- audits/                     Audit reports (see latest full review)
+|   |-- integrations/               Tsotchke / Eshkol integration plans
+|   |-- log/                        DAILY_LOG + DECISIONS (ADRs)
+|   |-- operations/ planning/ process/ reports/ testing/
+|   |-- research/                   Research program + source_cards/
+|   |-- source/                     Philosophy and audit input material
+|   `-- vision/                     VISION, MISSION, integrity charter
+|-- external/                       Third-party adapters (ADR-gated, opt-in)
+|-- include/blackhole_ds/
+|   |-- units.hpp                   Strong-typed physical quantities
+|   |-- core/ metrics/ data/        Kernel headers
+|-- knowledge/
+|   |-- brains/                     Reasoning-lens XML profiles + seeds
+|   `-- papers/                     Source seeds + JSONL RAG index
+|-- schemas/                        brain_soul.xsd, source_card.json
 |-- scripts/
-|   |-- local/
-|   `-- Validate-ResearchOS.py
+|   |-- Validate-ResearchOS.py      Umbrella validation gate
+|   |-- brains/ research/           Corpus generators + validators
+|   |-- dev/                        build/test/audit/Daily-Commit helpers
+|   `-- local/                      Package intake (legacy)
 |-- src/
-|-- tests/
-`-- tools/
+|   |-- cli/main.cpp                CLI entry point
+|   `-- core/ metrics/ integrators/ data/   Future module homes
+|-- tests/smoke_tests.cpp           Analytic + dimensional-safety tests
+`-- tools/blackhole_ds_harness.py   Python reference harness
 ```
-
-`docs/source/` contains source philosophy and audit input material. It is kept
-out of the root so the root stays buildable and easy to review.
 
 ## Build And Test
 
@@ -173,12 +196,21 @@ branch, validates, commits, rebases, and pushes only when `-Push` is supplied.
 
 ## Next Milestones
 
-1. Split the current C++ seed into `core`, `metrics`, and `data` modules.
-2. Add a real analytic test suite for Schwarzschild and Kerr edge cases.
-3. Add CLI flags and machine-readable CSV/JSON output.
-4. Add first E2E test: run executable, emit data, validate schema ingest.
-5. Add curated paper/source cards under `docs/research/`.
-6. Add A/B harness for integrator candidate comparison.
-7. Add visual prototype after the physics/data contracts are stable.
+The visual simulation is the destination; these are the steps in order.
+
+1. First geodesic integrator (null geodesics in Schwarzschild, RK45 with
+   error control), validated against the analytic photon sphere.
+2. Truth-tier column in `data/schema.sql` plus matching exporter and
+   harness updates, so exact values and approximations can never share a
+   table unlabeled.
+3. E2E test: run executable, emit data, validate schema ingest round-trip.
+4. A/B harness for integrator candidate comparison (error, runtime,
+   stability).
+5. Kerr geodesics + first lensed-image computation on CPU.
+6. GPU port of the ray marcher (CUDA, RTX 5070 Ti class) - the first
+   visual prototype: gravitationally lensed accretion-disk render with
+   honest tier labeling (visualization_metaphor for color mapping,
+   analytic/numerical tiers for the geometry underneath).
+7. First tsotchke integration (libirrep) per ADR-0005.
 
 This repo is now the place where that work happens.

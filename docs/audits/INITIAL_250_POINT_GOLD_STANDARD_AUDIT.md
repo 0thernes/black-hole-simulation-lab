@@ -1,3 +1,12 @@
+> **HISTORICAL DOCUMENT (note added 2026-06-12).** This audit predates the
+> current repository and describes a planned state, not reality: it
+> references a 32-agent coordination model, "Ralph Wiggum daemons", and
+> file contents and directories that do not exist in this tree. It is
+> retained as project history. The canonical, evidence-based audit is
+> `docs/audits/AUDIT-2026-06-12-FULL-REPO-REVIEW.md` (67 verified
+> findings against commit 6e7cff1). Do not treat claims below as
+> statements about the current repository.
+
 # ?? BlackHoleDS — Gold Standard Hyper-Strict 250-Point Technical Inspection & Audit
 ## Target: Visual Black Hole Simulation & Data Science Platform (C++ Primary + SQL/DAX/Power BI/Excel + Quantum Cosmology + Graph/Type/Chaos Theory)
 

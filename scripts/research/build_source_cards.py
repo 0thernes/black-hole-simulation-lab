@@ -9,7 +9,6 @@ per source under `docs/research/source_cards/<slug>.md`, plus
 
 from __future__ import annotations
 
-import datetime as dt
 import json
 import sys
 from pathlib import Path
@@ -44,7 +43,8 @@ def format_identifier(ident: dict[str, Any] | None) -> str:
     return "\n".join(parts)
 
 
-def render_card(source: dict[str, Any], today: str) -> str:
+def render_card(source: dict[str, Any], default_created: str,
+                default_updated: str) -> str:
     authors = source.get("authors", [])
     authors_str = ", ".join(authors) if authors else "Unknown"
     ident = format_identifier(source.get("identifier"))
@@ -108,12 +108,15 @@ def render_card(source: dict[str, Any], today: str) -> str:
         lines.append(source["notes"])
         lines.append("")
 
+    # Dates come from the seed file (per-source metadata, falling back to
+    # the seed's top-level dates) - never from the wall clock, so
+    # regeneration is deterministic and the CI drift gate can work.
     meta = source.get("metadata") or {}
     lines.append("## Metadata")
     lines.append("")
     lines.append(f"- Card version: {meta.get('card_version', '1.0.0')}")
-    lines.append(f"- Created: {meta.get('created', today)}")
-    lines.append(f"- Updated: {meta.get('updated', today)}")
+    lines.append(f"- Created: {meta.get('created', default_created)}")
+    lines.append(f"- Updated: {meta.get('updated', default_updated)}")
     lines.append(
         f"- Author: {meta.get('author', 'blackhole_ds-seed-corpus')}"
     )
@@ -131,7 +134,10 @@ def main() -> int:
     if not sources:
         fail("no sources in seed file")
 
-    today = dt.date.today().isoformat()
+    created = seed.get("created")
+    updated = seed.get("updated")
+    if not created or not updated:
+        fail("seed file must declare top-level 'created' and 'updated' dates")
 
     CARDS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -139,7 +145,7 @@ def main() -> int:
     for src in sources:
         slug = src["slug"]
         out_path = CARDS_DIR / f"{slug}.md"
-        out_path.write_text(render_card(src, today), encoding="utf-8")
+        out_path.write_text(render_card(src, created, updated), encoding="utf-8")
         rendered.append(
             {
                 "slug": slug,

@@ -10,7 +10,6 @@ The XML conforms to `schemas/brain_soul.xsd`.
 
 from __future__ import annotations
 
-import datetime as dt
 import json
 import sys
 from pathlib import Path
@@ -44,7 +43,7 @@ def xml_text(s: str) -> str:
     return escape(s, {'"': "&quot;"})
 
 
-def render_profile(p: dict[str, Any], today: str) -> str:
+def render_profile(p: dict[str, Any], created: str, updated: str) -> str:
     cat = p["category"]
     if cat not in CATEGORY_DIRS:
         fail(f"unknown category {cat!r} for {p.get('slug', '?')}")
@@ -150,11 +149,12 @@ def render_profile(p: dict[str, Any], today: str) -> str:
         )
     parts.append("  </how_to_apply>")
 
-    # metadata
+    # metadata - dates come from the seed file, never from the wall
+    # clock, so regeneration is deterministic and provenance is honest.
     parts.append("  <metadata>")
     parts.append("    <profile_version>1.0.0</profile_version>")
-    parts.append(f"    <created>{today}</created>")
-    parts.append(f"    <updated>{today}</updated>")
+    parts.append(f"    <created>{created}</created>")
+    parts.append(f"    <updated>{updated}</updated>")
     parts.append("    <author>blackhole_ds-seed-roster</author>")
     parts.append("    <confidence>seed</confidence>")
     parts.append("  </metadata>")
@@ -172,7 +172,12 @@ def main() -> int:
     if not profiles:
         fail("no profiles in seed file")
 
-    today = dt.date.today().isoformat()
+    # Deterministic dates: regeneration must be byte-identical for the
+    # same seed file. The CI drift gate depends on this.
+    created = seed.get("created")
+    updated = seed.get("updated")
+    if not created or not updated:
+        fail("seed file must declare top-level 'created' and 'updated' dates")
 
     counts: dict[str, int] = {}
     manifest_entries: list[dict[str, str]] = []
@@ -186,7 +191,7 @@ def main() -> int:
         out_dir = BRAINS / dir_name
         out_dir.mkdir(parents=True, exist_ok=True)
         out_path = out_dir / f"{p['slug']}.xml"
-        out_path.write_text(render_profile(p, today), encoding="utf-8")
+        out_path.write_text(render_profile(p, created, updated), encoding="utf-8")
 
         counts[cat] = counts.get(cat, 0) + 1
         manifest_entries.append(
@@ -201,7 +206,7 @@ def main() -> int:
     # MANIFEST.json
     manifest = {
         "schema_version": seed["schema_version"],
-        "generated": today,
+        "generated": updated,
         "total": len(manifest_entries),
         "counts_by_category": counts,
         "profiles": sorted(manifest_entries, key=lambda x: x["slug"]),

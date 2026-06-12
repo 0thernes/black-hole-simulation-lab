@@ -60,22 +60,43 @@ except ImportError:
 # =============================================================================
 
 def photon_sphere_rg(spin_a_over_M: float) -> float:
-    """Approximate photon sphere for Kerr (exact for a=0 -> 3.0 rg)."""
-    a = abs(spin_a_over_M)
-    return 3.0 + 0.12 * a - 0.04 * a*a   # high-fidelity approximation; full formula in theory/
+    """Exact Kerr equatorial photon-orbit radius (prograde convention).
+
+    r_ph = 2 * (1 + cos((2/3) * arccos(-a))) in units of GM/c^2.
+    Negative a means retrograde. a=0 gives exactly 3.0 (Schwarzschild).
+    Must match include/blackhole_ds/metrics/kerr.hpp bit-for-bit.
+    Source: Bardeen, Press, Teukolsky 1972. Tier: analytic_classical.
+    """
+    a = max(-0.999, min(0.999, spin_a_over_M))
+    return 2.0 * (1.0 + math.cos((2.0 / 3.0) * math.acos(-a)))
 
 def isco_rg(spin_a_over_M: float) -> float:
-    """ISCO for Kerr (Bardeen 1972 / Chandrasekhar). a=0 -> 6.0 rg."""
-    a = spin_a_over_M
+    """Exact prograde Kerr ISCO (Bardeen, Press, Teukolsky 1972).
+
+    a=0 gives exactly 6.0; a->1 prograde tends to 1.0.
+    Must match include/blackhole_ds/metrics/kerr.hpp.
+    Tier: analytic_classical.
+    """
+    a = max(-0.999, min(0.999, spin_a_over_M))
     z1 = 1 + (1 - a*a)**(1/3) * ((1 + a)**(1/3) + (1 - a)**(1/3))
     z2 = math.sqrt(3 * a*a + z1*z1)
-    r_isco = 3 + z2 - math.copysign(math.sqrt((3 - z1) * (3 + z1 + 2*z2)), a)
-    return max(1.0, r_isco)   # prograde ISCO can be < 1 rg for near-extremal
+    return 3 + z2 - math.copysign(math.sqrt((3 - z1) * (3 + z1 + 2*z2)), a)
 
 def shadow_diameter_rg(spin_a_over_M: float) -> float:
-    """~5.196 rg for Schwarzschild. Increases slightly with spin (EHT-relevant)."""
-    a = abs(spin_a_over_M)
-    return 5.196 + 0.142 * a*a - 0.031 * a*a*a
+    """Schwarzschild shadow DIAMETER: 2*sqrt(27) ~ 10.392 GM/c^2 (exact).
+
+    Terminology guard: b_crit = sqrt(27) M ~ 5.196 M is the shadow RADIUS.
+    A previous version of this function returned ~5.196 labeled as the
+    diameter (factor-of-2 error) with an invented spin polynomial whose
+    sign was also wrong (the Kerr mean shadow shrinks slightly with spin,
+    it does not grow). Spin dependence is a few-percent, inclination-
+    dependent effect that belongs to a real ray tracer; it is intentionally
+    omitted here.
+    Tier: analytic_classical for a=0; for a != 0 treat as
+    pedagogical_simplification (spin dependence omitted).
+    """
+    _ = spin_a_over_M  # spin dependence intentionally omitted; see docstring
+    return 2.0 * math.sqrt(27.0)
 
 def lyapunov_estimate(spin_a_over_M: float, r_start: float, rng=None) -> float:
     """Crude but useful proxy for largest Lyapunov exponent near the photon sphere."""

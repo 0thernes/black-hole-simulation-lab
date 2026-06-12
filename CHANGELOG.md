@@ -3,6 +3,50 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-06-12 (Remediation: fixes 1-5 from the full audit)
+
+20 audit findings closed, including all 3 criticals. North star reaffirmed:
+a visual, GPU-accelerated black hole simulation runnable on RTX-class
+consumer hardware.
+
+- **Fix 1 - CI green:** `units.hpp` validators no longer call std-math in
+  constant expressions (hand-rolled abs, precomputed sqrt(27) literal) -
+  MSVC-clean per the C++20 standard. Added the missing binary
+  `operator+`/`-` and scalar `*`/`/` for Quantity (same-tag only), making
+  the dimensional-safety claim real; removed the dimensionally broken
+  `square()`/`sqrt(Length)` helpers. Compile-time `Addable` concept tests
+  prove Length+Length compiles and Length+Time does not.
+- **Fix 2 - shadow physics:** corrected the radius/diameter factor-of-2:
+  the validator now checks the true Schwarzschild shadow DIAMETER
+  2*sqrt(27) M ~ 10.392 M and explicitly rejects the radius (5.196 M)
+  passed off as a diameter. Harness `photon_sphere_rg`/`isco_rg` replaced
+  with the exact Bardeen-Press-Teukolsky forms matching `metrics/kerr.hpp`
+  (verified value-for-value); the invented shadow spin polynomial (wrong
+  sign) is gone. CSV export now writes max_digits10 (17 significant
+  digits) so exports round-trip at the project's 1e-12 validation level.
+- **Fix 3 - license:** ADR-0006 records the truth: the project license is
+  and has been AGPL-3.0. ADR-0004 marked superseded with a process-failure
+  note (it was written from a chat description instead of the actual
+  file). HIERARCHY, TSOTCHKE_ECOSYSTEM, and ESHKOL_INTEGRATION corrected.
+- **Fix 4 - determinism:** corpus generators read created/updated dates
+  from the seed JSON instead of the wall clock; consecutive regenerations
+  are byte-identical (verified). All 20 sources gained explicit metadata
+  blocks. `audit.ps1` now regenerates BEFORE validating. CI gained a
+  corpus drift gate (`git diff --exit-code` after regeneration).
+- **Fix 5 - gates that gate:** `Validate-ResearchOS.py` REQUIRED_FILES
+  now covers all iteration 2-8 artifacts (57 files). `brain_soul.xsd`
+  year type changed from `xs:gYear` to a YearOrPeriod pattern that
+  legitimately admits "1960s"/"1900-1930s"-style scholarly periods;
+  `validate_brains.py` mirrors the pattern, scans for orphan XMLs, and
+  runs full lxml XSD validation when available (CI installs lxml).
+  `validate_source_cards.py` enforces `schemas/source_card.json` via
+  jsonschema (CI installs it) - and immediately caught a real bug: the
+  schema's year minimum (1900) rejected Gauss 1828; widened to 1600.
+  README rewritten: GPU-visual north star, current layout tree, honest
+  implemented/not-implemented lists, milestone ladder ending at the CUDA
+  ray-marched visual prototype. INITIAL_250 audit doc marked historical.
+- Audit document updated: 20 findings flipped to FIXED, 47 remain OPEN.
+
 ## 2026-06-12 (Full repository audit)
 
 - `docs/audits/AUDIT-2026-06-12-FULL-REPO-REVIEW.md`: multi-agent audit of

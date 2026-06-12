@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <iomanip>
+#include <limits>
 #include <ostream>
 #include <string_view>
 
@@ -15,6 +17,10 @@ namespace blackhole_ds::data {
 
 class CsvWriter {
 public:
+    // Saves and restores the caller's stream formatting; rows are written
+    // at max_digits10 (17 significant digits) so exported values
+    // round-trip bit-exactly. The project validates analytics to 1e-12;
+    // the default 6-digit ostream precision would silently destroy that.
     explicit CsvWriter(std::ostream& out) : out_(out) {}
 
     void write_header() {
@@ -26,11 +32,16 @@ public:
                    double spin_a_over_M,
                    std::string_view quantity,
                    double value_si_meters) {
+        const auto saved_precision = out_.precision();
+        const auto saved_flags = out_.flags();
+        out_ << std::setprecision(std::numeric_limits<double>::max_digits10);
         out_ << core::to_string(label) << ','
              << mass_solar << ','
              << spin_a_over_M << ','
              << quantity << ','
              << value_si_meters << '\n';
+        out_.precision(saved_precision);
+        out_.flags(saved_flags);
     }
 
 private:

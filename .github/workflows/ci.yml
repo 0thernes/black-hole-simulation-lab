@@ -20,17 +20,27 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Validate Research OS
-        run: python scripts/Validate-ResearchOS.py
+      - name: Install validation dependencies
+        run: pip install lxml jsonschema
 
       - name: Rebuild brain corpus
         run: python scripts/brains/build_brains.py
 
-      - name: Validate brain corpus
-        run: python scripts/brains/validate_brains.py
-
       - name: Rebuild source-card corpus
         run: python scripts/research/build_source_cards.py
+
+      - name: Corpus drift gate
+        # Generators are deterministic (dates come from the seed JSON), so
+        # regeneration must be byte-identical to the committed artifacts.
+        # A diff here means someone edited generated files by hand or
+        # committed a seed change without regenerating - both are errors.
+        run: git diff --exit-code
+
+      - name: Validate Research OS
+        run: python scripts/Validate-ResearchOS.py
+
+      - name: Validate brain corpus
+        run: python scripts/brains/validate_brains.py
 
       - name: Validate source-card corpus
         run: python scripts/research/validate_source_cards.py

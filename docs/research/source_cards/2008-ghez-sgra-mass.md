@@ -30,7 +30,7 @@ Measured the mass of Sgr A* to approximately 4.1 x 10^6 solar masses via trackin
 ## Metadata
 
 - Card version: 1.0.0
-- Created: 2026-06-10
-- Updated: 2026-06-10
+- Created: 2026-05-26
+- Updated: 2026-06-12
 - Author: blackhole_ds-seed-corpus
 - Confidence: seed

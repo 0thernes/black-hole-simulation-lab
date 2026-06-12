@@ -12,23 +12,67 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_FILES = [
+    # Root governance
     "README.md",
     "CMakeLists.txt",
     "AUDIT-250-POINT-GOLD-STANDARD.md",
     "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CODEOWNERS",
+    "LICENSE",
+    # Architecture and process docs
     "docs/architecture/ARCHITECTURE.md",
+    "docs/architecture/HIERARCHY.md",
+    "docs/architecture/ERD.md",
+    "docs/architecture/SYSTEM_DIAGRAM.md",
+    "docs/architecture/diagrams/erd.mmd",
+    "docs/architecture/diagrams/system_pipeline.mmd",
     "docs/audits/INITIAL_250_POINT_GOLD_STANDARD_AUDIT.md",
+    "docs/log/DAILY_LOG.md",
+    "docs/log/DECISIONS.md",
     "docs/operations/DIRECT_LOCAL_GITHUB_WORKFLOW.md",
     "docs/planning/DEVELOPMENT_GAMEPLAN.md",
     "docs/process/REPO_WORKFLOW.md",
+    "docs/process/DAILY_WORKFLOW.md",
     "docs/reports/PROJECT_LOG.md",
     "docs/research/RESEARCH_PROGRAM.md",
     "docs/testing/TEST_STRATEGY.md",
+    # Vision layer
+    "docs/vision/VISION.md",
+    "docs/vision/MISSION.md",
+    "docs/vision/SCIENTIFIC_INTEGRITY_CHARTER.md",
+    # Integrations
+    "docs/integrations/TSOTCHKE_ECOSYSTEM.md",
+    "docs/integrations/ESHKOL_INTEGRATION.md",
+    "external/README.md",
+    # C++ kernel
     "include/blackhole_ds/units.hpp",
+    "include/blackhole_ds/core/constants.hpp",
+    "include/blackhole_ds/core/truth_label.hpp",
+    "include/blackhole_ds/metrics/schwarzschild.hpp",
+    "include/blackhole_ds/metrics/kerr.hpp",
+    "include/blackhole_ds/data/csv_writer.hpp",
     "src/BlackHoleDS.cpp",
+    "src/cli/main.cpp",
     "tests/smoke_tests.cpp",
+    # Data and tooling
     "tools/blackhole_ds_harness.py",
     "data/schema.sql",
+    # Knowledge corpus
+    "schemas/brain_soul.xsd",
+    "schemas/source_card.json",
+    "knowledge/brains/seed_profiles.json",
+    "knowledge/papers/seed_sources.json",
+    "scripts/brains/build_brains.py",
+    "scripts/brains/validate_brains.py",
+    "scripts/research/build_source_cards.py",
+    "scripts/research/validate_source_cards.py",
+    # Dev workflow
+    "scripts/dev/build.ps1",
+    "scripts/dev/test.ps1",
+    "scripts/dev/audit.ps1",
+    "scripts/dev/Daily-Commit.ps1",
 ]
 
 FORBIDDEN_TRACKED_PATTERNS = [

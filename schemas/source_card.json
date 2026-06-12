@@ -23,7 +23,7 @@
       "minItems": 1,
       "items": {"type": "string"}
     },
-    "year": {"type": "integer", "minimum": 1900, "maximum": 2100},
+    "year": {"type": "integer", "minimum": 1600, "maximum": 2100},
     "venue": {"type": "string", "description": "Journal, conference, publisher, or archive."},
     "identifier": {
       "type": "object",

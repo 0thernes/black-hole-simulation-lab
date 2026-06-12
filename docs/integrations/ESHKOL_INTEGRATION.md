@@ -102,7 +102,8 @@ of the same metrics. Eshkol regenerates them when enabled.
   Homebrew on macOS. Windows installation requires either a manual build
   or WSL. Document the install path explicitly before Stage 1.
 - **License compatibility.** Eshkol's license must be reviewed against
-  MIT. Record under `docs/legal/`.
+  AGPL-3.0 (this project's license, see ADR-0006). Record under
+  `docs/legal/`.
 - **Maintenance velocity drift.** If Eshkol releases break our transpile
   contract, Stage 4 forces a rebuild. Pin Eshkol by commit SHA in the
   ADR.

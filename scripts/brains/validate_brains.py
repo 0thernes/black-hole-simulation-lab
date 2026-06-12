@@ -4,14 +4,19 @@
 Checks:
   1. Every profile in MANIFEST.json exists on disk.
   2. Every XML file is well-formed and parses cleanly.
-  3. Every XML file references the expected XSD schema location.
-  4. The slug attribute matches the file name stem.
-  5. The category in <identity> matches the directory.
-  6. INDEX.md profile count matches the on-disk count.
+  3. The slug attribute matches the file name stem.
+  4. The category in <identity> matches the directory.
+  5. Contribution <year> values match the schema's YearOrPeriod pattern
+     (mirrored here so the gate works without lxml).
+  6. No orphan XML files on disk that are missing from the manifest.
+  7. INDEX.md profile count matches the on-disk count.
+  8. Full XSD validation against schemas/brain_soul.xsd when lxml is
+     installed (CI installs it; locally it is optional).
 
-This validator intentionally does not require lxml. It uses the stdlib
-xml.etree.ElementTree for structural checks. Full XSD validation can be
-added later with lxml if needed.
+The 2026-06-12 audit flagged the previous version as a gate that does not
+gate: it never checked XSD type validity, so xs:gYear violations shipped
+silently. The pattern mirror plus opportunistic lxml validation closes
+that hole.
 """
 
 from __future__ import annotations
@@ -22,10 +27,22 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+try:
+    from lxml import etree as lxml_etree
+    LXML_AVAILABLE = True
+except ImportError:
+    lxml_etree = None
+    LXML_AVAILABLE = False
+
 ROOT = Path(__file__).resolve().parents[2]
 BRAINS = ROOT / "knowledge" / "brains"
 MANIFEST = BRAINS / "MANIFEST.json"
 INDEX_MD = BRAINS / "INDEX.md"
+XSD_PATH = ROOT / "schemas" / "brain_soul.xsd"
+
+# Mirrors the YearOrPeriod simpleType in schemas/brain_soul.xsd. Keep the
+# two in sync; the XSD is authoritative.
+YEAR_PATTERN = re.compile(r"^[0-9]{4}s?(-([0-9]{4}s?)?)?$")
 
 CATEGORY_DIRS = {
     "mathematician": "mathematicians",
@@ -75,6 +92,15 @@ def check_one(xml_path: Path, expected_slug: str, expected_cat: str) -> None:
     contributions = root.find("contributions")
     if contributions is None or not list(contributions):
         fail(f"{xml_path}: missing or empty <contributions>")
+    for contribution in contributions.findall("contribution"):
+        year = contribution.find("year")
+        if year is not None:
+            year_text = (year.text or "").strip()
+            if not YEAR_PATTERN.match(year_text):
+                fail(
+                    f"{xml_path}: contribution year {year_text!r} does not "
+                    "match the schema YearOrPeriod pattern"
+                )
 
     reasoning = root.find("reasoning_lens")
     if reasoning is None:
@@ -141,6 +167,29 @@ def main() -> int:
             )
 
         check_one(full_path, slug, cat)
+
+    # Orphan scan: every XML on disk must be in the manifest.
+    manifest_paths = {str((ROOT / e["path"]).resolve()) for e in profiles}
+    for cat_dir in CATEGORY_DIRS.values():
+        for xml_file in sorted((BRAINS / cat_dir).glob("*.xml")):
+            if str(xml_file.resolve()) not in manifest_paths:
+                fail(
+                    f"orphan profile not in manifest: "
+                    f"{xml_file.relative_to(ROOT)}"
+                )
+
+    # Full XSD validation when lxml is available (CI always; local optional).
+    if LXML_AVAILABLE:
+        schema = lxml_etree.XMLSchema(lxml_etree.parse(str(XSD_PATH)))
+        for entry in profiles:
+            doc = lxml_etree.parse(str(ROOT / entry["path"]))
+            if not schema.validate(doc):
+                errors = "; ".join(str(e) for e in schema.error_log)
+                fail(f"XSD validation failed for {entry['path']}: {errors}")
+        print(f"validate_brains: XSD validation passed ({len(profiles)} files)")
+    else:
+        print("validate_brains: lxml not installed, XSD validation skipped "
+              "(pattern mirror checks still ran)")
 
     # Index count
     index_text = INDEX_MD.read_text(encoding="utf-8")

@@ -121,19 +121,40 @@ Numbers are assigned in order. Do not renumber.
   - Use a package manager like Conan or vcpkg (deferred: adds another
     moving part. Revisit when there are >= 3 active external integrations).
 
-## ADR-0004: License remains MIT for now; AGPLv3 upload kept as a reference
+## ADR-0006: The project license is AGPL-3.0 (corrects ADR-0004)
+
+- Date: 2026-06-12
+- Status: accepted
+- Context: The 2026-06-12 full repository audit (finding F-011) showed that
+  the root `LICENSE` file has been the GNU Affero General Public License
+  v3.0 since the baseline commit, while ADR-0004 and three docs claimed the
+  project was MIT. ADR-0004 was written from a chat-history description of
+  the repo instead of reading the actual file - a process failure worth
+  recording: decisions must be made against on-disk reality.
+- Decision: The project license is AGPL-3.0, matching the LICENSE file
+  that has been in force since the baseline and matching the original
+  intent of the AGPLv3 upload. All documentation that claimed MIT is
+  corrected. Strong copyleft fits this project: it is an open research
+  lab, and AGPL ensures derived simulation services share their changes.
+- Consequences:
+  - Contributors and downstream users operate under AGPL-3.0 terms.
+  - External integrations must be license-compatible with AGPL-3.0
+    (permissively-licensed upstreams like MIT/BSD/Apache-2.0 remain fine
+    to depend on; the combined work is AGPL).
+  - Any future relicensing requires a new ADR and consent of all
+    copyright holders at that time.
+- Alternatives considered:
+  - Switch the LICENSE file to MIT to make ADR-0004 true retroactively
+    (rejected: the AGPL file was the deliberate original upload, and
+    weakening copyleft silently after publication is poor governance).
+
+## ADR-0004: License remains MIT for now (SUPERSEDED by ADR-0006)
 
 - Date: 2026-05-26
-- Status: accepted
-- Context: An uploaded `LICENSE` file from a prior session contained AGPLv3,
-  while the repo's existing LICENSE is MIT. Switching licenses is a major
-  governance change that affects every contributor and downstream user.
-- Decision: Keep the root `LICENSE` as MIT. Preserve the AGPLv3 upload as a
-  reference under `docs/reference/user-supplied/` if it is added later, with
-  a clear note that it is not the active license. Defer the license question
-  until the project has a meaningful contributor base or a real use case
-  that depends on copyleft semantics.
-- Consequences:
-  - Anyone can use the code under MIT terms today.
-  - A future license change would require an explicit ADR, contributor
-    sign-off, and updates to all source headers.
+- Status: superseded by ADR-0006
+- Note: This ADR recorded a decision about a LICENSE file that did not
+  exist as described. The root LICENSE was already AGPL-3.0 when this was
+  written. Kept for the historical record; see ADR-0006 for the correction
+  and the active decision.
+- Original (incorrect) decision text: keep the root LICENSE as MIT and
+  defer the license question.

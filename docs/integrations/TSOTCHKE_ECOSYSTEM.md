@@ -90,7 +90,9 @@ template, then merge with **no** real fetches.
 
 ## License compatibility
 
-The project license is MIT (see [ADR-0004](../log/DECISIONS.md)). Before
-any tsotchke integration lands, the upstream license must be reviewed and
-recorded under `docs/legal/`. Each ADR must include the upstream license
-and any compatibility caveats.
+The project license is AGPL-3.0 (see [ADR-0006](../log/DECISIONS.md)).
+Before any tsotchke integration lands, the upstream license must be
+reviewed for AGPL-3.0 compatibility and recorded under `docs/legal/`.
+Permissive upstream licenses (MIT/BSD/Apache-2.0) are compatible as
+dependencies; the combined work remains AGPL. Each integration ADR must
+include the upstream license and any compatibility caveats.

@@ -7,6 +7,10 @@ Checks:
   3. Truth tiers are from the allowed enumeration.
   4. INDEX.md count matches the on-disk count.
   5. Slugs are unique and URL-safe.
+  6. Every seed source validates against schemas/source_card.json when
+     the jsonschema package is installed (CI installs it; locally it is
+     optional). The 2026-06-12 audit flagged the JSON Schema as
+     decorative - enforced by nothing. This closes that hole.
 """
 
 from __future__ import annotations
@@ -16,11 +20,19 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    import jsonschema
+    JSONSCHEMA_AVAILABLE = True
+except ImportError:
+    jsonschema = None
+    JSONSCHEMA_AVAILABLE = False
+
 ROOT = Path(__file__).resolve().parents[2]
 SEED = ROOT / "knowledge" / "papers" / "seed_sources.json"
 CARDS_DIR = ROOT / "docs" / "research" / "source_cards"
 INDEX_MD = CARDS_DIR / "INDEX.md"
 INDEX_JSONL = ROOT / "knowledge" / "papers" / "INDEX.jsonl"
+CARD_SCHEMA = ROOT / "schemas" / "source_card.json"
 
 ALLOWED_TIERS = {
     "analytic_classical",
@@ -51,6 +63,24 @@ def main() -> int:
     sources = seed.get("sources", [])
     if not sources:
         fail("no sources in seed file")
+
+    # Enforce the JSON Schema when the validator library is present.
+    if JSONSCHEMA_AVAILABLE:
+        schema = json.loads(CARD_SCHEMA.read_text(encoding="utf-8"))
+        validator = jsonschema.Draft202012Validator(schema)
+        for src in sources:
+            errors = sorted(validator.iter_errors(src), key=str)
+            if errors:
+                msgs = "; ".join(
+                    f"{'/'.join(str(p) for p in e.path) or '<root>'}: {e.message}"
+                    for e in errors[:5]
+                )
+                fail(f"{src.get('slug', '?')}: JSON Schema violations: {msgs}")
+        print(f"validate_source_cards: JSON Schema validation passed "
+              f"({len(sources)} sources)")
+    else:
+        print("validate_source_cards: jsonschema not installed, schema "
+              "validation skipped (structural checks still ran)")
 
     slugs: set[str] = set()
     for src in sources:

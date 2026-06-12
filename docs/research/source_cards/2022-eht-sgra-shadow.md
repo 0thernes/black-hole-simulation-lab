@@ -32,7 +32,7 @@ First horizon-scale image of Sgr A*, the supermassive black hole at the center o
 ## Metadata
 
 - Card version: 1.0.0
-- Created: 2026-06-10
-- Updated: 2026-06-10
+- Created: 2026-05-26
+- Updated: 2026-06-12
 - Author: blackhole_ds-seed-corpus
 - Confidence: seed

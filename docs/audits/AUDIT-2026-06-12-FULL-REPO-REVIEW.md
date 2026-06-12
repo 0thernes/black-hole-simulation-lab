@@ -47,7 +47,7 @@ Status column is for tracking remediation; all start OPEN.
 - **Severity:** critical
 - **Dimension:** Git hygiene & CI
 - **Location:** `include/blackhole_ds/units.hpp (line ~188)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 gh run list shows all 9 CI runs on main since the baseline commit (2026-05-26) concluded 'failure', including the latest (Iteration 8, run 27293174242). The latest run fails at 'CMake build' with MSVC error C3615 at units.hpp lines 188, 195, 203: photon_sphere_radius_valid, isco_radius_valid, shadow_diameter_valid are declared constexpr but call std::abs, which is not constexpr until C++23 (and the project pins C++20). The neighboring 'constexpr Length sqrt' (line 217) calling std::sqrt has the same conformance problem (constexpr only in C++26). It compiles locally only because the entire local toolchain (scripts/dev/build.ps1 forces MinGW g++; .vscode/tasks.json uses g++) accepts these as a GCC extension, while CI on windows-latest uses the Visual Studio generator. So the repo's headline 'analytic truth anchors' have never compiled on the CI compiler, and CONTRIBUTING.md's 'validation gates must pass' has been red on origin/main for the project's entire history. Iterations 1-7 runs also all failed at their 'Build' step, so this is not a one-off regression.
 
@@ -60,7 +60,7 @@ gh run list shows all 9 CI runs on main since the baseline commit (2026-05-26) c
 - **Severity:** critical
 - **Dimension:** Physics & mathematics
 - **Location:** `include/blackhole_ds/units.hpp (line ~203)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 The Schwarzschild photon-capture impact parameter is b_crit = 3*sqrt(3) M = 5.196 M. That is the shadow RADIUS in units of r_g = GM/c^2; the DIAMETER is 2*sqrt(27) M = 10.392 M (~10.4 GM/c^2, the value EHT papers quote). The repo defines r_g = GM/c^2 (units.hpp:140), so every quantity named 'shadow_diameter' carrying 5.196 is half the true diameter. The comment '~5.2 rg' (units.hpp:12, :202) conflates '~5.2 Schwarzschild radii' (correct, since r_s = 2M) with '5.2 r_g' (wrong by 2x). The error is propagated everywhere: validators::shadow_diameter_valid (units.hpp:203-209), shadow_diameter_rg() in tools/blackhole_ds_harness.py:75-78, the schema column comment data/schema.sql:75 ('~5.2 for a=0, the famous number for EHT comparisons'), and tests/smoke_tests.cpp:72 enshrines Length{5.196} as a valid 'diameter' for M=1 — so the validation gate actively certifies the wrong value.
 
@@ -73,7 +73,7 @@ The Schwarzschild photon-capture impact parameter is b_crit = 3*sqrt(3) M = 5.19
 - **Severity:** critical
 - **Dimension:** Physics & mathematics
 - **Location:** `tools/blackhole_ds_harness.py (line ~62)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 photon_sphere_rg() returns 3.0 + 0.12*|a| - 0.04*a^2. The exact Kerr equatorial photon orbit (Bardeen-Press-Teukolsky 1972, implemented correctly in include/blackhole_ds/metrics/kerr.hpp:27-30) gives: a=0.5 exact 2.347 vs harness 3.050; a=0.9 exact prograde 1.558 vs harness 3.076; a=0.998 exact 1.074 vs harness 3.080; a=-0.9 exact retrograde 3.910 vs harness 3.076. The harness formula has the wrong sign of trend for prograde (increases with spin instead of decreasing), destroys the prograde/retrograde asymmetry via abs(a), and matches neither branch. The file header (lines 14-16) claims the harness is 'the reference implementation for the C++ exporter (same numbers...). Any divergence is a 250-point audit failure' — it diverges from the repo's own exact C++ formula by a factor of ~2 at high spin, and these values are exported into the runs table and charts with no tier label.
 
@@ -88,7 +88,7 @@ photon_sphere_rg() returns 3.0 + 0.12*|a| - 0.04*a^2. The exact Kerr equatorial 
 - **Severity:** major
 - **Dimension:** C++ code
 - **Location:** `include/blackhole_ds/data/csv_writer.hpp (line ~29)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 write_row streams `mass_solar`, `spin_a_over_M`, and `value_si_meters` straight to the ostream with no precision control (lines 29-33). Default std::ostream precision is 6 significant digits. For mass_solar=1.0, schwarzschild_radius_m = 2*1476.625038 = 2953.250076 m is exported as '2953.25', dropping ~7 digits. The same writer is the project's only data-export path and the headers claim 1e-12 analytic tolerance (units.hpp:191, validators) - the CSV cannot represent values to anywhere near that. Spin values like a=-0.998+1.996*i/9 also round. This makes round-trip/regression comparison against the 1e-12 validators impossible from the exported file.
 
@@ -114,7 +114,7 @@ units.hpp line 5 states 'NO RAW DOUBLES IN PHYSICS CODE. Every quantity has a ty
 - **Severity:** major
 - **Dimension:** C++ code
 - **Location:** `include/blackhole_ds/units.hpp (line ~63)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 The header's banner (line 5) and Usage Contract (lines 236-240) advertise that `auto nonsense = r + t;` is a COMPILE ERROR 'exactly what we want', implying that same-dimension addition (`r1 + r2`) DOES work. But `Quantity` defines only compound `operator+=` / `operator-=` (lines 63-78) and a unary `operator-` (line 80). There is no free or member binary `operator+`/`operator-` anywhere in the header (confirmed by grep). Consequence: `r + t` does not compile, but neither does `r1 + r2` for two same-dimension Lengths, nor `e1 - e2` for Energies. The 'mixing dimensions is the only thing that fails' story is false: ALL binary +/- fails. Any future integrator that writes `pos = pos + vel*dt` using these types will not compile, and the documented example is aspirational, not real. The type system under-delivers (no usable addition) while the comments over-claim (selective compile error).
 
@@ -127,7 +127,7 @@ The header's banner (line 5) and Usage Contract (lines 236-240) advertise that `
 - **Severity:** major
 - **Dimension:** Schemas & data artifacts
 - **Location:** `knowledge/brains/physicists/kip-thorne.xml (line ~17)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 The brain XSD types contribution/year as xs:gYear (schemas/brain_soul.xsd line 72), and every generated XML declares xsi:noNamespaceSchemaLocation pointing at it. But seven contributions carry non-gYear strings that a real XSD validator (lxml/xmllint) would reject: kip-thorne.xml:17 '1980s-', roger-penrose.xml:30 '1960s', reinhard-genzel.xml:16 '1990s-', elie-cartan.xml:17 '1900-1930s', andrea-ghez.xml:16 '1998-', shep-doeleman.xml:16 '2009-', henri-poincare.xml:29 '1880s'. I confirmed all seven fail the xs:gYear lexical rule. The shipped validator scripts/brains/validate_brains.py uses stdlib ElementTree (structure-only, no XSD) and explicitly defers full XSD validation ('can be added later with lxml'), so these files pass CI today but the moment anyone runs xmllint/lxml against the advertised schema, validation breaks. The XML literally claims conformance to a schema it violates. Source values originate in knowledge/brains/seed_profiles.json (e.g. lines 276, 148, 731, 573, 697, 767, 497).
 
@@ -154,7 +154,7 @@ This is a genuine "gate that does not gate": the XML literally advertises confor
 - **Severity:** major
 - **Dimension:** Schemas & data artifacts
 - **Location:** `schemas/source_card.json (line ~7)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 schemas/source_card.json is a JSON Schema whose 'required' list (line 7) includes 'metadata', and metadata in turn requires card_version/created/updated/author (lines 91-99). Nothing validates against it: scripts/research/validate_source_cards.py does its own ad-hoc string checks (## Claims / ## Metadata present, tier in enum, slug regex) and never loads source_card.json. I confirmed by enumeration that ALL 21 entries in knowledge/papers/seed_sources.json omit the 'metadata' object entirely, so if the JSON Schema were ever wired in (e.g. via jsonschema), every source would fail validation. CHANGELOG.md:90 advertises it as 'JSON Schema for the source-card system', implying enforcement that does not exist. This is a gate that does not gate, and the schema and data have already drifted out of agreement.
 
@@ -167,7 +167,7 @@ schemas/source_card.json is a JSON Schema whose 'required' list (line 7) include
 - **Severity:** major
 - **Dimension:** Documentation
 - **Location:** `README.md (line ~35)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 Three README sections are stale against the actual tree at HEAD (Iteration 8). (1) The 'Repository Layout' tree (lines 35-62) omits knowledge/ (brains + papers), schemas/, external/, assets/, docs/vision/, docs/integrations/, docs/log/, scripts/dev|brains|research/, and src/cli/ — all added in iterations 2-8 — while implying scripts/ contains only local/ and the validator. (2) 'Implemented now' (lines 16-24) omits the modular C++ kernel (core/metrics/data headers), the CLI with --mass/--spin/--format/--steps flags (verified in src/cli/main.cpp), the truth-tier-aware CSV writer, the 20-profile brain corpus, the 20-card source corpus, and the scripts/dev/ automation; 'Not implemented yet' (line 32) still lists 'Large research corpus/RAG index' without acknowledging that knowledge/papers/INDEX.jsonl (described in CHANGELOG as 'for cheap RAG lookup') and the seed corpus now exist. (3) 'Next Milestones' (lines 174-183): items 1 (module split), 2 (analytic test suite), 3 (CLI flags + CSV), and 5 (source cards) are done per CHANGELOG iterations 5 and 7 and the actual tree, but are still listed as future work. The README is the contributor entrypoint; this makes the repo look both less capable and less maintained than it is. Note Validate-ResearchOS.py only requires the phrase 'next milestones' to exist, so updating content will not break the gate.
 
@@ -190,7 +190,7 @@ Severity: major is appropriate for a docs-dimension audit. This is not a mere pa
 - **Severity:** major
 - **Dimension:** Documentation
 - **Location:** `docs/audits/INITIAL_250_POINT_GOLD_STANDARD_AUDIT.md (line ~71)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 The document self-describes as 'Living Document — Re-executed by Ralph Wiggum Daemons on every significant change' (line 4) and 'the canonical... 250-point ledger' (line 11), but: point 26 (line 71) scores a '12 kB' README containing 'Ralph Wiggum daemons, 32-agent coordination... Terry Davis rigor' — the actual README is 5.8 kB and contains none of this; points 27-31 quote README text ('Make no mistakes. No secrets...') that does not exist in the current README; point 51 (line 95) claims a canonical layout including theory/, exports/, examples/, daemons/ was 'created 2026-05-25' — none of these directories exist; the promised re-audit trigger 'First C++ source commit' (line 139) fired long ago with no re-audit; and no daemons exist anywhere in the repo. It also competes with the root AUDIT-250-POINT-GOLD-STANDARD.md, which calls itself 'the root audit ledger' and uses a different, honest 50-point numbering. The root file does label this one 'historical seed audit material', but nothing inside the document itself says it is superseded, so a reader landing here via CODEOWNERS or schema.sql references is actively misled. Additionally, every status emoji has been corrupted to '??' mojibake, making Elite vs Critical markings unreadable.
 
@@ -203,7 +203,7 @@ The document self-describes as 'Living Document — Re-executed by Ralph Wiggum 
 - **Severity:** major
 - **Dimension:** Documentation
 - **Location:** `docs/log/DECISIONS.md (line ~124)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 The root LICENSE file has been the GNU AGPL-3.0 since the initial commit (bf49792, verified via git log --follow -- LICENSE; file begins 'GNU AFFERO GENERAL PUBLIC LICENSE Version 3'). Yet ADR-0004 (DECISIONS.md:124-139, Status: accepted) claims 'the repo's existing LICENSE is MIT' and decides to 'Keep the root LICENSE as MIT' — a decision that was never true and was never enacted. The false MIT claim is repeated in docs/architecture/HIERARCHY.md:89 ('LICENSE  MIT (see ADR-0004 for rationale)'), docs/integrations/TSOTCHKE_ECOSYSTEM.md:93 ('The project license is MIT (see ADR-0004)'), and docs/integrations/ESHKOL_INTEGRATION.md:104-105 ('Eshkol's license must be reviewed against MIT'). Meanwhile docs/audits/INITIAL_250_POINT_GOLD_STANDARD_AUDIT.md point 33 correctly states 'AGPL-3.0 License Present'. This misleads downstream users about copyleft obligations and gives future license-compatibility reviews (explicitly planned in the integration docs) a wrong baseline. Related paper cut: ADR-0005 appears before ADR-0004 in the file despite 'Numbers are assigned in order', suggesting ADR-0004 was appended without checking the actual LICENSE.
 
@@ -216,7 +216,7 @@ The root LICENSE file has been the GNU AGPL-3.0 since the initial commit (bf4979
 - **Severity:** major
 - **Dimension:** Git hygiene & CI
 - **Location:** `.github/workflows/ci.yml (line ~26)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 Steps 'Rebuild brain corpus' (line 26-27) and 'Rebuild source-card corpus' (line 32-33) overwrite the tracked knowledge/brains/*.xml, MANIFEST.json, INDEX.md, docs/research/source_cards/*.md and knowledge/papers/INDEX.jsonl in the CI workspace, and the subsequent validate steps check the regenerated output, not the committed content. (The committed tree does get one structural pass in step 'Validate Research OS' at line 23, which runs both validators before any rebuild — but those validators only check schema shape, slug/category consistency and counts, never content equality with the seed.) Net effect: a PR can edit a committed brain XML or source card (e.g. change a truth-tier label on a reference while staying schema-valid), or update seed_profiles.json/seed_sources.json without regenerating, and CI passes. There is no `git diff --exit-code` after the rebuild steps, so the rebuild actively masks drift instead of detecting it. For a repo whose charter is 'every published value carries a truth tier', the generated corpus is exactly the artifact that should be tamper-evident.
 
@@ -254,7 +254,7 @@ Severity stays major: this is the textbook "gate that does not gate" — mislead
 - **Severity:** major
 - **Dimension:** Git hygiene & CI
 - **Location:** `scripts/brains/build_brains.py (line ~156)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 build_brains.py unconditionally writes `<created>{today}</created>` and `<updated>{today}</updated>` (lines 156-157) and MANIFEST 'generated': today (line 204); the seed files carry no date metadata at all (grep for "created" in seed_profiles.json and seed_sources.json: 0 matches), so build_source_cards.py's meta.get('created', today) fallback (lines 115-116) always resolves to today too. Consequences: (1) any rebuild on a later day dirties all 20 brain XMLs + MANIFEST + every source card, so the natural `git diff --exit-code` CI gate cannot be added as-is; (2) the <created> field — provenance metadata in a scientific-integrity repo — is rewritten to the rebuild date, so the committed '2026-06-10' creation dates will be silently falsified the next time anyone runs the builder and commits.
 
@@ -292,7 +292,7 @@ ADR-0002 and the charter's cardinal rule ('never let a T6 value sit in the same 
 - **Severity:** major
 - **Dimension:** Physics & mathematics
 - **Location:** `include/blackhole_ds/units.hpp (line ~217)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 The header's contract is 'NO RAW DOUBLES... Adding meters to seconds is a compile error.' But sqrt(Length)->Length (line 217-219) and square(Q) returning Quantity<same tag> (lines 221-225) are dimensionally false: sqrt(m) is m^1/2 and (m)^2 is m^2, yet both come back typed Length, so `r + square(r)` and `r + sqrt(r)` compile cleanly. The layer that ADR-0001 makes mandatory for all physics code silently permits exactly the class of dimensional errors it claims to make impossible — a gate that does not gate. Energy/Mass also lack the c^2 bookkeeping outside geometric units (mass_to_energy is documented G=c=1 only, which is fine, but square/sqrt have no such caveat).
 
@@ -305,7 +305,7 @@ The header's contract is 'NO RAW DOUBLES... Adding meters to seconds is a compil
 - **Severity:** major
 - **Dimension:** Physics & mathematics
 - **Location:** `tools/blackhole_ds_harness.py (line ~76)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 shadow_diameter_rg() = 5.196 + 0.142*a^2 - 0.031*a^3 grows with spin (5.307 at a=1, +2.1%), and the docstring asserts 'Increases slightly with spin (EHT-relevant)'. The literature says the opposite: the angle-averaged Kerr shadow size SHRINKS slightly with spin — for an equatorial observer at a=1 the shadow spans -2M..+7M (mean radius ~4.83 M equivalent, down ~7% from 5.196 M; Bardeen 1973, Takahashi 2004, Johannsen & Psaltis 2010). The same wrong-sign polynomial is hard-coded in units.hpp validators::shadow_diameter_valid (line 206) citing 'Bardeen 1973 / Johannsen 2013' — neither source contains this polynomial. The validator comment also points to 'theory/shadow_diameter.md' for the full formula, but no theory/ directory exists anywhere in the repo, so the only provenance for this T1-adjacent 'validator' is a dead link.
 
@@ -331,7 +331,7 @@ lyapunov_estimate() is an invented function: base 0.015 + 0.085*|a|, a proximity
 - **Severity:** major
 - **Dimension:** PowerShell workflow scripts
 - **Location:** `scripts/brains/build_brains.py (line ~156)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 render_profile unconditionally writes <created>{today}</created> and <updated>{today}</updated> (lines 156-157, today = date.today() at line 175), and the MANIFEST gets "generated": today (line 204). The outputs (knowledge/brains/**/*.xml, MANIFEST.json — currently stamped 2026-06-10) are git-tracked. audit.ps1 regenerates on every run, so every Daily-Commit on a new day rewrites every brain XML and the manifest. Consequences: (a) Daily-Commit's $hasChanges check (line 61) is true even on no-work days, producing commits of pure date noise via git add -A; (b) the <created> provenance field changes on every rebuild, which is a false provenance claim in a repo whose charter is scientific integrity; (c) diffs for real changes are buried in date churn. build_source_cards.py is partially better (meta.get('created', today)) but has the same fallback behavior.
 
@@ -357,7 +357,7 @@ The hook body is a here-string (lines 22-28) whose embedded line endings are wha
 - **Severity:** major
 - **Dimension:** PowerShell workflow scripts
 - **Location:** `scripts/dev/audit.ps1 (line ~19)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 audit.ps1 runs Validate-ResearchOS.py (line 19) — which includes validate_brain_corpus() and validate_source_card_corpus() — and only afterwards regenerates the brain corpus (line 27) and source cards (line 34). The regenerated output is never re-validated. Daily-Commit.ps1 then runs audit.ps1 as step 1 (line 41) and 'git add -A' (line 72), so a bad edit to knowledge/brains/seed_profiles.json produces invalid generated XML that passes the local gate (validators saw the stale pre-regen files), gets committed, and is pushed directly to main. CI proves the correct order: .github/workflows/ci.yml rebuilds each corpus and THEN validates it (lines 26-36), so the breakage surfaces as a red CI run on main after the push — the local gate does not gate.
 
@@ -409,7 +409,7 @@ Invoke-External captures '& $File @Arguments 2>&1' (line 45) with $ErrorActionPr
 - **Severity:** major
 - **Dimension:** Python tooling
 - **Location:** `scripts/Validate-ResearchOS.py (line ~14)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 REQUIRED_FILES (lines 14-32) lists only the original skeleton (README, CMakeLists, audits, architecture, harness, schema.sql). It does NOT require any of the artifacts shipped in later iterations that the project constitution treats as core: docs/vision/SCIENTIFIC_INTEGRITY_CHARTER.md (the truth-tier charter the whole audit is AGAINST), docs/vision/MISSION.md, docs/vision/VISION.md, schemas/brain_soul.xsd, schemas/source_card.json, knowledge/brains/seed_profiles.json, knowledge/papers/seed_sources.json, docs/log/DECISIONS.md (the ADR ledger). The sub-validators only run *if their seed/manifest happen to exist* (validate_brain_corpus/validate_source_card_corpus, lines 135-148) — so if someone deletes the brain seed or the charter, the gate passes green. The gate that is supposed to enforce the constitution does not require the constitution's own documents to exist.
 
@@ -422,7 +422,7 @@ REQUIRED_FILES (lines 14-32) lists only the original skeleton (README, CMakeList
 - **Severity:** major
 - **Dimension:** Python tooling
 - **Location:** `scripts/brains/build_brains.py (line ~175)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 build_brains.py computes `today = dt.date.today().isoformat()` (line 175) and stamps it into every profile's <created>, <updated>, MANIFEST.json 'generated', for all 20 XML files on EVERY run. The seed JSON carries no metadata dates (verified: profile keys have no 'metadata'), so there is no stable source-of-truth date to preserve. build_source_cards.py has the identical issue: render_card falls back to `today` for both Created and Updated (lines 115-116) because seed sources also lack a metadata block. audit.ps1 (lines 24-36) unconditionally re-runs BOTH builders whenever the seed files exist, and Daily-Commit.ps1 then does `git add -A` + commit (lines 72-73). Verified churn: committed artifacts are dated 2026-06-10 while today is 2026-06-12 — running the audit today rewrites all 20 XML + MANIFEST + INDEX.md + 20 source cards + 2 indexes with date-only diffs. Rewriting 'created' is a correctness bug: a creation date must be stable, not move forward every build.
 
@@ -435,7 +435,7 @@ build_brains.py computes `today = dt.date.today().isoformat()` (line 175) and st
 - **Severity:** major
 - **Dimension:** Python tooling
 - **Location:** `scripts/brains/build_brains.py (line ~86)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 schemas/brain_soul.xsd line 72 types contribution <year> as xs:gYear (strict CCYY). build_brains.py line 86 writes `c['year']` verbatim from the seed with no validation. Verified the seed contains non-gYear values: roger-penrose '1960s', kip-thorne '1980s-', henri-poincare '1880s', elie-cartan '1900-1930s', andrea-ghez '1998-', reinhard-genzel '1990s-', shep-doeleman '2009-'. These 7 XML files are NOT valid against their own declared XSD. They pass CI only because validate_brains.py intentionally uses xml.etree (no XSD check) and lxml is not even installed. The xsi:noNamespaceSchemaLocation pointer in every file is therefore a false claim of conformance, and any contributor who later enables real XSD validation gets 7 hard failures.
 
@@ -448,7 +448,7 @@ schemas/brain_soul.xsd line 72 types contribution <year> as xs:gYear (strict CCY
 - **Severity:** major
 - **Dimension:** Python tooling
 - **Location:** `scripts/research/build_source_cards.py (line ~134)`
-- **Status:** OPEN
+- **Status:** FIXED (2026-06-12 remediation commit)
 
 `today = dt.date.today().isoformat()` (line 134) feeds render_card, where Created/Updated fall back to `today` (lines 115-116). Verified the seed sources carry no 'metadata' key, so the fallback always fires and both dates equal the build day. Combined with audit.ps1 regenerating the corpus unconditionally and Daily-Commit's `git add -A`, every audit on a new calendar day rewrites all 20 source cards (committed value 2026-06-10 vs today 2026-06-12). Same reproducibility/commit-pollution problem as build_brains.
 

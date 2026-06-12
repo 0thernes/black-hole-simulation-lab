@@ -13,6 +13,19 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            elementFormDefault="qualified">
 
+  <!--
+    Year-ish values in scholarly contributions are often periods, decades,
+    or open ranges ("1916", "1960s", "1900-1930s", "1980s-", "2009-").
+    xs:gYear would reject those legitimate forms (the 2026-06-12 audit
+    found 7 of 20 generated files violating the old gYear declaration),
+    so we use a constrained token instead.
+  -->
+  <xs:simpleType name="YearOrPeriod">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="[0-9]{4}s?(-([0-9]{4}s?)?)?"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="CategoryEnum">
     <xs:restriction base="xs:string">
       <xs:enumeration value="mathematician"/>
@@ -69,7 +82,7 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="title" type="xs:string"/>
-                    <xs:element name="year" type="xs:gYear" minOccurs="0"/>
+                    <xs:element name="year" type="YearOrPeriod" minOccurs="0"/>
                     <xs:element name="description" type="xs:string"/>
                     <xs:element name="relevance_to_blackhole_ds"
                                 type="xs:string" minOccurs="0"/>

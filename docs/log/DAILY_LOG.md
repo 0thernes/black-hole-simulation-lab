@@ -47,6 +47,31 @@ Entry format:
   - Keep AGPL-3.0 or switch to MIT? Needs an explicit decision now that
     the contradiction is on record.
 
+## 2026-06-12 (later: remediation session)
+
+- Context: Executed fixes 1-5 from the audit. 20 findings closed
+  including all 3 criticals; 47 remain OPEN for future passes.
+- Done:
+  - units.hpp: MSVC-safe constexpr validators, real binary operators,
+    removed broken square()/sqrt(), corrected shadow radius/diameter
+    terminology with an explicit factor-of-2 guard comment.
+  - Harness physics now matches the C++ kernel exactly (verified
+    value-for-value at five spin values).
+  - CSV exports at 17 significant digits.
+  - License resolved: AGPL-3.0 per ADR-0006; ADR-0004 superseded.
+  - Generators deterministic (dates from seed JSON; consecutive runs
+    byte-identical); CI drift gate added; audit.ps1 reordered.
+  - Validation gates real: 57 required files, XSD pattern + lxml,
+    jsonschema enforcement (which immediately caught the schema's 1900
+    year-minimum rejecting Gauss 1828 - gates that gate find bugs).
+  - README rewritten around the GPU-visual north star: ray-marched
+    lensed renders on RTX-class hardware as the headline goal.
+- Learned: the first time the JSON Schema was actually enforced it found
+  a real inconsistency within minutes. Decorative schemas are worse than
+  no schemas - they create false confidence.
+- Next: watch CI go green (first time ever), then start the geodesic
+  integrator (README milestone 1) on the road to the visual prototype.
+
 ## 2026-05-26
 
 - Context: Reset the project to a single source of truth on disk after the
