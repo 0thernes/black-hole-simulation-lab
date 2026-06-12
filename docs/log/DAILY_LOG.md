@@ -20,6 +20,33 @@ Entry format:
 
 ---
 
+## 2026-06-12
+
+- Context: Full multi-agent repository audit ("Review Audit All") of the
+  state left by the eight bootstrap iterations.
+- Done:
+  - Ran a 77-agent audit workflow: seven dimension reviewers plus one
+    adversarial verifier per finding. 69 raised, 67 confirmed, 2 refuted.
+  - Wrote `docs/audits/AUDIT-2026-06-12-FULL-REPO-REVIEW.md` with every
+    confirmed finding, verifier note, suggested fix, and OPEN status.
+- Learned:
+  - CI has failed on every push since the baseline: MSVC cannot compile
+    the constexpr validators in `units.hpp` (std::sqrt is not constexpr
+    in MSVC C++20). Local MinGW builds pass, so the breakage was
+    invisible without checking the Actions tab.
+  - The LICENSE file is AGPL-3.0, not MIT. ADR-0004 was written from the
+    chat-history description instead of the actual file. Lesson: verify
+    on-disk reality before recording a decision.
+  - The "shadow diameter 5.196 rg" in `units.hpp`/harness is the shadow
+    radius; the diameter is 2*sqrt(27) ~ 10.39 M.
+- Next: Remediation passes, criticals first (CI/MSVC constexpr, shadow
+  factor-of-2, harness photon-sphere formula), then the major batch
+  (date-churn in generators, stale validation gate, README staleness,
+  license decision ADR).
+- Open questions:
+  - Keep AGPL-3.0 or switch to MIT? Needs an explicit decision now that
+    the contradiction is on record.
+
 ## 2026-05-26
 
 - Context: Reset the project to a single source of truth on disk after the

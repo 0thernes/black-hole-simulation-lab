@@ -3,6 +3,30 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-06-12 (Full repository audit)
+
+- `docs/audits/AUDIT-2026-06-12-FULL-REPO-REVIEW.md`: multi-agent audit of
+  the entire repo at commit `6e7cff1`. Seven dimension reviewers (C++,
+  physics/math, Python, PowerShell, docs, schemas/data, git/CI); every
+  candidate finding independently re-verified by an adversarial agent that
+  read the cited files. 69 findings raised, 67 confirmed, 2 refuted.
+- Confirmed: 3 critical, 28 major, 30 minor, 6 info.
+- The three criticals: (1) CI has never been green - all recorded runs
+  failed; current cause is MSVC rejecting the constexpr validators in
+  `units.hpp` (std::sqrt/std::abs are not constexpr-valid under MSVC
+  C++20, while MinGW GCC accepts them as builtins, so local builds pass
+  and CI fails). (2) The "shadow diameter ~5.2 rg" quantity in
+  `units.hpp` and the Python harness is actually the shadow *radius*
+  (b_crit = sqrt(27) M); the diameter is ~10.39 M - a factor-of-2 error
+  in a headline observable. (3) The harness `photon_sphere_rg()`
+  approximation deviates up to ~97% from the exact Kerr formula now in
+  `metrics/kerr.hpp` while being labeled "high-fidelity".
+- Also confirmed: the root LICENSE file is AGPL-3.0, contradicting
+  ADR-0004 and three docs that claim MIT. The license question needs an
+  explicit decision and a corrected ADR.
+- Remediation is tracked finding-by-finding in the audit document
+  (Status: OPEN per finding).
+
 ## 2026-05-26 (Iteration 8: Daily workflow automation)
 
 Bootstrap-plan completion. Daily forward motion now has a single command.
