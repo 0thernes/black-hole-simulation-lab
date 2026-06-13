@@ -12,6 +12,21 @@ Status legend: **PASS** fully satisfied · **PARTIAL** partially satisfied ·
 **TODO** legitimately not done yet (early-stage) · **N/A** not applicable ·
 **FAIL** a real defect.
 
+> **Remediation in progress.** This document is a point-in-time snapshot.
+> Roughly 25 of the 41 FAIL findings were addressed in remediation batches
+> 1-3 immediately after the inspection (see `CHANGELOG.md` and
+> `docs/log/DAILY_LOG.md` for the per-finding record). Addressed so far
+> include: S01.03/08/09 (repo hygiene), S02.11 (CMake option honesty),
+> S03.18 (CLI help), S06.11 (constant provenance), S07.05/06/08/18 (CLI +
+> CSV tests), S08.10 (Dependabot), S10.01/02/08/10/11/13 (doc accuracy +
+> dangling links), S11.03/05 (diagram/layer locations),
+> S12.05/16 (schema constraints + de-memed comments), S14.12/13/14
+> (source-card referential-integrity gates), S15.09 (secret pattern),
+> S16.01/18 (harness cleanup), S19.09/10/11 (AGPL SPDX/NOTICE/AUTHORS),
+> S20.12 (removed fabricated Lyapunov noise). The larger remaining FAILs
+> (truth-tier schema column, strong-types-in-metrics, trajectory
+> producers) are roadmap-scale and tracked in `docs/process/KANBAN.md`.
+
 ## Scorecard
 
 Total points: **500** across **25** sections.

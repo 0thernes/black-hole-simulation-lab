@@ -191,7 +191,13 @@ def main() -> int:
         out_dir = BRAINS / dir_name
         out_dir.mkdir(parents=True, exist_ok=True)
         out_path = out_dir / f"{p['slug']}.xml"
-        out_path.write_text(render_profile(p, created, updated), encoding="utf-8")
+        # newline="\n": emit LF on every platform so regeneration is
+        # byte-identical across Windows (local) and Linux (CI), keeping the
+        # drift gate from depending on git's eol normalization.
+        out_path.write_text(
+            render_profile(p, created, updated),
+            encoding="utf-8", newline="\n",
+        )
 
         counts[cat] = counts.get(cat, 0) + 1
         manifest_entries.append(
@@ -212,7 +218,8 @@ def main() -> int:
         "profiles": sorted(manifest_entries, key=lambda x: x["slug"]),
     }
     MANIFEST.write_text(
-        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+        json.dumps(manifest, indent=2) + "\n",
+        encoding="utf-8", newline="\n",
     )
 
     # INDEX.md
@@ -255,7 +262,7 @@ def main() -> int:
             lines.append(f"- [{e['name']}]({link})")
         lines.append("")
 
-    INDEX_MD.write_text("\n".join(lines), encoding="utf-8")
+    INDEX_MD.write_text("\n".join(lines), encoding="utf-8", newline="\n")
 
     print(
         f"build_brains: wrote {len(manifest_entries)} profiles, "

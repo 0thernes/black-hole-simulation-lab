@@ -47,6 +47,35 @@ Entry format:
   - Keep AGPL-3.0 or switch to MIT? Needs an explicit decision now that
     the contradiction is on record.
 
+## 2026-06-12 (professional-grade upgrade session)
+
+- Context: A large end-to-end hardening pass — DSA, docs, a 500-point
+  inspection, CI/CD, and inspection-finding burndown.
+- Done (13 commits, all CI-green):
+  - Phase A: numerical ODE integrators (RK4 + adaptive Dormand-Prince
+    5(4)) with convergence tests; COMPLEXITY.md.
+  - Phase B: documentation suite (INDEX, GLOSSARY, ERM + data dictionary,
+    ROADMAP, KANBAN, Engineering Resource Plan, README TOC/quickstart).
+  - Phase D: CI/CD — 3-job pipeline (format/validate/build-matrix),
+    clang-format enforcement (pinned 19.1.7), .gitattributes eol policy,
+    Dependabot; ADR-0007/0008.
+  - Phase C: a 25-section, 500-point grounded inspection run via a
+    multi-agent workflow (in waves to dodge rate limits). Honest result:
+    333 PASS, 110 PARTIAL, 41 FAIL, 14 TODO, 2 N/A.
+  - Remediation batches 1-3: ~25 of the 41 FAILs closed — repo hygiene,
+    schema CHECK constraints + de-memed comments, removed fabricated
+    Lyapunov noise (Charter fix), CLI/CSV unit tests (CTest 3 -> 7),
+    AGPL SPDX/NOTICE/AUTHORS, source-card referential-integrity gates,
+    deterministic LF generators, real harness git provenance.
+- Learned: the first enforcement of a previously-decorative gate (JSON
+  Schema) found a real bug within minutes (Gauss 1828 vs the 1900 year
+  floor); the inspection found a factor-of-2 that had survived in a SQL
+  comment after the C++ fix. Enforcing gates pays immediately.
+- Next: the larger remaining FAILs are roadmap-scale — truth-tier schema
+  column (K-116, M2), strong-types-in-metrics (K-122), trajectory
+  producers (K-118), ruff/mypy + gitleaks CI (K-120/121). Then M1: the
+  geodesic integrator on the road to the visual sim.
+
 ## 2026-06-12 (later: remediation session)
 
 - Context: Executed fixes 1-5 from the audit. 20 findings closed

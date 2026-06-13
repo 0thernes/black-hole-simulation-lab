@@ -46,6 +46,21 @@ finding id (e.g. `F-005`).
   [audit F-024 cluster]
 - `K-115` Remaining audit majors not yet ticketed (triage from the
   2026-06-12 report; 47 open findings).
+- `K-116` Add a `model_status` truth-tier column to the data model so exact
+  analytic, numerical, and placeholder values are row-level labeled.
+  [inspection S20.09/10, S12 cluster; milestone M2]
+- `K-117` Wire a real Lyapunov estimator (variational/shadow-trajectory)
+  to replace the now-NULL placeholder. [inspection S20.12 follow-up; M1+]
+- `K-118` Implement producers for `trajectories` and `chaos_stats` (or mark
+  them reserved). [inspection S12.09; M2]
+- `K-119` Separate `theory_version` from `git_commit` in the harness and
+  fix the dim_ensemble seed-row collision. [inspection S21.04/05]
+- `K-120` Add a Python linter/type-checker (ruff + mypy) with a CI gate
+  mirroring clang-format. [inspection S16.12]
+- `K-121` Pin GitHub Actions to commit SHAs; add gitleaks secret scanning
+  to CI. [inspection S08.09, S18.11]
+- `K-122` Adopt strong `units` types in the metrics API (or document the
+  raw-double carve-out per function). [inspection S04.06; same as K-103]
 
 ## Ready
 
@@ -73,6 +88,15 @@ finding id (e.g. `F-005`).
   (AGPL-3.0), generator determinism + drift gate, gates-that-gate.
 - `K-004` Numerical integrators (RK4 + adaptive Dormand-Prince 5(4)) with
   convergence tests and complexity reference.
+- `K-005` Comprehensive documentation suite (INDEX, GLOSSARY, ERM/data
+  dictionary, ROADMAP, KANBAN, COMPLEXITY, Engineering Resource Plan).
+- `K-006` 500-point / 25-section grounded inspection
+  (`docs/audits/INSPECTION-500-POINT.md`).
+- `K-007` CI/CD hardening: 3-job pipeline, clang-format enforcement
+  (pinned 19.1.7), .gitattributes eol policy, Dependabot.
+- `K-008` Inspection remediation batches 1-3: ~25 FAILs closed (repo
+  hygiene, schema honesty, CLI/CSV tests, AGPL licensing, referential
+  integrity gates, deterministic LF generators).
 
 ---
 

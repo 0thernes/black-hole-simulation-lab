@@ -145,7 +145,10 @@ def main() -> int:
     for src in sources:
         slug = src["slug"]
         out_path = CARDS_DIR / f"{slug}.md"
-        out_path.write_text(render_card(src, created, updated), encoding="utf-8")
+        out_path.write_text(
+            render_card(src, created, updated),
+            encoding="utf-8", newline="\n",
+        )
         rendered.append(
             {
                 "slug": slug,
@@ -160,7 +163,7 @@ def main() -> int:
 
     # INDEX.jsonl: one source per line for cheap RAG
     INDEX_JSONL.parent.mkdir(parents=True, exist_ok=True)
-    with INDEX_JSONL.open("w", encoding="utf-8") as fh:
+    with INDEX_JSONL.open("w", encoding="utf-8", newline="\n") as fh:
         for entry in sorted(rendered, key=lambda x: (x["year"], x["slug"])):
             fh.write(json.dumps(entry) + "\n")
 
@@ -203,7 +206,7 @@ def main() -> int:
             )
         lines.append("")
 
-    INDEX_MD.write_text("\n".join(lines), encoding="utf-8")
+    INDEX_MD.write_text("\n".join(lines), encoding="utf-8", newline="\n")
 
     print(f"build_source_cards: wrote {len(rendered)} cards")
     return 0
