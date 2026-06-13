@@ -61,6 +61,15 @@ Licensing (S19.09, S19.10, S19.11):
 Verified: clang-format idempotent on all 15 files, build clean, 7/7 CTest
 suites pass, validation green.
 
+## 2026-06-13 (Render polish: supersampling anti-aliasing)
+
+- `viz/disk_image.hpp`: `render_disk_image` now averages `samples x samples`
+  sub-pixel rays (default 2x2) via a new `sample_colour` helper, removing the
+  jagged shadow/disk edges. `DiskView.samples` controls the rate; the
+  geometry and physics are unchanged, so all symmetry/redshift tests still
+  hold (they exercise `trace_disk_pixel` directly). 13 suites green.
+- Regenerated the `docs/images` reference renders with anti-aliasing.
+
 ## 2026-06-13 (M5 start: Doppler beaming + gravitational redshift)
 
 The disk image now carries the famous *brightness* asymmetry — one side

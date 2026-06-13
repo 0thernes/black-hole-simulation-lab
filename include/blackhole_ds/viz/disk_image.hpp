@@ -69,6 +69,7 @@ struct DiskView {
     int max_crossings = 4;         // image orders to consider per ray
     double dphi = 0.01;            // orbit-angle step (rad)
     double phi_cap = 6.0 * 3.141592653589793; // ~3 full loops
+    int samples = 2; // supersampling: samples x samples per pixel
 };
 
 enum class HitKind { Disk, Shadow, Background };
@@ -221,32 +222,59 @@ struct PixelHit {
     return Rgb{u8(R * lum), u8(G * lum), u8(B * lum)};
 }
 
-// Render the lensed disk + shadow into a new Image.
+// Colour of a single image-plane sample at (X, Y) in units of M.
+[[nodiscard]] inline Rgb sample_colour(double X, double Y, double sin_i,
+                                       const DiskView& v) {
+    static const Rgb background{4, 4, 9}; // near-black sky floor
+    const PixelHit hit = trace_disk_pixel(X, Y, v);
+    switch (hit.kind) {
+    case HitKind::Disk:
+        return disk_colour(hit.r_disk, hit.order, X, sin_i, v);
+    case HitKind::Shadow:
+        return Rgb{0, 0, 0};
+    case HitKind::Background:
+    default:
+        return background;
+    }
+}
+
+// Render the lensed disk + shadow into a new Image, averaging
+// v.samples x v.samples sub-pixel rays (supersampling anti-aliasing).
 [[nodiscard]] inline Image render_disk_image(const DiskView& v = {}) {
     Image img(v.width, v.height);
     const double H = v.half_extent_M;
     const int w = img.width();
     const int h = img.height();
-    const Rgb background{4, 4, 9}; // near-black sky floor
+    const int ss = v.samples > 0 ? v.samples : 1;
     const double sin_i =
         std::sin(v.inclination_deg * 3.141592653589793 / 180.0);
 
+    // Pixel pitch in image-plane units of M.
+    const double dx = (2.0 * H) / (w - 1);
+    const double dy = (2.0 * H) / (h - 1);
+    const int n = ss * ss;
+
     for (int j = 0; j < h; ++j) {
-        const double Y = H - (2.0 * H) * j / (h - 1);
+        const double Yc = H - dy * j;
         for (int i = 0; i < w; ++i) {
-            const double X = -H + (2.0 * H) * i / (w - 1);
-            const PixelHit hit = trace_disk_pixel(X, Y, v);
-            switch (hit.kind) {
-            case HitKind::Disk:
-                img.set(i, j, disk_colour(hit.r_disk, hit.order, X, sin_i, v));
-                break;
-            case HitKind::Shadow:
-                img.set(i, j, Rgb{0, 0, 0});
-                break;
-            case HitKind::Background:
-                img.set(i, j, background);
-                break;
+            const double Xc = -H + dx * i;
+            double rsum = 0.0, gsum = 0.0, bsum = 0.0;
+            for (int sy = 0; sy < ss; ++sy) {
+                // Sub-sample offsets centred on the pixel, in (-0.5, 0.5) px.
+                const double oy = (sy + 0.5) / ss - 0.5;
+                for (int sx = 0; sx < ss; ++sx) {
+                    const double ox = (sx + 0.5) / ss - 0.5;
+                    const Rgb c =
+                        sample_colour(Xc + ox * dx, Yc - oy * dy, sin_i, v);
+                    rsum += c.r;
+                    gsum += c.g;
+                    bsum += c.b;
+                }
             }
+            const auto avg = [n](double s) {
+                return static_cast<std::uint8_t>(s / n + 0.5);
+            };
+            img.set(i, j, Rgb{avg(rsum), avg(gsum), avg(bsum)});
         }
     }
     return img;
