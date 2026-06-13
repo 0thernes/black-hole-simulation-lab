@@ -97,8 +97,10 @@ Implemented now:
 - C++20 modular kernel: `core/` (constants, truth labels), `metrics/`
   (exact Schwarzschild and Kerr observables), `integrators/` (tested RK4 +
   adaptive Dormand-Prince), `geodesics/` (Schwarzschild photon orbits —
-  light bending, validated against the Eddington 4M/b deflection; plus the
-  closed-form Bardeen 1973 Kerr shadow boundary),
+  light bending, validated against the Eddington 4M/b deflection; the
+  closed-form Bardeen 1973 Kerr shadow boundary; and a full **Kerr
+  null-geodesic integrator** — the Carter-separated equations of motion in
+  Mino time, validated by constants-of-motion conservation),
   `viz/` (ASCII shadow, PPM shadow/photon-ring, lensed Doppler-beamed disk,
   and Kerr asymmetric-shadow renders), `data/` (full-precision CSV export).
 - CLI executable with `--mass`, `--spin`, `--format text|csv`, `--steps`,

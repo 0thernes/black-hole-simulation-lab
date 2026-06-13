@@ -61,6 +61,38 @@ Licensing (S19.09, S19.10, S19.11):
 Verified: clang-format idempotent on all 15 files, build clean, 7/7 CTest
 suites pass, validation green.
 
+## 2026-06-13 (M5: Kerr null-geodesic integrator — the spinning-disk engine)
+
+The engine the spinning-disk ray trace will ride on. A Schwarzschild photon
+stays in a plane (`d2u/dphi2 + u = 3u^2`); a Kerr photon does not — frame
+dragging twists it out of plane — so this integrates the full geodesic in
+Boyer-Lindquist coordinates using the separated constants of motion.
+
+- `geodesics/kerr_geodesic.hpp`: the Carter-separated equations of motion in
+  **Mino time**, in second-order form `d²r/dλ² = ½R'(r)`,
+  `d²θ/dλ² = ½Θ'(θ)`. Mino time decouples r and θ into 1-D "particle in a
+  potential" problems, and the second-order form removes the square root —
+  so there is **no sign flip to track at the radial/polar turning points**,
+  which is exactly where naive first-order √R integrators break. Cyclic
+  `dφ/dλ`, `dt/dλ` from the first integrals. Constants: E, L_z, Carter Q
+  (Q = 0 ⇔ equatorial). Composes with the existing `rk4_step`. Plus
+  `radial_residual`, `polar_residual`, `recover_Q` for verification.
+- `tests/kerr_geodesic_tests.cpp`: verified the way GR integrators must be —
+  by conserved quantities. (1) Q and the on-shell residuals do not drift
+  along a generic 3-D orbit (a=0.5, E=1, L_z=2, Q=3). (2) a → 0 reproduces
+  the Schwarzschild photon circle r=3 at b=√27 (R=R'=0, stays circular).
+  (3) the equatorial plane is geodesic (θ=π/2 stays put). (4) frame dragging:
+  a zero-angular-momentum photon advances in φ for a>0 but not a=0. (5) an
+  **independent cross-check** — the prograde equatorial photon radius from the
+  closed-form shadow module (`kerr_shadow.hpp`) is exactly where this
+  integrator finds R=R'=0, and a photon launched there stays on the circle.
+- New `blackhole_ds_kerr_geodesic_tests` target; registered in the validation
+  gate. **16 CTest suites, all green.**
+- Truth tier: the equations of motion are `analytic_classical` (Carter 1968);
+  the trajectories are `numerical_approximation` (RK4) with bounded,
+  test-checked conserved-quantity drift. No CLI/image surface yet — this is
+  the foundation for folding frame dragging into the lensed-disk ray trace.
+
 ## 2026-06-13 (M5 proper: the Kerr (spinning) black-hole shadow)
 
 The first true *spin* physics: the asymmetric, D-shaped shadow of a rotating
