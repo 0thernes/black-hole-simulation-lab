@@ -3,6 +3,38 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-06-12 (Remediation batch 2: tests + licensing)
+
+Burning down more inspection FAILs, focused on test coverage and AGPL
+enforceability.
+
+Testing (S07.05, S07.06, S07.08, S07.18):
+- Extracted the CLI parser into `include/blackhole_ds/cli/options.hpp` so
+  it is unit-testable in isolation (pure: argv in, Options + diagnostics
+  out, no globals).
+- `tests/cli_tests.cpp`: 14 grouped checks covering defaults, valid flags,
+  --help, unparseable values, missing values, unknown format, --steps < 1,
+  unknown args, strict trailing-garbage rejection, plus CsvWriter header
+  exactness, truth-label prefix, 17-digit precision, and stream-flag
+  restoration.
+- CTest grew from 3 to 7 cases: added the CLI unit suite and output-
+  asserting runs (PASS_REGULAR_EXPRESSION on the text banner and the CSV
+  header; a WILL_FAIL case for a bad flag). The bare run no longer passes
+  on exit code alone.
+- S03.18: corrected the `--steps` help text — it is the number of spin
+  intervals, so the table has steps+1 rows (default 9 -> 10 rows).
+
+Licensing (S19.09, S19.10, S19.11):
+- Added `SPDX-License-Identifier: AGPL-3.0-or-later` + copyright headers to
+  all 15 C++ source/header files.
+- Added root `NOTICE` (AGPL notice + pointers) and `AUTHORS` (copyright
+  holders).
+- CONTRIBUTING.md gained a "Licensing of Contributions" section stating the
+  inbound=outbound AGPL model and the DCO sign-off encouragement.
+
+Verified: clang-format idempotent on all 15 files, build clean, 7/7 CTest
+suites pass, validation green.
+
 ## 2026-06-12 (Phase C: 500-point inspection + remediation batch 1)
 
 - `docs/audits/INSPECTION-500-POINT.md`: a 25-section, 500-point grounded

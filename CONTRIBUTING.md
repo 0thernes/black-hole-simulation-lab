@@ -5,6 +5,20 @@ simulation lab. Contributions are welcome but the bar is real. Please read
 this document and the architecture decision records in
 `docs/log/DECISIONS.md` before your first PR.
 
+## Licensing of Contributions
+
+This project is licensed under **AGPL-3.0-or-later** (see `LICENSE`,
+`NOTICE`, and ADR-0006). Contributions are accepted under the
+**inbound = outbound** model: by submitting a contribution you agree that it
+is licensed under the same AGPL-3.0-or-later terms as the project, and that
+you have the right to submit it under those terms.
+
+- New C/C++/Python/PowerShell source files should carry the SPDX header:
+  `SPDX-License-Identifier: AGPL-3.0-or-later` plus a copyright line.
+- Add yourself to `AUTHORS` in the same PR as your first contribution.
+- Sign your commits with `git commit -s` (Developer Certificate of Origin)
+  if you are able; it is encouraged but not yet strictly required.
+
 ## Project Rules
 
 1. **Scientific honesty.** Every value, plot, table, exported row, and

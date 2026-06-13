@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 0thernes <0_0@0thernes.art>
 // BlackHoleDS — Physical Units & Type Theory (C++20)
 // Compile-time dimensional safety for cosmology and GR numerics.
 //

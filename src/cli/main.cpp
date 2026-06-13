@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 0thernes <0_0@0thernes.art>
 // src/cli/main.cpp
 // BlackHoleDS CLI entry point.
 //
@@ -14,25 +16,17 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <string>
-#include <string_view>
 
+#include "blackhole_ds/cli/options.hpp"
 #include "blackhole_ds/core/truth_label.hpp"
 #include "blackhole_ds/data/csv_writer.hpp"
 #include "blackhole_ds/metrics/kerr.hpp"
 #include "blackhole_ds/metrics/schwarzschild.hpp"
 
 namespace bhds = blackhole_ds;
+using bhds::cli::Options;
 
 namespace {
-
-struct Options {
-    double mass_solar = 1.0;
-    double spin_a_over_M = 0.0;
-    std::string format = "text";
-    int steps = 9;
-    bool show_help = false;
-};
 
 void print_help(std::ostream& os) {
     os << "blackhole_ds: analytic Schwarzschild and Kerr observables.\n"
@@ -41,84 +35,11 @@ void print_help(std::ostream& os) {
        << "  --mass <Msun>        Mass in solar masses (default 1.0)\n"
        << "  --spin <a/M>         Dimensionless Kerr spin (default 0.0)\n"
        << "  --format <text|csv>  Output format (default text)\n"
-       << "  --steps <N>          Rows in the Kerr table (default 9)\n"
+       << "  --steps <N>          Kerr spin intervals; table has N+1 rows "
+          "(default 9 -> 10 rows)\n"
        << "  --help               Print this help\n"
        << "\n"
        << "Truth label of all printed values: analytic_classical.\n";
-}
-
-bool parse_double(std::string_view s, double& out) {
-    try {
-        size_t pos = 0;
-        const double v = std::stod(std::string(s), &pos);
-        if (pos != s.size()) {
-            return false;
-        }
-        out = v;
-        return true;
-    } catch (...) {
-        return false;
-    }
-}
-
-bool parse_int(std::string_view s, int& out) {
-    try {
-        size_t pos = 0;
-        const int v = std::stoi(std::string(s), &pos);
-        if (pos != s.size()) {
-            return false;
-        }
-        out = v;
-        return true;
-    } catch (...) {
-        return false;
-    }
-}
-
-bool parse_args(int argc, char** argv, Options& opt, std::ostream& err) {
-    for (int i = 1; i < argc; ++i) {
-        std::string_view arg = argv[i];
-        const auto need_value = [&](std::string_view name) -> std::string_view {
-            if (i + 1 >= argc) {
-                err << "missing value for " << name << '\n';
-                return {};
-            }
-            return argv[++i];
-        };
-        if (arg == "--help" || arg == "-h") {
-            opt.show_help = true;
-        } else if (arg == "--mass") {
-            const auto v = need_value("--mass");
-            if (v.empty() || !parse_double(v, opt.mass_solar)) {
-                return false;
-            }
-        } else if (arg == "--spin") {
-            const auto v = need_value("--spin");
-            if (v.empty() || !parse_double(v, opt.spin_a_over_M)) {
-                return false;
-            }
-        } else if (arg == "--format") {
-            const auto v = need_value("--format");
-            if (v.empty()) {
-                return false;
-            }
-            opt.format = v;
-            if (opt.format != "text" && opt.format != "csv") {
-                err << "unknown format: " << opt.format << '\n';
-                return false;
-            }
-        } else if (arg == "--steps") {
-            const auto v = need_value("--steps");
-            if (v.empty() || !parse_int(v, opt.steps) || opt.steps < 1) {
-                err << "invalid --steps value\n";
-                return false;
-            }
-        } else {
-            err << "unknown argument: " << arg << '\n';
-            return false;
-        }
-    }
-    return true;
 }
 
 void emit_text(const Options& opt) {
@@ -182,7 +103,7 @@ void emit_csv(const Options& opt) {
 int main(int argc, char** argv) {
     Options opt;
     std::ostringstream err;
-    if (!parse_args(argc, argv, opt, err)) {
+    if (!bhds::cli::parse_args(argc, argv, opt, err)) {
         std::cerr << err.str();
         print_help(std::cerr);
         return EXIT_FAILURE;

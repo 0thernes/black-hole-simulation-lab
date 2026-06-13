@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 0thernes <0_0@0thernes.art>
 // blackhole_ds/metrics/kerr.hpp
 // Analytic Kerr observables for prograde equatorial orbits.
 //

@@ -1,0 +1,106 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 0thernes <0_0@0thernes.art>
+// blackhole_ds/cli/options.hpp
+// CLI option type and argument parser, extracted from main so it can be
+// unit-tested directly (inspection finding S07.06).
+//
+// The parser is pure: it reads argv, writes parsed values into Options, and
+// writes any diagnostics to the supplied error stream. No global state, no
+// I/O beyond the error stream. Returns false on any malformed input.
+
+#pragma once
+
+#include <ostream>
+#include <string>
+#include <string_view>
+
+namespace blackhole_ds::cli {
+
+struct Options {
+    double mass_solar = 1.0;
+    double spin_a_over_M = 0.0;
+    std::string format = "text"; // "text" or "csv"
+    int steps = 9;               // spin intervals; table has steps + 1 rows
+    bool show_help = false;
+};
+
+[[nodiscard]] inline bool parse_double(std::string_view s, double& out) {
+    try {
+        size_t pos = 0;
+        const double v = std::stod(std::string(s), &pos);
+        if (pos != s.size()) {
+            return false;
+        }
+        out = v;
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+[[nodiscard]] inline bool parse_int(std::string_view s, int& out) {
+    try {
+        size_t pos = 0;
+        const int v = std::stoi(std::string(s), &pos);
+        if (pos != s.size()) {
+            return false;
+        }
+        out = v;
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+// Parse argv into opt. Returns false (and writes a diagnostic to err) on any
+// unknown flag, missing value, or unparseable value.
+[[nodiscard]] inline bool parse_args(int argc, const char* const* argv,
+                                     Options& opt, std::ostream& err) {
+    for (int i = 1; i < argc; ++i) {
+        std::string_view arg = argv[i];
+        const auto need_value = [&](std::string_view name) -> std::string_view {
+            if (i + 1 >= argc) {
+                err << "missing value for " << name << '\n';
+                return {};
+            }
+            return argv[++i];
+        };
+        if (arg == "--help" || arg == "-h") {
+            opt.show_help = true;
+        } else if (arg == "--mass") {
+            const auto v = need_value("--mass");
+            if (v.empty() || !parse_double(v, opt.mass_solar)) {
+                err << "invalid --mass value\n";
+                return false;
+            }
+        } else if (arg == "--spin") {
+            const auto v = need_value("--spin");
+            if (v.empty() || !parse_double(v, opt.spin_a_over_M)) {
+                err << "invalid --spin value\n";
+                return false;
+            }
+        } else if (arg == "--format") {
+            const auto v = need_value("--format");
+            if (v.empty()) {
+                return false;
+            }
+            opt.format = v;
+            if (opt.format != "text" && opt.format != "csv") {
+                err << "unknown format: " << opt.format << '\n';
+                return false;
+            }
+        } else if (arg == "--steps") {
+            const auto v = need_value("--steps");
+            if (v.empty() || !parse_int(v, opt.steps) || opt.steps < 1) {
+                err << "invalid --steps value\n";
+                return false;
+            }
+        } else {
+            err << "unknown argument: " << arg << '\n';
+            return false;
+        }
+    }
+    return true;
+}
+
+} // namespace blackhole_ds::cli
