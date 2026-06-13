@@ -3,6 +3,36 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-06-12 (Phase A: numerical integrators + complexity reference)
+
+First real DSA: the ODE machinery the geodesic solver (milestone 1) needs.
+
+- `include/blackhole_ds/integrators/ode_state.hpp`: stack-allocated
+  `State<N>` (`std::array`, no heap) with O(N) `add`/`axpy`/`scale` and a
+  tolerance-weighted RMS error norm (Hairer-Norsett-Wanner).
+- `include/blackhole_ds/integrators/rk4.hpp`: classic fixed-step RK4,
+  global error O(h^4), 4 derivative evals/step.
+- `include/blackhole_ds/integrators/rk45.hpp`: adaptive Dormand-Prince
+  5(4) with the full standard Butcher tableau, embedded 4th-order error
+  estimate, elementary step-size controller (h * safety * e^(-1/5)
+  clamped), FSAL reuse (6 evals/accepted step), forward and backward
+  integration, and a runaway-step guard.
+- `tests/integrator_tests.cpp`: verifies RK4 hits e to 1e-10, RK4
+  4th-order convergence (empirical error ratio in [12,20] for 2x steps),
+  SHO energy conservation over a full period, DP45 accuracy + adaptive
+  step counts, that tighter tolerance buys accuracy at the cost of steps,
+  and backward integration. Wired into CTest (now 3 suites).
+- `docs/engineering/COMPLEXITY.md`: time/space complexity of every
+  algorithm in the repo (current and planned), including the
+  embarrassingly-parallel-over-pixels scaling argument for the GPU
+  render goal and the error-vs-step-count distinction for numerical
+  methods.
+- ARCHITECTURE.md updated: integrators section, build contract (3 test
+  targets), realized module-shape tree.
+- Validate-ResearchOS.py REQUIRED_FILES extended for the new artifacts.
+
+Verified: clean MinGW build, all 3 CTest suites pass.
+
 ## 2026-06-12 (Remediation: fixes 1-5 from the full audit)
 
 20 audit findings closed, including all 3 criticals. North star reaffirmed:

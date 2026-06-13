@@ -41,13 +41,39 @@ Rules:
 - Python harness output and future C++ exporter output must converge on the same
   schema and validation tolerances.
 
+## Numerical Integrators
+
+`include/blackhole_ds/integrators/` provides the ODE machinery the geodesic
+solver will use:
+
+- `ode_state.hpp`: fixed-size, stack-allocated `State<N>` (`std::array`)
+  with `add`/`axpy`/`scale` (all O(N)) and a tolerance-weighted RMS error
+  norm for the adaptive controller.
+- `rk4.hpp`: classic fixed-step fourth-order Runge-Kutta. Global error
+  O(h^4); four derivative evaluations per step.
+- `rk45.hpp`: adaptive Dormand-Prince 5(4) ("ode45"). A 5th-order solution
+  with an embedded 4th-order error estimate drives step-size control, so
+  the integrator concentrates work where the solution is sensitive (e.g.
+  near the photon sphere). FSAL reuse: six derivative evaluations per
+  accepted step.
+
+Both are header-only, allocation-free in the hot loop, and templated on the
+state dimension N (geodesics will use N=8: four position + four momentum
+components). Convergence order and adaptive behavior are verified in
+`tests/integrator_tests.cpp`. Complexity is documented in
+`docs/engineering/COMPLEXITY.md`.
+
+These are tagged `numerical_approximation`: every result carries a
+documented error order, never presented as exact.
+
 ## Build Contract
 
 The root `CMakeLists.txt` defines:
 
-- `blackhole_ds`: current seed executable.
+- `blackhole_ds`: CLI executable (`src/cli/main.cpp` + shim).
 - `blackhole_ds_smoke_tests`: analytic and type-safety smoke tests.
-- CTest entries for both.
+- `blackhole_ds_integrator_tests`: ODE-integrator convergence tests.
+- CTest entries for all three, plus a smoke run of the executable.
 
 Future modules should be added as libraries before new executables are added.
 
@@ -55,20 +81,18 @@ Future modules should be added as libraries before new executables are added.
 
 ```text
 include/blackhole_ds/
-|-- core/
-|-- metrics/
-|-- integrators/
-|-- chaos/
-|-- data/
-`-- viz/
+|-- core/          (done: constants, truth_label)
+|-- metrics/       (done: schwarzschild, kerr)
+|-- integrators/   (done: ode_state, rk4, rk45)
+|-- chaos/         (planned: Lyapunov, Poincare sections)
+|-- data/          (done: csv_writer; planned: json, sqlite)
+`-- viz/           (planned: ray marcher, photon ring)
 
 src/
-|-- core/
-|-- metrics/
-|-- integrators/
-|-- data/
-`-- main.cpp
+|-- cli/main.cpp   (done)
+|-- core/ metrics/ integrators/ data/   (compiled units as they grow)
 ```
 
-The first refactor should split `src/BlackHoleDS.cpp` into small modules while
-preserving test behavior.
+`src/BlackHoleDS.cpp` is now an empty shim; the program lives in
+`src/cli/main.cpp`. The next compiled units are the geodesic right-hand
+side (a `metrics/`-driven derivative functor) feeding `rk45_integrate`.

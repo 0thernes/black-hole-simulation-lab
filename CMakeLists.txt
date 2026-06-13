@@ -73,5 +73,21 @@ else()
     target_compile_options(blackhole_ds_smoke_tests PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+add_executable(blackhole_ds_integrator_tests
+    tests/integrator_tests.cpp
+)
+
+target_include_directories(blackhole_ds_integrator_tests
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+if(MSVC)
+    target_compile_options(blackhole_ds_integrator_tests PRIVATE /W4)
+else()
+    target_compile_options(blackhole_ds_integrator_tests PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
 add_test(NAME blackhole_ds_smoke_tests COMMAND blackhole_ds_smoke_tests)
+add_test(NAME blackhole_ds_integrator_tests COMMAND blackhole_ds_integrator_tests)
 add_test(NAME blackhole_ds_runs COMMAND blackhole_ds)
