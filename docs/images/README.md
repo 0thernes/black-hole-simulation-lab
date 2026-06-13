@@ -9,8 +9,8 @@ validated geodesic physics — regenerate any time with the commands below.
 
 | Image | What it is |
 |---|---|
-| `lensed_disk_i80.png` | Lensed thin accretion disk, observer inclination 80 deg (near edge-on). The far side of the disk is bent up and over the shadow by gravitational lensing — the canonical "Interstellar/EHT" look. |
-| `lensed_disk_i20.png` | The same disk at 20 deg inclination (near face-on) — a more open ring. |
+| `lensed_disk_i80.png` | Lensed thin accretion disk, observer inclination 80 deg (near edge-on). The far side is bent up and over the shadow by gravitational lensing, and one side is far brighter than the other from relativistic Doppler beaming — the canonical "Interstellar + EHT" look. |
+| `lensed_disk_i20.png` | The same disk at 20 deg inclination (near face-on) — a more open ring with a milder Doppler asymmetry. |
 | `shadow_photon_ring.png` | The bare Schwarzschild shadow encircled by its photon ring (brightness from the integrated deflection angle). |
 
 ## How they were made
@@ -29,11 +29,15 @@ blackhole_ds --image shadow_photon_ring.ppm
   the photon ring — is `numerical_approximation`, computed by integrating
   the validated Schwarzschild null-geodesic equation. The shadow radius is
   `analytic_classical` (= sqrt(27) M).
-- The **colour and brightness** are a `visualization_metaphor`: a warm
-  temperature-like ramp that fades with radius. There is **no** Doppler
-  beaming or gravitational redshift yet, so the disk is left-right symmetric
-  in brightness (a real Kerr image is not — that asymmetry is M5 work). The
-  top-bottom *shape* asymmetry you see IS real lensing.
+- The **relativistic redshift factor** g (gravitational + orbital time
+  dilation + Doppler) is an exact GR formula, applied as g⁴ beaming. This
+  produces the real left-right brightness asymmetry (approaching side
+  brighter) and the radial reddening toward the inner edge.
+- The **intrinsic emissivity profile and colour ramp** are a
+  `visualization_metaphor` — a warm temperature-like ramp that fades with
+  radius, not a radiometric surface-brightness model.
+- **Kerr spin** is not modelled yet (M5), so the shadow is circular and the
+  asymmetry comes only from orbital Doppler, not frame dragging.
 
 See `include/blackhole_ds/viz/disk_image.hpp` for the full derivation and
 `tests/disk_tests.cpp` for the symmetry invariants that validate it.

@@ -6,10 +6,13 @@
 // short of a published reference image:
 //   - Face-on (i=0): the trace depends ONLY on impact parameter b, so the
 //     image is exactly rotationally symmetric.
-//   - Inclined: the geometry depends on X (the tilt axis) but not the sign of
-//     Y, so the image is mirror-symmetric top<->bottom and asymmetric
-//     left<->right (the lensed near/far disk).
+//   - Inclined: the geometry depends on Y (the tilt axis) but not the sign of
+//     X, so the lensing GEOMETRY is mirror-symmetric left<->right and
+//     asymmetric top<->bottom (the lensed near/far disk). The relativistic
+//     Doppler beaming then breaks the left<->right symmetry in BRIGHTNESS
+//     (same disk radius, different colour) -- the EHT-style asymmetry.
 //   - A central ray is captured (shadow); disk hits land in [r_in, r_out].
+//   - redshift_factor is GR-exact: no Doppler at face-on, asymmetric inclined.
 
 #include <cmath>
 #include <cstdio>
@@ -126,6 +129,54 @@ int main() {
         v.inclination_deg = 78.0;
         const PixelHit corner = trace_disk_pixel(40.0, 40.0, v);
         CHECK(corner.kind == HitKind::Background);
+    }
+
+    // --- Redshift factor: face-on (sin i = 0) has no Doppler, so g is
+    //     independent of X and equals the gravitational/time-dilation term
+    //     sqrt(1 - 3/r); inclined breaks that symmetry (Doppler) ---
+    {
+        const double r = 8.0;
+        const double g_grav = std::sqrt(1.0 - 3.0 / r);
+        // Face-on: g(X) == g(-X) == sqrt(1-3/r) for any X.
+        CHECK(std::abs(redshift_factor(r, 5.0, 0.0) - g_grav) < 1e-12);
+        CHECK(std::abs(redshift_factor(r, -5.0, 0.0) - g_grav) < 1e-12);
+        // Inclined: one side blueshifted (g > grav), the other redshifted.
+        const double sin_i = std::sin(78.0 * 3.141592653589793 / 180.0);
+        const double g_plus = redshift_factor(r, 5.0, sin_i);
+        const double g_minus = redshift_factor(r, -5.0, sin_i);
+        CHECK(g_plus < g_grav);  // +X side receding -> redshifted/dimmer
+        CHECK(g_minus > g_grav); // -X side approaching -> blueshifted/brighter
+        CHECK(g_minus > g_plus); // genuine asymmetry
+        // No stable orbit emission inside 3M.
+        CHECK(redshift_factor(2.5, 0.0, 0.0) == 0.0);
+    }
+
+    // --- The rendered inclined image is left-right brightness-asymmetric
+    //     (Doppler beaming), even though the geometry is left-right
+    //     symmetric: same disk radius, different colour ---
+    {
+        DiskView v;
+        v.inclination_deg = 80.0;
+        const double sin_i =
+            std::sin(v.inclination_deg * 3.141592653589793 / 180.0);
+        // Find a disk-hit pixel and confirm its mirror has the same radius
+        // but a different (beamed) colour.
+        bool checked = false;
+        for (double y = -10.0; y <= 10.0 && !checked; y += 0.5) {
+            for (double x = 1.0; x <= 12.0; x += 0.5) {
+                const PixelHit r = trace_disk_pixel(x, y, v);
+                const PixelHit l = trace_disk_pixel(-x, y, v);
+                if (r.kind == HitKind::Disk && l.kind == HitKind::Disk &&
+                    std::abs(r.r_disk - l.r_disk) < 1e-9) {
+                    const Rgb cr = disk_colour(r.r_disk, r.order, x, sin_i, v);
+                    const Rgb cl = disk_colour(l.r_disk, l.order, -x, sin_i, v);
+                    CHECK(!(cr.r == cl.r && cr.g == cl.g && cr.b == cl.b));
+                    checked = true;
+                    break;
+                }
+            }
+        }
+        CHECK(checked);
     }
 
     if (failures == 0) {

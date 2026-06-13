@@ -204,9 +204,10 @@ int main(int argc, char** argv) {
                   << "\nObserver inclination: " << std::fixed
                   << std::setprecision(1) << dv.inclination_deg << " deg; disk "
                   << dv.r_in_M << "-" << dv.r_out_M << " M\n"
-                  << "Truth tier: lensing geometry numerical_approximation; "
-                     "colour visualization_metaphor (no Doppler/redshift "
-                     "yet)\n";
+                  << "Truth tier: lensing geometry + redshift factor "
+                     "(gravitational + orbital + Doppler) are GR-exact; "
+                     "emissivity/colour is a visualization_metaphor. No Kerr "
+                     "spin yet.\n";
         return EXIT_SUCCESS;
     }
     if (opt.format == "csv") {

@@ -61,6 +61,32 @@ Licensing (S19.09, S19.10, S19.11):
 Verified: clang-format idempotent on all 15 files, build clean, 7/7 CTest
 suites pass, validation green.
 
+## 2026-06-13 (M5 start: Doppler beaming + gravitational redshift)
+
+The disk image now carries the famous *brightness* asymmetry — one side
+bright, the other dim — from real relativistic physics, not a painted-on
+gradient.
+
+- `viz/disk_image.hpp`: added `redshift_factor(r, X, sin_i)`, the exact
+  Schwarzschild thin-disk frequency ratio
+  `g = sqrt(1 - 3M/r) / (1 + r^{-3/2} X sin i)` for material on circular
+  geodesic orbits — numerator is the gravitational + orbital time dilation
+  (1/u^t), denominator is the longitudinal Doppler with `X sin i = -L_z/E`
+  (Cunningham-Bardeen). Observed flux scales as g^4 (Liouville), so the
+  approaching side is beamed bright and the receding side dimmed; the
+  colour temperature is shifted by g. Reduces to no-Doppler at face-on.
+- `tests/disk_tests.cpp`: added redshift-factor checks — face-on g is
+  X-independent and equals sqrt(1-3/r); inclined is asymmetric (one side
+  > grav, the other <); no emission inside 3M; and the rendered inclined
+  image is left-right brightness-asymmetric while the geometry stays
+  left-right symmetric. 13 suites, all green.
+- Regenerated `docs/images/lensed_disk_i80.png` / `i20.png`: they now show
+  the EHT M87*-style bright/dim crescent in addition to the lensing warp.
+- Honesty upgrade: the redshift factor g is now GR-exact
+  (`analytic_classical`); only the emissivity profile and colour ramp
+  remain `visualization_metaphor`. Kerr spin / frame dragging is still M5
+  proper. README, CLI message, and image docs updated accordingly.
+
 ## 2026-06-13 (M3: the iconic lensed accretion-disk image)
 
 The first gravitationally lensed black-hole image — the canonical

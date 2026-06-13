@@ -37,14 +37,15 @@
 //       disk crossing is captured: the SHADOW. (Tested.)
 //
 // Truth tiers: the lensing GEOMETRY (which disk radius each pixel sees) is a
-// numerical_approximation built on the validated geodesic. The disk colour /
-// brightness ramp is a visualization_metaphor -- it is NOT a radiometric
-// surface-brightness calculation and includes no Doppler beaming or
-// gravitational redshift yet (those are M5). The shadow radius is
-// analytic_classical.
+// numerical_approximation built on the validated geodesic; the shadow radius
+// is analytic_classical. The relativistic redshift factor g (gravitational +
+// orbital time dilation + Doppler) is an exact GR formula (analytic_classical;
+// see redshift_factor below), applied as g^4 beaming. The intrinsic
+// emissivity profile and colour ramp remain a visualization_metaphor (not a
+// radiometric surface-brightness model). Kerr spin is not modelled yet (M5).
 //
 // References (analytic_classical): Luminet 1979 (first thin-disk BH image);
-// Misner-Thorne-Wheeler 1973 ch. 25.
+// Cunningham 1975 (redshift factor); Misner-Thorne-Wheeler 1973 ch. 25.
 
 #pragma once
 
@@ -158,17 +159,59 @@ struct PixelHit {
     return PixelHit{HitKind::Background, 0.0, order};
 }
 
-// Illustrative warm colour for a disk hit. Brightness falls with radius
-// (inner edge brightest) and with image order; hue whitens toward the hot
-// inner edge. NOT a radiometric calculation (visualization_metaphor).
-[[nodiscard]] inline Rgb disk_colour(double r, int order, const DiskView& v) {
-    const double inner = v.r_in_M;
-    const double t = std::clamp(inner / r, 0.0, 1.0); // 1 at inner edge
-    double lum = std::pow(t, 3.0);                    // falloff outward
-    if (order > 0) {
-        lum *= 0.45 / static_cast<double>(order); // higher orders dimmer
+// Relativistic redshift factor g = nu_observed / nu_emitted for material on
+// a circular geodesic orbit at radius r in Schwarzschild, seen at observer
+// inclination i, for a photon whose conserved axial angular momentum maps to
+// image coordinate X (the horizontal celestial coordinate, perpendicular to
+// the projected spin axis):
+//
+//     g = sqrt(1 - 3M/r) / (1 + r^{-3/2} X sin i)        (M = 1)
+//
+//   - Numerator sqrt(1 - 3M/r): combined gravitational + orbital time
+//     dilation of a circular-geodesic emitter (1/u^t). Real for r > 3M; the
+//     disk inner edge r_in >= 6M keeps it well-defined.
+//   - Denominator: the longitudinal Doppler shift from the orbital velocity.
+//     X sin i = -L_z/E is the Cunningham-Bardeen relation between the
+//     conserved axial angular momentum and the image coordinate, so one side
+//     of the disk (material moving toward the observer) is blueshifted
+//     (g > 1) and the other redshifted (g < 1). This is the famous
+//     brightness asymmetry, and it vanishes at i = 0 (face-on) as it must.
+//
+// Observed specific intensity transforms as I_obs = g^3 I_em (Liouville's
+// theorem; I_nu/nu^3 is invariant), so bolometric flux scales as g^4.
+//
+// Truth tier: analytic_classical formula (the redshift factor is exact GR);
+// applied to a visualization_metaphor emissivity model below.
+// Reference: Cunningham 1975; Luminet 1979; MTW 1973.
+[[nodiscard]] inline double redshift_factor(double r, double X, double sin_i) {
+    if (r <= 3.0) {
+        return 0.0; // no stable circular orbit emission inside 3M
     }
-    lum = std::clamp(lum, 0.0, 1.0);
+    const double numer = std::sqrt(1.0 - 3.0 / r);
+    double denom = 1.0 + std::pow(r, -1.5) * X * sin_i;
+    if (denom < 0.05) {
+        denom = 0.05; // guard the extreme blueshifted edge (rendering only)
+    }
+    return numer / denom;
+}
+
+// Warm colour for a disk hit, now including relativistic beaming and the
+// frequency shift. Brightness falls with radius (intrinsic, illustrative)
+// and is multiplied by g^4 (beaming); the colour temperature is shifted by
+// g (blueshift -> hotter/whiter, redshift -> redder). The emissivity profile
+// and colour ramp are a visualization_metaphor; the g factor is exact GR.
+[[nodiscard]] inline Rgb disk_colour(double r, int order, double X,
+                                     double sin_i, const DiskView& v) {
+    const double inner = v.r_in_M;
+    const double g = redshift_factor(r, X, sin_i);
+
+    double emiss = std::pow(std::clamp(inner / r, 0.0, 1.0), 3.0); // falloff
+    if (order > 0) {
+        emiss *= 0.45 / static_cast<double>(order); // higher orders dimmer
+    }
+    double lum = std::clamp(emiss * std::pow(g, 4.0), 0.0, 1.0); // beaming g^4
+
+    const double t = std::clamp((inner / r) * g, 0.0, 1.0); // shifted temp
     const double R = 1.0;
     const double G = 0.45 + 0.55 * t;
     const double B = 0.15 * t * t;
@@ -185,6 +228,8 @@ struct PixelHit {
     const int w = img.width();
     const int h = img.height();
     const Rgb background{4, 4, 9}; // near-black sky floor
+    const double sin_i =
+        std::sin(v.inclination_deg * 3.141592653589793 / 180.0);
 
     for (int j = 0; j < h; ++j) {
         const double Y = H - (2.0 * H) * j / (h - 1);
@@ -193,7 +238,7 @@ struct PixelHit {
             const PixelHit hit = trace_disk_pixel(X, Y, v);
             switch (hit.kind) {
             case HitKind::Disk:
-                img.set(i, j, disk_colour(hit.r_disk, hit.order, v));
+                img.set(i, j, disk_colour(hit.r_disk, hit.order, X, sin_i, v));
                 break;
             case HitKind::Shadow:
                 img.set(i, j, Rgb{0, 0, 0});

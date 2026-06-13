@@ -4,10 +4,11 @@
 
 *A gravitationally lensed thin accretion disk at 80 deg inclination, rendered
 by this engine from the validated Schwarzschild null-geodesic equation. The
-disk's far side is bent up and over the shadow by spacetime curvature — the
-canonical lensed-black-hole image. Geometry is `numerical_approximation`;
-colour is a `visualization_metaphor` (no Doppler/redshift yet). See
-[docs/images/](docs/images/README.md).*
+disk's far side is bent up and over the shadow by spacetime curvature (the
+lensing warp), and one side blazes bright while the other dims — relativistic
+Doppler beaming of the orbiting material (∝ g⁴), the EHT-style asymmetry. The
+lensing geometry and the redshift factor g are GR-exact; the emissivity/colour
+ramp is a `visualization_metaphor`. See [docs/images/](docs/images/README.md).*
 
 Research-first C++20 black hole simulation lab, building toward a **visual,
 GPU-accelerated black hole simulation you can run on your own machine**.
