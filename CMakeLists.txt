@@ -147,11 +147,27 @@ else()
     target_compile_options(blackhole_ds_shadow_tests PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+add_executable(blackhole_ds_render_tests
+    tests/render_tests.cpp
+)
+
+target_include_directories(blackhole_ds_render_tests
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+if(MSVC)
+    target_compile_options(blackhole_ds_render_tests PRIVATE /W4)
+else()
+    target_compile_options(blackhole_ds_render_tests PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
 add_test(NAME blackhole_ds_smoke_tests COMMAND blackhole_ds_smoke_tests)
 add_test(NAME blackhole_ds_integrator_tests COMMAND blackhole_ds_integrator_tests)
 add_test(NAME blackhole_ds_cli_tests COMMAND blackhole_ds_cli_tests)
 add_test(NAME blackhole_ds_geodesic_tests COMMAND blackhole_ds_geodesic_tests)
 add_test(NAME blackhole_ds_shadow_tests COMMAND blackhole_ds_shadow_tests)
+add_test(NAME blackhole_ds_render_tests COMMAND blackhole_ds_render_tests)
 
 # The bare-run test asserts on output content, not just the exit code, so a
 # silently-broken CLI cannot pass (inspection finding S07.08).
@@ -172,3 +188,11 @@ set_tests_properties(blackhole_ds_help PROPERTIES
 # A bad flag exits non-zero.
 add_test(NAME blackhole_ds_badflag COMMAND blackhole_ds --bogus)
 set_tests_properties(blackhole_ds_badflag PROPERTIES WILL_FAIL TRUE)
+
+# Image render reports a measured shadow radius near the analytic sqrt(27)
+# ~ 5.2 M (the exact digit is resolution-dependent; render_tests checks the
+# within-one-pixel agreement rigorously).
+add_test(NAME blackhole_ds_image
+    COMMAND blackhole_ds --image ${CMAKE_CURRENT_BINARY_DIR}/shadow_test.ppm)
+set_tests_properties(blackhole_ds_image PROPERTIES
+    PASS_REGULAR_EXPRESSION "Measured shadow radius: 5\\.[12]")

@@ -61,6 +61,35 @@ Licensing (S19.09, S19.10, S19.11):
 Verified: clang-format idempotent on all 15 files, build clean, 7/7 CTest
 suites pass, validation green.
 
+## 2026-06-13 (First raster image: shadow + photon ring to PPM)
+
+The first real raster (pixel) image, building on the M1 geodesics.
+
+- `include/blackhole_ds/viz/ppm_writer.hpp`: a dependency-free RGB `Image`
+  with binary (P6) and ASCII (P3) PPM writers. Pure infrastructure; every
+  future raster output (CPU lensing, GPU render) uses it.
+- `include/blackhole_ds/viz/shadow_image.hpp`: renders the Schwarzschild
+  shadow encircled by its photon ring. The shadow (b < sqrt(27) M) is
+  black; the ring brightness is driven by the *actual integrated
+  deflection angle* delta(b) from the validated geodesic module — bright
+  where light winds near the photon sphere, fading to a dim sky floor far
+  out. Honest tiering: shadow radius is analytic_classical; the brightness
+  ordering follows the numerical deflection; the colour map itself is a
+  visualization_metaphor (not a radiometric flux calculation).
+- `tests/render_tests.cpp`: PPM P6/P3 byte-level checks, out-of-bounds
+  safety, ring-brightness ordering (shadow dark < far field < ring), and
+  the headline validation — the shadow radius measured FROM the rendered
+  401px image matches sqrt(27) M to within one pixel.
+- `src/cli/main.cpp`: `--image <file.ppm>` writes the render and prints the
+  measured vs analytic shadow radius. View the PPM in any image viewer
+  (GIMP, IrfanView, ImageMagick `magick shadow.ppm shadow.png`).
+- CMake: `blackhole_ds_render_tests` plus an `--image` CTest (11 suites
+  total, all green). New files registered in the validation gate.
+
+Capability: a stronger rung-3 step than the ASCII shadow — a true pixel
+image whose ring structure comes from real geodesic bending. Next (M3):
+lens an accretion disk / background so the iconic asymmetric image appears.
+
 ## 2026-06-13 (First image: the black-hole shadow)
 
 The project draws its first picture of a black hole.

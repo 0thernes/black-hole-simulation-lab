@@ -50,6 +50,10 @@ ctest --test-dir build -C Release --output-on-failure
 
 # Render the black-hole shadow as ASCII art:
 .\build\Release\blackhole_ds.exe --shadow
+
+# Render a real raster image (shadow + photon ring) to a PPM file:
+.\build\Release\blackhole_ds.exe --image shadow.ppm
+# View it in any image viewer, or convert: magick shadow.ppm shadow.png
 ```
 
 New here? Read [docs/INDEX.md](docs/INDEX.md) (the documentation map) and
@@ -57,8 +61,9 @@ New here? Read [docs/INDEX.md](docs/INDEX.md) (the documentation map) and
 
 ## Current Status
 
-A validated analytic core with research infrastructure — not yet a GRMHD
-or numerical-relativity solver, and not yet visual.
+A validated analytic core that now bends light and draws its first images —
+not yet a GRMHD or numerical-relativity solver, and not yet a lensed
+accretion-disk render, but past "calculator" and onto the visual ladder.
 
 Implemented now:
 
@@ -66,10 +71,12 @@ Implemented now:
   (exact Schwarzschild and Kerr observables), `integrators/` (tested RK4 +
   adaptive Dormand-Prince), `geodesics/` (Schwarzschild photon orbits —
   light bending, validated against the Eddington 4M/b deflection),
-  `viz/` (ASCII shadow render), `data/` (full-precision CSV export).
+  `viz/` (ASCII shadow + PPM raster shadow/photon-ring render),
+  `data/` (full-precision CSV export).
 - CLI executable with `--mass`, `--spin`, `--format text|csv`, `--steps`,
-  `--deflection <b/M>` (light bending), and `--shadow` (renders the
-  black-hole shadow as ASCII).
+  `--deflection <b/M>` (light bending), `--shadow` (ASCII shadow), and
+  `--image <file.ppm>` (raster shadow + photon ring, with the measured
+  shadow radius validated against the analytic sqrt(27) M).
 - Strong physical-units header (`include/blackhole_ds/units.hpp`) with
   compile-time dimensional safety, enforced by tests.
 - Brain/Soul reasoning-lens corpus: 20 XML profiles (physicists,

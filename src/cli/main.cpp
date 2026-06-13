@@ -13,6 +13,7 @@
 // Truth label of all printed values: analytic_classical.
 
 #include <cstdlib>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -24,6 +25,7 @@
 #include "blackhole_ds/metrics/kerr.hpp"
 #include "blackhole_ds/metrics/schwarzschild.hpp"
 #include "blackhole_ds/viz/ascii_shadow.hpp"
+#include "blackhole_ds/viz/shadow_image.hpp"
 
 namespace bhds = blackhole_ds;
 using bhds::cli::Options;
@@ -42,6 +44,8 @@ void print_help(std::ostream& os) {
        << "  --deflection <b/M>   Light deflection for impact parameter b "
           "(in units of M)\n"
        << "  --shadow             Render the black-hole shadow as ASCII art\n"
+       << "  --image <file.ppm>   Render the shadow + photon ring to a PPM "
+          "image\n"
        << "  --help               Print this help\n"
        << "\n"
        << "Truth label of all printed values: analytic_classical.\n";
@@ -158,6 +162,25 @@ int main(int argc, char** argv) {
                   << "Truth tier: visualization_metaphor; the shadow radius "
                      "sqrt(27) M is analytic_classical\n\n";
         bhds::viz::render_shadow(std::cout);
+        return EXIT_SUCCESS;
+    }
+    if (opt.image_set) {
+        const bhds::viz::Image img = bhds::viz::render_shadow_image();
+        std::ofstream out(opt.image_path, std::ios::binary);
+        if (!out) {
+            std::cerr << "could not open image path: " << opt.image_path
+                      << '\n';
+            return EXIT_FAILURE;
+        }
+        img.write_ppm(out);
+        const double r = bhds::viz::measured_shadow_radius_M(
+            img, bhds::viz::ShadowImageView{}.half_extent_M);
+        std::cout << "Wrote " << img.width() << "x" << img.height()
+                  << " PPM shadow+photon-ring image to " << opt.image_path
+                  << "\nMeasured shadow radius: " << std::fixed
+                  << std::setprecision(3) << r
+                  << " M (analytic sqrt(27) = " << bhds::viz::shadow_radius_M()
+                  << " M)\n";
         return EXIT_SUCCESS;
     }
     if (opt.format == "csv") {

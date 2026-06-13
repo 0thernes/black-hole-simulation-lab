@@ -25,6 +25,8 @@ struct Options {
     bool deflection_set = false; // whether --deflection was given
     double deflection_b = 0.0;   // impact parameter b/M for light bending
     bool shadow = false;         // render the ASCII shadow
+    std::string image_path;      // --image <file.ppm>: render to PPM
+    bool image_set = false;      // whether --image was given
 };
 
 [[nodiscard]] inline bool parse_double(std::string_view s, double& out) {
@@ -108,6 +110,14 @@ struct Options {
             opt.deflection_set = true;
         } else if (arg == "--shadow") {
             opt.shadow = true;
+        } else if (arg == "--image") {
+            const auto v = need_value("--image");
+            if (v.empty()) {
+                err << "invalid --image value (need an output path)\n";
+                return false;
+            }
+            opt.image_path = std::string(v);
+            opt.image_set = true;
         } else {
             err << "unknown argument: " << arg << '\n';
             return false;
