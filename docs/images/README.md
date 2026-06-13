@@ -13,6 +13,7 @@ validated geodesic physics — regenerate any time with the commands below.
 | `lensed_disk_i20.png` | The same disk at 20 deg inclination (near face-on) — a more open ring with a milder Doppler asymmetry. |
 | `shadow_photon_ring.png` | The bare Schwarzschild shadow encircled by its photon ring (brightness from the integrated deflection angle). |
 | `kerr_shadow_a099_i80.png` | The shadow of a **spinning** (Kerr) black hole, spin a/M = 0.99, observer inclination 80 deg. Unlike the Schwarzschild circle, it is an asymmetric **D-shape**: spin flattens the co-rotating side and displaces the whole shadow (here by 4.67 M in the horizontal α-extent). This is the closed-form Bardeen 1973 boundary — the defining visual signature of black-hole spin, and what the EHT uses to constrain it. |
+| `kerr_disk_a09_i78.png` | The gravitationally lensed accretion disk around a **spinning** (Kerr) black hole, spin a/M = 0.9 at 78 deg inclination, **ray-traced through real Kerr null geodesics** (not the planar Schwarzschild approximation). The far side of the disk bends up over the shadow (the lensing warp), one side is Doppler-beamed bright, and frame dragging twists the geometry. Anchored by an a → 0 regression: at zero spin the tracer reproduces the Schwarzschild disk. |
 
 ## How they were made
 
@@ -23,6 +24,8 @@ blackhole_ds --disk lensed_disk_i20.ppm --inclination 20
 blackhole_ds --image shadow_photon_ring.ppm
 # Kerr (spinning) shadow — the asymmetric D-shape:
 blackhole_ds --kerr-shadow kerr_shadow_a099_i80.ppm --spin 0.99 --inclination 80
+# Frame-dragged Kerr lensed disk (slow — real geodesic ray trace):
+blackhole_ds --kerr-disk kerr_disk_a09_i78.ppm --spin 0.9 --inclination 78
 # e.g. ImageMagick:  magick lensed_disk_i80.ppm lensed_disk_i80.png
 ```
 
@@ -46,7 +49,19 @@ blackhole_ds --kerr-shadow kerr_shadow_a099_i80.ppm --spin 0.99 --inclination 80
   `visualization_metaphor`. The lensed *disk* image is still Schwarzschild —
   frame dragging is not yet folded into the disk ray trace.
 
-See `include/blackhole_ds/viz/disk_image.hpp` for the disk derivation and
+- The **Kerr lensed disk** (`kerr_disk_a09_i78.png`) is ray-traced through
+  real Kerr null geodesics (`viz/kerr_disk_image.hpp`): the lensing geometry
+  and trajectory are `numerical_approximation` (geodesic integration whose
+  conserved-quantity drift is bounded and tested), the Kerr circular-orbit
+  redshift factor is `analytic_classical`, and the emissivity/colour ramp is a
+  `visualization_metaphor`. Its correctness is anchored by an a → 0 regression:
+  at zero spin it reproduces the Schwarzschild disk tracer.
+
+See `include/blackhole_ds/viz/disk_image.hpp` for the Schwarzschild disk and
 `tests/disk_tests.cpp` for its symmetry invariants;
 `include/blackhole_ds/geodesics/kerr_shadow.hpp` for the Kerr shadow boundary
-and `tests/kerr_shadow_tests.cpp` for the circle-limit and asymmetry tests.
+and `tests/kerr_shadow_tests.cpp` for the circle-limit and asymmetry tests;
+`include/blackhole_ds/geodesics/kerr_geodesic.hpp` +
+`include/blackhole_ds/viz/kerr_disk_image.hpp` for the Kerr geodesic engine and
+disk ray tracer, with `tests/kerr_geodesic_tests.cpp` and
+`tests/kerr_disk_tests.cpp` for the conservation and a → 0 regression checks.

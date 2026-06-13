@@ -88,7 +88,7 @@ top-level directory or change ownership semantics.
 |-- CMakeLists.txt                     Build configuration
 |-- CODEOWNERS                         GitHub code ownership
 |-- CONTRIBUTING.md                    Contribution rules
-|-- LICENSE                            AGPL-3.0 (see ADR-0006 for rationale)
+|-- LICENSE                            Proprietary, All Rights Reserved (see ADR-0009)
 |-- README.md                          Project entrypoint
 `-- SECURITY.md                        Security policy
 ```

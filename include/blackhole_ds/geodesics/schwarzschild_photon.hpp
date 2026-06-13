@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-// Copyright (C) 2026 0thernes <0_0@0thernes.art>
+// SPDX-License-Identifier: LicenseRef-Proprietary-AllRightsReserved
+// Copyright (c) 2026 0thernes <0_0@0thernes.art>. All Rights Reserved.
 // blackhole_ds/geodesics/schwarzschild_photon.hpp
 // First geodesic module (roadmap M1): equatorial null geodesics in
 // Schwarzschild spacetime, i.e. how light bends around a non-rotating

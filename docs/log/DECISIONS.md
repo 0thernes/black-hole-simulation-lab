@@ -212,3 +212,84 @@ Numbers are assigned in order. Do not renumber.
   and the active decision.
 - Original (incorrect) decision text: keep the root LICENSE as MIT and
   defer the license question.
+
+## ADR-0009: Relicense to proprietary, All Rights Reserved (supersedes ADR-0006)
+
+- Date: 2026-06-13
+- Status: accepted
+- Context: ADR-0006 set the license to AGPL-3.0 on the reasoning that an open
+  research lab benefits from strong copyleft. On review, the author's intent
+  for this specific body of work has changed: the simulation kernel (the
+  compile-time dimensional-units system, the Carter-separated Mino-time Kerr
+  geodesic engine, the closed-form Bardeen shadow renderer, the truth-tier
+  discipline, and the brain/soul reasoning-lens corpus) is treated as novel,
+  proprietary intellectual property. The author is the sole copyright holder
+  (see `AUTHORS`; `git shortlog -sn` shows a single contributor), so a
+  relicense requires no third-party consent. ADR-0006 itself anticipated this:
+  "Any future relicensing requires a new ADR and consent of all copyright
+  holders at that time" — this ADR is that record.
+- Decision: The project license is **Proprietary — All Rights Reserved**. The
+  root `LICENSE` is replaced with a proprietary license that reserves all
+  rights, grants only a limited source-viewing permission, grants no patent
+  rights, prohibits use/copying/modification/redistribution and use as ML
+  training data absent a separate signed agreement, takes contributions by
+  assignment (inbound != outbound), and disclaims warranty and liability. Every
+  C/C++ source file's SPDX tag is changed from `AGPL-3.0-or-later` to
+  `LicenseRef-Proprietary-AllRightsReserved`, and the copyright line gains
+  "All Rights Reserved." `NOTICE`, `README`, `CONTRIBUTING`, `HIERARCHY`, the
+  two integration docs, and the inspiration briefing are updated to match.
+- Consequences:
+  - No one may use, build, redistribute, or derive from the Work without a
+    written license from the author. This is intentional for novel IP.
+  - The dependency calculus inverts: permissive upstreams (MIT/BSD/Apache-2.0)
+    may be linked in with notices preserved; **copyleft upstreams
+    (GPL/AGPL/LGPL-static) may NOT** be incorporated without a separate
+    commercial license, because they would force this Work open. ADR-0005's
+    integration gate must enforce this.
+  - Historical audit documents (`docs/audits/*`, `CHANGELOG` entries) that
+    state "AGPL" remain unedited as a point-in-time record, consistent with
+    ADR-0003 discipline. They describe the past, not the present.
+  - The author may still open-source any explicitly designated future version
+    (LICENSE §9); this decision does not foreclose that, it just makes the
+    default closed.
+- Alternatives considered:
+  - Keep AGPL-3.0 (rejected: does not match the author's intent to hold this
+    as novel proprietary IP; AGPL would compel disclosure of any networked
+    derivative).
+  - Dual-license (open core + commercial) (deferred: more governance than a
+    solo research lab needs today; revisit if external demand appears).
+  - A custom "source-available, non-commercial" license such as PolyForm
+    Noncommercial or BUSL (considered: viable, but a plain All-Rights-Reserved
+    proprietary grant is the least ambiguous expression of the author's intent
+    right now and is trivially loosened later under §9).
+
+## ADR-0010: Canonical working-tree path moves into the Vibe-Coded (AI) / CLAUDECODE workspace
+
+- Date: 2026-06-13
+- Status: accepted
+- Context: ADR-0003 named `Z:\Orca\Workspaces\Stress Test Agents Maxxxing` as
+  the authoritative local working tree. The author consolidates all
+  Claude-Code-managed projects under `Z:\[Vibe Coded (AI)]\CLAUDECODE\` (siblings:
+  "Chaos Entropy Art Engine", "Cosmogonic Quantum Mechalogodrom",
+  "Professional Calculator", "Art Provenance Vault", etc.). Keeping this repo
+  in a separate `Orca\Workspaces` tree fragments the portfolio.
+- Decision: Move the entire working tree (including `.git`, excluding nothing)
+  to `Z:\[Vibe Coded (AI)]\CLAUDECODE\Black Hole Simulation Lab`. The Git
+  history, the `origin` remote
+  (`https://github.com/0thernes/Stress-Test-Agents-Maxxxing.git`), and the
+  GitHub repo identity are unchanged — only the local filesystem path moves.
+  This ADR amends, but does not delete, the path stated in ADR-0003.
+- Consequences:
+  - All local automation that hard-codes the old path
+    (`CONTRIBUTING.md` daily-workflow block, any `scripts/`/`.vscode/` paths)
+    must be updated; the move is a one-time rename on the same Z: volume, so it
+    is fast and the `.git` directory travels intact.
+  - Prior Claude Code session history keyed by the old path does not follow the
+    move; this is expected and harmless.
+  - The GitHub remote and clone URL are unaffected; `git remote -v` still
+    points at the same origin after the move.
+- Alternatives considered:
+  - Re-clone fresh at the new path (rejected: loses local uncommitted work and
+    ignored build state; a move preserves everything).
+  - Leave it in `Orca\Workspaces` (rejected: the author explicitly wants one
+    consolidated CLAUDECODE portfolio).

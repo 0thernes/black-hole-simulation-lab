@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-// Copyright (C) 2026 0thernes <0_0@0thernes.art>
+// SPDX-License-Identifier: LicenseRef-Proprietary-AllRightsReserved
+// Copyright (c) 2026 0thernes <0_0@0thernes.art>. All Rights Reserved.
 // tests/integrator_tests.cpp
 // Verifies the RK4 and adaptive Dormand-Prince integrators against ODEs
 // with known closed-form solutions, and checks the convergence order.

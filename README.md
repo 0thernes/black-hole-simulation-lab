@@ -35,7 +35,8 @@ This is the real local repository. Source code, research notes, audits,
 tests, logs, and architecture decisions belong here and get committed
 through Git. ZIP files are intake artifacts only, never the source of truth.
 
-> **License:** AGPL-3.0 · **CI:** GitHub Actions on `windows-latest`
+> **License:** Proprietary — All Rights Reserved (see `LICENSE`, ADR-0009) ·
+> **CI:** GitHub Actions on `windows-latest`
 > (MSVC, green) · **Language:** C++20 + Python 3.11 · **Build:** CMake ≥ 3.20
 
 ## Table of Contents
@@ -79,6 +80,9 @@ ctest --test-dir build -C Release --output-on-failure
 
 # Render the asymmetric shadow of a SPINNING (Kerr) black hole:
 .\build\Release\blackhole_ds.exe --kerr-shadow kerr.ppm --spin 0.99 --inclination 80
+
+# Render the frame-dragged Kerr lensed accretion disk (slow; real geodesics):
+.\build\Release\blackhole_ds.exe --kerr-disk kerr_disk.ppm --spin 0.9 --inclination 78
 ```
 
 New here? Read [docs/INDEX.md](docs/INDEX.md) (the documentation map) and
@@ -102,14 +106,17 @@ Implemented now:
   null-geodesic integrator** — the Carter-separated equations of motion in
   Mino time, validated by constants-of-motion conservation),
   `viz/` (ASCII shadow, PPM shadow/photon-ring, lensed Doppler-beamed disk,
-  and Kerr asymmetric-shadow renders), `data/` (full-precision CSV export).
+  Kerr asymmetric-shadow, and the frame-dragged Kerr lensed-disk ray tracer),
+  `data/` (full-precision CSV export).
 - CLI executable with `--mass`, `--spin`, `--format text|csv`, `--steps`,
   `--deflection <b/M>` (light bending), `--shadow` (ASCII shadow),
   `--image <file.ppm>` (raster shadow + photon ring, with the measured
   shadow radius validated against the analytic sqrt(27) M),
   `--disk <file.ppm> --inclination <deg>` (lensed accretion disk with
-  gravitational + Doppler redshift), and `--kerr-shadow <file.ppm>` (the
-  spinning black hole's asymmetric D-shaped shadow, exact at a → 0).
+  gravitational + Doppler redshift), `--kerr-shadow <file.ppm>` (the
+  spinning black hole's asymmetric D-shaped shadow, exact at a → 0), and
+  `--kerr-disk <file.ppm>` (the frame-dragged Kerr lensed disk, ray-traced
+  through real Kerr null geodesics).
 - Strong physical-units header (`include/blackhole_ds/units.hpp`) with
   compile-time dimensional safety, enforced by tests.
 - Brain/Soul reasoning-lens corpus: 20 XML profiles (physicists,
@@ -123,12 +130,11 @@ Implemented now:
 
 Not implemented yet (in build order):
 
-- Full equatorial geodesic with conserved-quantity tracking (the current
-  photon module integrates the orbit shape; finishing M1).
-- Lensed background + accretion-disk rendering (the ASCII shadow is a
-  silhouette only — no lensing of a star field, no disk, no colour yet).
-- Ray-marched photon renderer on the GPU (the headline goal; the CPU
-  shadow is the seed of it).
+- Lensed background **star field** behind the disk (the disk, its colour, the
+  Doppler beaming, and the higher-order lensed images are done; an external
+  celestial-sphere background to lens is not).
+- GPU port of the ray marcher (CUDA, RTX-class — the headline goal; the CPU
+  Kerr disk/shadow tracers are the validated seed of it).
 - GRMHD or numerical-relativity solver.
 - Truth-tier column in the SQLite schema.
 - Production Power BI/Excel templates.
@@ -142,7 +148,7 @@ Not implemented yet (in build order):
 |-- CMakeLists.txt                  C++20 build (CMake >= 3.20)
 |-- README.md
 |-- AUDIT-250-POINT-GOLD-STANDARD.md
-|-- CODEOWNERS / CONTRIBUTING.md / SECURITY.md / LICENSE (AGPL-3.0)
+|-- CODEOWNERS / CONTRIBUTING.md / SECURITY.md / LICENSE (proprietary, All Rights Reserved)
 |-- assets/diagrams/                Source diagrams (Mermaid)
 |-- data/schema.sql                 Canonical SQLite star schema
 |-- docs/
@@ -312,9 +318,9 @@ The visual simulation is the destination; these are the steps in order.
    stability).
 5. First lensed-image computation on CPU — DONE (lensed Doppler-beamed disk +
    shadow/photon ring). Kerr shadow — DONE (closed-form Bardeen boundary,
-   `--kerr-shadow`). Remaining: fold frame dragging into the *disk* ray trace
-   (full Kerr geodesics with the Carter constant), so the disk image itself is
-   spinning, not just the silhouette.
+   `--kerr-shadow`). Kerr null-geodesic integrator + **frame-dragged Kerr
+   lensed disk** — DONE (`--kerr-disk`, real geodesics with the Carter
+   constant, anchored by an a → 0 regression to the Schwarzschild disk).
 6. GPU port of the ray marcher (CUDA, RTX 5070 Ti class) - the first
    visual prototype: gravitationally lensed accretion-disk render with
    honest tier labeling (visualization_metaphor for color mapping,

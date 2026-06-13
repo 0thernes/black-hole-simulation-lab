@@ -108,13 +108,18 @@ ships with a documented build path for RTX-class hardware.
   (`geodesics/kerr_shadow.hpp`, `--kerr-shadow`), an asymmetric D-shape that
   reduces exactly to the sqrt(27) M Schwarzschild circle as a → 0 (tested).
   Reference render `docs/images/kerr_shadow_a099_i80.png`.
-- Kerr null geodesics (Carter constant). Integrator core DONE —
-  `geodesics/kerr_geodesic.hpp`, the Carter-separated equations of motion in
-  Mino time (second-order, turning-point-safe), validated by conserved-quantity
-  drift + an independent cross-check against the closed-form photon orbit.
-  REMAINING: wire this integrator into the disk ray trace (backward-trace each
-  pixel through the Kerr geodesic, find equatorial disk crossings) so the disk
-  image itself is Kerr — frame-dragged lensing, not just the silhouette.
+- Kerr null geodesics (Carter constant). DONE — `geodesics/kerr_geodesic.hpp`,
+  the Carter-separated equations of motion in Mino time, validated by
+  conserved-quantity drift + a cross-check against the closed-form photon orbit.
+- Frame-dragged Kerr lensed accretion-disk image. DONE —
+  `viz/kerr_disk_image.hpp` + `--kerr-disk`: per-pixel backward ray tracing
+  through the Kerr geodesic, equatorial-crossing detection for the lensed disk,
+  horizon capture for the shadow, and the Kerr circular-orbit redshift factor
+  for Doppler beaming. Anchored by an a → 0 regression against the Schwarzschild
+  disk tracer. Reference render `docs/images/kerr_disk_a09_i78.png`.
+- REMAINING for full M5: a quantitative spin-vs-shadow-asymmetry curve compared
+  against published EHT-style values (the comparison is currently qualitative);
+  optional GRMHD-style emissivity instead of the illustrative ramp.
 
 **Exit criterion:** a Kerr render shows the characteristic asymmetric
 photon ring; shadow asymmetry vs spin matches published EHT-style curves

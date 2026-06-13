@@ -7,14 +7,15 @@ this document and the architecture decision records in
 
 ## Licensing of Contributions
 
-This project is licensed under **AGPL-3.0-or-later** (see `LICENSE`,
-`NOTICE`, and ADR-0006). Contributions are accepted under the
-**inbound = outbound** model: by submitting a contribution you agree that it
-is licensed under the same AGPL-3.0-or-later terms as the project, and that
-you have the right to submit it under those terms.
+This is **proprietary software — All Rights Reserved** (see `LICENSE`,
+`NOTICE`, and ADR-0009). It is not open source. By submitting a contribution
+you **assign** it to the Author (0thernes) so the Work can continue to be
+licensed as a unified proprietary whole, and you confirm you have the right to
+make that assignment. Do not submit material you are not entitled to assign.
 
 - New C/C++/Python/PowerShell source files should carry the SPDX header:
-  `SPDX-License-Identifier: AGPL-3.0-or-later` plus a copyright line.
+  `SPDX-License-Identifier: LicenseRef-Proprietary-AllRightsReserved` plus the
+  copyright line `Copyright (c) 2026 0thernes <0_0@0thernes.art>. All Rights Reserved.`
 - Add yourself to `AUTHORS` in the same PR as your first contribution.
 - Sign your commits with `git commit -s` (Developer Certificate of Origin)
   if you are able; it is encouraged but not yet strictly required.
@@ -41,7 +42,7 @@ you have the right to submit it under those terms.
 ## Daily Workflow
 
 ```powershell
-cd "Z:\Orca\Workspaces\Stress Test Agents Maxxxing"
+cd "Z:\[Vibe Coded (AI)]\CLAUDECODE\Black Hole Simulation Lab"
 git pull --rebase origin main
 
 # Make your change. Always start a feature branch for non-trivial work.

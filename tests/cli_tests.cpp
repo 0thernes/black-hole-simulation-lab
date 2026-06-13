@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-// Copyright (C) 2026 0thernes <0_0@0thernes.art>
+// SPDX-License-Identifier: LicenseRef-Proprietary-AllRightsReserved
+// Copyright (c) 2026 0thernes <0_0@0thernes.art>. All Rights Reserved.
 // tests/cli_tests.cpp
 // Unit tests for the CLI argument parser (blackhole_ds/cli/options.hpp) and
 // the CSV writer (blackhole_ds/data/csv_writer.hpp). Inspection findings

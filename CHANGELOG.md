@@ -3,6 +3,35 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-06-13 (Relicense to proprietary + workspace relocation + Tier-1 audit)
+
+Three coupled changes, all recorded in ADRs.
+
+- **Relicense → Proprietary, All Rights Reserved** (ADR-0009, supersedes the
+  AGPL-3.0 decision in ADR-0006). Root `LICENSE` rewritten as a proprietary
+  All-Rights-Reserved grant (limited source-viewing only; no use/copy/modify/
+  redistribute; no patent grant; no-ML-training clause; contributions by
+  assignment; warranty + liability disclaimers; governing-law/severability;
+  §9 future-relicensing path). `NOTICE` rewritten. **All 31 C/C++ source files**
+  re-tagged `SPDX-License-Identifier: LicenseRef-Proprietary-AllRightsReserved`
+  with an "All Rights Reserved" copyright line. README, CONTRIBUTING,
+  HIERARCHY, TSOTCHKE_ECOSYSTEM, ESHKOL_INTEGRATION, and INSPIRATION_BRIEFING
+  updated; dependency-compatibility calculus inverted (permissive deps OK,
+  copyleft deps now incompatible without a commercial license). Historical
+  audit docs left stating "AGPL" as point-in-time record.
+- **Relocation** (ADR-0010): canonical working tree moved from
+  `Z:\Orca\Workspaces\Stress Test Agents Maxxxing` to
+  `Z:\[Vibe Coded (AI)]\CLAUDECODE\Black Hole Simulation Lab`. Git history and
+  the `origin` remote are unchanged — local path only.
+- **Tier-1 full audit** added at
+  `docs/audits/AUDIT-2026-06-13-RELOCATION-AND-TIER1-REVIEW.md` (verdict A−:
+  publishable research instrument, pre-GPU). Fixed a README status-drift
+  integrity bug (the "Not implemented yet" block contradicted the shipped Kerr
+  geodesic engine and Doppler-beamed disk). Top recommendation: parallelize the
+  render pixel loop (≈10–16× quick win, on-ramp to the GPU port).
+
+Verified: build clean, 17/17 CTest pass (30.4 s).
+
 ## 2026-06-12 (Remediation batch 3: accuracy + referential integrity)
 
 More inspection FAILs closed, weighted toward "gates that gate".
@@ -60,6 +89,39 @@ Licensing (S19.09, S19.10, S19.11):
 
 Verified: clang-format idempotent on all 15 files, build clean, 7/7 CTest
 suites pass, validation green.
+
+## 2026-06-13 (M5: the frame-dragged Kerr lensed accretion-disk image)
+
+The payoff — the gravitationally lensed accretion disk around a **spinning**
+black hole, ray-traced through real Kerr null geodesics. The far side of the
+disk is bent up and over the shadow (the Interstellar/EHT warp), one side is
+Doppler-beamed bright, and frame dragging twists the geometry and shifts the
+inner shadow — all from integrating the actual geodesic, not a planar
+approximation.
+
+- `viz/kerr_disk_image.hpp`: per-pixel backward ray tracing. Each image
+  coordinate (alpha, beta) → constants (E, L_z, Q) → an ingoing photon
+  integrated in Mino time, watching for the equatorial plane (disk crossing,
+  with higher crossings = lensed images), horizon capture (shadow), or escape
+  (background). The integrator uses the **first-order on-shell form**
+  (dr/dλ = s_r √R, dθ/dλ = s_θ √Θ recomputed each step, sign flips at genuine
+  turning points) — robust against the off-shell drift that the second-order
+  form suffers over the huge observer-to-hole radius range. Disk hits are
+  coloured by the **Kerr circular-orbit redshift factor**
+  `g = 1/[u^t(1 - Ω b)]` (g⁴ beaming + temperature shift).
+- CLI `--kerr-disk <file.ppm>` (uses `--spin`, `--inclination`).
+- `tests/kerr_disk_tests.cpp`: the central anchor is an **a → 0 regression** —
+  with zero spin the Kerr tracer reproduces the validated Schwarzschild disk
+  tracer (`viz/disk_image.hpp`) across a grid (95.5% hit-kind agreement, 90%+
+  disk-radius agreement; remaining differences are sub-pixel disk-edge and
+  lensed-ring boundaries), plus the Kerr redshift → Schwarzschild redshift
+  reduction, shadow/disk presence at high spin, and frame-dragging shadow
+  displacement. New `blackhole_ds_kerr_disk_tests` target; registered in the
+  validation gate. **17 CTest suites, all green.**
+- `docs/images/kerr_disk_a09_i78.png`: reference render (a/M = 0.9, i = 78°).
+- Truth tiers: lensing geometry/trajectory `numerical_approximation` (geodesic
+  integration, conserved-quantity-checked); redshift factor `analytic_classical`;
+  emissivity/colour a `visualization_metaphor`.
 
 ## 2026-06-13 (M5: Kerr null-geodesic integrator — the spinning-disk engine)
 

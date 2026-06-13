@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-// Copyright (C) 2026 0thernes <0_0@0thernes.art>
+// SPDX-License-Identifier: LicenseRef-Proprietary-AllRightsReserved
+// Copyright (c) 2026 0thernes <0_0@0thernes.art>. All Rights Reserved.
 // blackhole_ds/viz/disk_image.hpp
 // Roadmap M3: the iconic image -- a gravitationally lensed thin accretion
 // disk around a Schwarzschild black hole, by backward ray tracing.

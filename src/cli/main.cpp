@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-// Copyright (C) 2026 0thernes <0_0@0thernes.art>
+// SPDX-License-Identifier: LicenseRef-Proprietary-AllRightsReserved
+// Copyright (c) 2026 0thernes <0_0@0thernes.art>. All Rights Reserved.
 // src/cli/main.cpp
 // BlackHoleDS CLI entry point.
 //
@@ -26,6 +26,7 @@
 #include "blackhole_ds/metrics/schwarzschild.hpp"
 #include "blackhole_ds/viz/ascii_shadow.hpp"
 #include "blackhole_ds/viz/disk_image.hpp"
+#include "blackhole_ds/viz/kerr_disk_image.hpp"
 #include "blackhole_ds/viz/kerr_shadow_image.hpp"
 #include "blackhole_ds/viz/shadow_image.hpp"
 
@@ -54,6 +55,8 @@ void print_help(std::ostream& os) {
           "--kerr-shadow (0 face-on .. 89.9; default 78)\n"
        << "  --kerr-shadow <file> Render the asymmetric Kerr (spinning) shadow "
           "to a PPM; uses --spin and --inclination\n"
+       << "  --kerr-disk <file>   Render the frame-dragged Kerr lensed disk "
+          "(PPM, slow); uses --spin and --inclination\n"
        << "  --help               Print this help\n"
        << "\n"
        << "Truth label of all printed values: analytic_classical.\n";
@@ -238,6 +241,32 @@ int main(int argc, char** argv) {
                   << " M; 0 for a=0)\n"
                   << "Truth tier: shadow boundary analytic_classical "
                      "(Bardeen 1973); photon-ring rim is a "
+                     "visualization_metaphor.\n";
+        return EXIT_SUCCESS;
+    }
+    if (opt.kerr_disk_set) {
+        bhds::viz::KerrDiskView kv;
+        kv.spin = opt.spin_a_over_M;
+        kv.inclination_deg = opt.inclination_deg;
+        const bhds::viz::Image img = bhds::viz::render_kerr_disk_image(kv);
+        std::ofstream out(opt.kerr_disk_path, std::ios::binary);
+        if (!out) {
+            std::cerr << "could not open kerr-disk image path: "
+                      << opt.kerr_disk_path << '\n';
+            return EXIT_FAILURE;
+        }
+        img.write_ppm(out);
+        std::cout << "Wrote " << img.width() << "x" << img.height()
+                  << " PPM frame-dragged Kerr disk image to "
+                  << opt.kerr_disk_path << "\nSpin a/M: " << std::fixed
+                  << std::setprecision(3) << kv.spin
+                  << "; inclination: " << std::setprecision(1)
+                  << kv.inclination_deg << " deg; disk " << kv.r_in_M << "-"
+                  << kv.r_out_M << " M\n"
+                  << "Truth tier: geodesic lensing geometry is "
+                     "numerical_approximation (Kerr null geodesic, "
+                     "conserved-quantity-checked); redshift factor g is "
+                     "analytic_classical; emissivity/colour is a "
                      "visualization_metaphor.\n";
         return EXIT_SUCCESS;
     }

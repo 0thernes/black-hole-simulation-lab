@@ -1,23 +1,21 @@
 BlackHoleDS / OPPENGROK Black Hole Simulation Lab
-Copyright (C) 2026 0thernes <0_0@0thernes.art>
+Copyright (c) 2026 0thernes <0_0@0thernes.art>. All Rights Reserved.
 
-This program is free software: you can redistribute it and/or modify it
-under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or (at your
-option) any later version.
+This is proprietary software. It is NOT open source and is NOT in the public
+domain. No license is granted except the limited right to view the source as
+expressly stated in the LICENSE file at the repository root.
 
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
-for more details.
+You may not use, run, copy, modify, distribute, sublicense, or incorporate
+this software or any part of it — including its algorithms, methods, data
+layouts, or expression — into any other software, product, dataset, or
+machine-learning training corpus, except under a separate written agreement
+signed by the Author. For licensing inquiries: 0_0@0thernes.art.
 
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-The full license text is in the LICENSE file at the repository root. The
-license decision and its rationale are recorded in ADR-0006
-(docs/log/DECISIONS.md).
+The full terms are in the LICENSE file. The licensing decision and its
+rationale are recorded in ADR-0009 (docs/log/DECISIONS.md), which supersedes
+the former AGPL-3.0 decision in ADR-0006.
 
 Scientific note: this project models black-hole physics with explicit
-truth-tier labels (see docs/vision/SCIENTIFIC_INTEGRITY_CHARTER.md). It is
-a research and learning codebase, not a validated production solver.
+truth-tier labels (see docs/vision/SCIENTIFIC_INTEGRITY_CHARTER.md). It is a
+research and learning codebase, not a validated production solver. No warranty
+of scientific accuracy or fitness for any purpose is made or implied.

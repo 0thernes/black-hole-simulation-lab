@@ -61,7 +61,7 @@ This briefing translates those sources into **non-negotiable operating rules** f
 1. Never commit without running the local secret scanner + spell-check + at least the unit validators from units.hpp.
 2. Every new source file or major refactor gets at least 3 dedicated 250-point audit items written at the time of creation.
 3. Spelling, grammar, or naming inconsistency is an automatic audit point (category 10). Zero tolerance.
-4. The AGPL-3.0 license is intentional. This research instrument must remain free and attributable. No "open core" bait-and-switch.
+4. The proprietary, All-Rights-Reserved license is intentional (see ADR-0009). This research instrument is novel work; all rights are reserved to the Author. Any open release is a deliberate, version-scoped decision, never a silent default.
 5. When in doubt, return to the analytic formula. Then write the test that would have caught the doubt.
 
 ---

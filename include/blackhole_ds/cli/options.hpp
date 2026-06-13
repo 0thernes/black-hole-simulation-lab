@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-// Copyright (C) 2026 0thernes <0_0@0thernes.art>
+// SPDX-License-Identifier: LicenseRef-Proprietary-AllRightsReserved
+// Copyright (c) 2026 0thernes <0_0@0thernes.art>. All Rights Reserved.
 // blackhole_ds/cli/options.hpp
 // CLI option type and argument parser, extracted from main so it can be
 // unit-tested directly (inspection finding S07.06).
@@ -32,6 +32,8 @@ struct Options {
     double inclination_deg = 78.0; // --inclination <deg> for the disk view
     std::string kerr_shadow_path;  // --kerr-shadow <file.ppm>
     bool kerr_shadow_set = false;  // whether --kerr-shadow was given
+    std::string kerr_disk_path;    // --kerr-disk <file.ppm>
+    bool kerr_disk_set = false;    // whether --kerr-disk was given
 };
 
 [[nodiscard]] inline bool parse_double(std::string_view s, double& out) {
@@ -139,6 +141,14 @@ struct Options {
             }
             opt.kerr_shadow_path = std::string(v);
             opt.kerr_shadow_set = true;
+        } else if (arg == "--kerr-disk") {
+            const auto v = need_value("--kerr-disk");
+            if (v.empty()) {
+                err << "invalid --kerr-disk value (need an output path)\n";
+                return false;
+            }
+            opt.kerr_disk_path = std::string(v);
+            opt.kerr_disk_set = true;
         } else if (arg == "--inclination") {
             const auto v = need_value("--inclination");
             if (v.empty() || !parse_double(v, opt.inclination_deg) ||

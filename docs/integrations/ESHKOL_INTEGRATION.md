@@ -101,9 +101,11 @@ of the same metrics. Eshkol regenerates them when enabled.
 - **Toolchain availability on Windows.** Eshkol's primary install path is
   Homebrew on macOS. Windows installation requires either a manual build
   or WSL. Document the install path explicitly before Stage 1.
-- **License compatibility.** Eshkol's license must be reviewed against
-  AGPL-3.0 (this project's license, see ADR-0006). Record under
-  `docs/legal/`.
+- **License compatibility.** Eshkol's license must be reviewed against this
+  project's **proprietary, All-Rights-Reserved** license (see ADR-0009): a
+  copyleft (GPL/AGPL) Eshkol cannot be incorporated into this Work without a
+  separate commercial license; a permissive (MIT/BSD/Apache-2.0) Eshkol is
+  fine with notices preserved. Record under `docs/legal/`.
 - **Maintenance velocity drift.** If Eshkol releases break our transpile
   contract, Stage 4 forces a rebuild. Pin Eshkol by commit SHA in the
   ADR.
