@@ -23,10 +23,34 @@ import json
 import math
 import random
 import sqlite3
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+
+
+def current_git_commit() -> str:
+    """Return the short HEAD commit, or a clear sentinel if unavailable.
+
+    Provenance must reflect the actual source version (Scientific Integrity
+    Charter, reproducibility). Hardcoding a string defeats that. Appends
+    '-dirty' when the working tree has uncommitted changes so a run from a
+    modified tree is never mistaken for a clean, reproducible one.
+    """
+    repo_root = Path(__file__).resolve().parents[1]
+    try:
+        sha = subprocess.run(
+            ["git", "-C", str(repo_root), "rev-parse", "--short", "HEAD"],
+            check=True, text=True, capture_output=True,
+        ).stdout.strip()
+        dirty = subprocess.run(
+            ["git", "-C", str(repo_root), "status", "--porcelain"],
+            check=True, text=True, capture_output=True,
+        ).stdout.strip()
+        return f"{sha}-dirty" if dirty else sha
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError):
+        return "unknown-no-git"
 
 try:
     import numpy as np
@@ -117,6 +141,7 @@ def lyapunov_estimate(spin_a_over_M: float, r_start: float, rng=None) -> float:
 
 def generate_ensemble(n: int, base_seed: int, metric: str = "Kerr") -> List[Dict]:
     rng = np.random.default_rng(base_seed) if NUMPY_AVAILABLE else random.Random(base_seed)
+    git_commit = current_git_commit()
     runs = []
     for i in range(n):
         if NUMPY_AVAILABLE:
@@ -146,7 +171,7 @@ def generate_ensemble(n: int, base_seed: int, metric: str = "Kerr") -> List[Dict
             "lyapunov_max": round(lyapunov_estimate(a, photon_sphere_rg(a) + r_offset, rng), 8),
             "rng_seed": int(base_seed + i),
             "integrator": "numpy-reference-v1",
-            "git_commit": "vision+units+schema-2026-05-25",
+            "git_commit": git_commit,
             "created_at": datetime.now(timezone.utc).isoformat(),
         }
         runs.append(run)
@@ -159,7 +184,11 @@ def generate_ensemble(n: int, base_seed: int, metric: str = "Kerr") -> List[Dict
 def export_sqlite(runs: List[Dict], db_path: Path, ensemble_name: str):
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path)
-    conn.executescript(Path("data/schema.sql").read_text(encoding="utf-8"))
+    # Resolve the schema relative to the repo root, not the caller's CWD, so
+    # the harness works from any directory (audit: it previously crashed
+    # unless run from the repo root).
+    schema_path = Path(__file__).resolve().parents[1] / "data" / "schema.sql"
+    conn.executescript(schema_path.read_text(encoding="utf-8"))
 
     cur = conn.cursor()
     # Minimal dimension rows (idempotent)
@@ -167,8 +196,9 @@ def export_sqlite(runs: List[Dict], db_path: Path, ensemble_name: str):
     cur.execute("INSERT OR IGNORE INTO dim_observer (observer_id, inclination_deg, distance_rg) VALUES (1, 17.0, 10000.0)")
     cur.execute(
         "INSERT OR IGNORE INTO dim_ensemble (ensemble_id, name, n_runs, base_seed, theory_version) "
-        "VALUES (1, ?, ?, ?, 'vision+units+schema-2026-05-25')",
-        (ensemble_name, len(runs), runs[0]["rng_seed"] if runs else 42),
+        "VALUES (1, ?, ?, ?, ?)",
+        (ensemble_name, len(runs), runs[0]["rng_seed"] if runs else 42,
+         current_git_commit()),
     )
 
     for r in runs:
