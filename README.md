@@ -1,4 +1,4 @@
-# OPPENGROK Black Hole Simulation Lab
+# Black Hole Simulation Lab
 
 ![Lensed accretion disk around a Schwarzschild black hole, 80 deg inclination](docs/images/lensed_disk_i80.png)
 
