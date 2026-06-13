@@ -177,6 +177,21 @@ else()
     target_compile_options(blackhole_ds_disk_tests PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+add_executable(blackhole_ds_kerr_shadow_tests
+    tests/kerr_shadow_tests.cpp
+)
+
+target_include_directories(blackhole_ds_kerr_shadow_tests
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+if(MSVC)
+    target_compile_options(blackhole_ds_kerr_shadow_tests PRIVATE /W4)
+else()
+    target_compile_options(blackhole_ds_kerr_shadow_tests PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
 add_test(NAME blackhole_ds_smoke_tests COMMAND blackhole_ds_smoke_tests)
 add_test(NAME blackhole_ds_integrator_tests COMMAND blackhole_ds_integrator_tests)
 add_test(NAME blackhole_ds_cli_tests COMMAND blackhole_ds_cli_tests)
@@ -184,6 +199,7 @@ add_test(NAME blackhole_ds_geodesic_tests COMMAND blackhole_ds_geodesic_tests)
 add_test(NAME blackhole_ds_shadow_tests COMMAND blackhole_ds_shadow_tests)
 add_test(NAME blackhole_ds_render_tests COMMAND blackhole_ds_render_tests)
 add_test(NAME blackhole_ds_disk_tests COMMAND blackhole_ds_disk_tests)
+add_test(NAME blackhole_ds_kerr_shadow_tests COMMAND blackhole_ds_kerr_shadow_tests)
 
 # The bare-run test asserts on output content, not just the exit code, so a
 # silently-broken CLI cannot pass (inspection finding S07.08).
@@ -219,3 +235,13 @@ add_test(NAME blackhole_ds_disk
             --inclination 80)
 set_tests_properties(blackhole_ds_disk PROPERTIES
     PASS_REGULAR_EXPRESSION "lensed accretion-disk image")
+
+# Kerr shadow render at high spin reports a non-zero alpha-asymmetry (the spin
+# signature). The boundary itself is exercised rigorously by
+# blackhole_ds_kerr_shadow_tests; here we just confirm the CLI path works.
+add_test(NAME blackhole_ds_kerr_shadow
+    COMMAND blackhole_ds --kerr-shadow
+            ${CMAKE_CURRENT_BINARY_DIR}/kerr_shadow_test.ppm
+            --spin 0.99 --inclination 80)
+set_tests_properties(blackhole_ds_kerr_shadow PROPERTIES
+    PASS_REGULAR_EXPRESSION "Kerr shadow image")

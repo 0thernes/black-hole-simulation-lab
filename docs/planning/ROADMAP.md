@@ -98,16 +98,26 @@ reference images committed).
 within numerical tolerance, runs at least an order of magnitude faster, and
 ships with a documented build path for RTX-class hardware.
 
-## M5 — Kerr, spin, and accretion physics
+## M5 — Kerr, spin, and accretion physics (IN PROGRESS)
 
-- Kerr null geodesics (Carter constant).
-- Frame dragging and the asymmetric shadow.
-- Doppler beaming and gravitational redshift on the disk
-  (`numerical_approximation` / `observational_constraint` as appropriate).
+- Doppler beaming and gravitational redshift on the disk. DONE — exact
+  Schwarzschild thin-disk redshift factor `g`, flux ∝ g⁴
+  (`viz/disk_image.hpp`); the EHT-style bright/dim crescent.
+- Frame dragging and the asymmetric shadow. DONE for the shadow — the
+  closed-form Bardeen 1973 spherical-photon-orbit boundary
+  (`geodesics/kerr_shadow.hpp`, `--kerr-shadow`), an asymmetric D-shape that
+  reduces exactly to the sqrt(27) M Schwarzschild circle as a → 0 (tested).
+  Reference render `docs/images/kerr_shadow_a099_i80.png`.
+- Kerr null geodesics (Carter constant) for the full ray-traced *disk* —
+  REMAINING. The shadow uses the closed-form boundary; folding frame dragging
+  into the lensed-disk integrator (so the disk image itself is Kerr, not just
+  the silhouette) is the next step.
 
 **Exit criterion:** a Kerr render shows the characteristic asymmetric
 photon ring; shadow asymmetry vs spin matches published EHT-style curves
-qualitatively, with the comparison documented.
+qualitatively, with the comparison documented. (Shadow boundary + asymmetry
+metric done and tested; quantitative spin-vs-asymmetry curve comparison and
+the Kerr disk ray trace remain.)
 
 ## M6 — Ecosystem integration and scale
 

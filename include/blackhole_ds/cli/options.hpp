@@ -30,6 +30,8 @@ struct Options {
     std::string disk_path;         // --disk <file.ppm>: lensed accretion disk
     bool disk_set = false;         // whether --disk was given
     double inclination_deg = 78.0; // --inclination <deg> for the disk view
+    std::string kerr_shadow_path;  // --kerr-shadow <file.ppm>
+    bool kerr_shadow_set = false;  // whether --kerr-shadow was given
 };
 
 [[nodiscard]] inline bool parse_double(std::string_view s, double& out) {
@@ -129,6 +131,14 @@ struct Options {
             }
             opt.disk_path = std::string(v);
             opt.disk_set = true;
+        } else if (arg == "--kerr-shadow") {
+            const auto v = need_value("--kerr-shadow");
+            if (v.empty()) {
+                err << "invalid --kerr-shadow value (need an output path)\n";
+                return false;
+            }
+            opt.kerr_shadow_path = std::string(v);
+            opt.kerr_shadow_set = true;
         } else if (arg == "--inclination") {
             const auto v = need_value("--inclination");
             if (v.empty() || !parse_double(v, opt.inclination_deg) ||

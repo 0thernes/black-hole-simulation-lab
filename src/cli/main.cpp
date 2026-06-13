@@ -26,6 +26,7 @@
 #include "blackhole_ds/metrics/schwarzschild.hpp"
 #include "blackhole_ds/viz/ascii_shadow.hpp"
 #include "blackhole_ds/viz/disk_image.hpp"
+#include "blackhole_ds/viz/kerr_shadow_image.hpp"
 #include "blackhole_ds/viz/shadow_image.hpp"
 
 namespace bhds = blackhole_ds;
@@ -49,8 +50,10 @@ void print_help(std::ostream& os) {
           "image\n"
        << "  --disk <file.ppm>    Render a lensed accretion disk (PPM); see "
           "--inclination\n"
-       << "  --inclination <deg>  Observer inclination for --disk (0 face-on "
-          ".. 89.9; default 78)\n"
+       << "  --inclination <deg>  Observer inclination for --disk / "
+          "--kerr-shadow (0 face-on .. 89.9; default 78)\n"
+       << "  --kerr-shadow <file> Render the asymmetric Kerr (spinning) shadow "
+          "to a PPM; uses --spin and --inclination\n"
        << "  --help               Print this help\n"
        << "\n"
        << "Truth label of all printed values: analytic_classical.\n";
@@ -208,6 +211,34 @@ int main(int argc, char** argv) {
                      "(gravitational + orbital + Doppler) are GR-exact; "
                      "emissivity/colour is a visualization_metaphor. No Kerr "
                      "spin yet.\n";
+        return EXIT_SUCCESS;
+    }
+    if (opt.kerr_shadow_set) {
+        bhds::viz::KerrShadowView kv;
+        kv.spin = opt.spin_a_over_M;
+        kv.inclination_deg = opt.inclination_deg;
+        const bhds::viz::Image img = bhds::viz::render_kerr_shadow(kv);
+        std::ofstream out(opt.kerr_shadow_path, std::ios::binary);
+        if (!out) {
+            std::cerr << "could not open kerr-shadow image path: "
+                      << opt.kerr_shadow_path << '\n';
+            return EXIT_FAILURE;
+        }
+        img.write_ppm(out);
+        const auto poly =
+            bhds::geodesics::kerr::shadow_boundary(kv.spin, kv.inclination_deg);
+        const auto [amin, amax] = bhds::viz::shadow_alpha_extent(poly);
+        std::cout << "Wrote " << img.width() << "x" << img.height()
+                  << " PPM Kerr shadow image to " << opt.kerr_shadow_path
+                  << "\nSpin a/M: " << std::fixed << std::setprecision(3)
+                  << kv.spin << "; inclination: " << std::setprecision(1)
+                  << kv.inclination_deg << " deg\n"
+                  << "Shadow alpha-extent: [" << std::setprecision(3) << amin
+                  << ", " << amax << "] M (asymmetry = " << (amin + amax)
+                  << " M; 0 for a=0)\n"
+                  << "Truth tier: shadow boundary analytic_classical "
+                     "(Bardeen 1973); photon-ring rim is a "
+                     "visualization_metaphor.\n";
         return EXIT_SUCCESS;
     }
     if (opt.format == "csv") {

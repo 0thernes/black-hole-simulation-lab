@@ -12,6 +12,7 @@ validated geodesic physics — regenerate any time with the commands below.
 | `lensed_disk_i80.png` | Lensed thin accretion disk, observer inclination 80 deg (near edge-on). The far side is bent up and over the shadow by gravitational lensing, and one side is far brighter than the other from relativistic Doppler beaming — the canonical "Interstellar + EHT" look. |
 | `lensed_disk_i20.png` | The same disk at 20 deg inclination (near face-on) — a more open ring with a milder Doppler asymmetry. |
 | `shadow_photon_ring.png` | The bare Schwarzschild shadow encircled by its photon ring (brightness from the integrated deflection angle). |
+| `kerr_shadow_a099_i80.png` | The shadow of a **spinning** (Kerr) black hole, spin a/M = 0.99, observer inclination 80 deg. Unlike the Schwarzschild circle, it is an asymmetric **D-shape**: spin flattens the co-rotating side and displaces the whole shadow (here by 4.67 M in the horizontal α-extent). This is the closed-form Bardeen 1973 boundary — the defining visual signature of black-hole spin, and what the EHT uses to constrain it. |
 
 ## How they were made
 
@@ -20,6 +21,8 @@ validated geodesic physics — regenerate any time with the commands below.
 blackhole_ds --disk lensed_disk_i80.ppm --inclination 80
 blackhole_ds --disk lensed_disk_i20.ppm --inclination 20
 blackhole_ds --image shadow_photon_ring.ppm
+# Kerr (spinning) shadow — the asymmetric D-shape:
+blackhole_ds --kerr-shadow kerr_shadow_a099_i80.ppm --spin 0.99 --inclination 80
 # e.g. ImageMagick:  magick lensed_disk_i80.ppm lensed_disk_i80.png
 ```
 
@@ -36,8 +39,14 @@ blackhole_ds --image shadow_photon_ring.ppm
 - The **intrinsic emissivity profile and colour ramp** are a
   `visualization_metaphor` — a warm temperature-like ramp that fades with
   radius, not a radiometric surface-brightness model.
-- **Kerr spin** is not modelled yet (M5), so the shadow is circular and the
-  asymmetry comes only from orbital Doppler, not frame dragging.
+- **Kerr spin** is now modelled for the *shadow* via the closed-form Bardeen
+  1973 boundary (`kerr_shadow_a099_i80.png`): the boundary curve is
+  `analytic_classical` (exact GR, no integration), validated by its a → 0
+  reduction to the sqrt(27) M circle. The photon-ring rim drawn around it is a
+  `visualization_metaphor`. The lensed *disk* image is still Schwarzschild —
+  frame dragging is not yet folded into the disk ray trace.
 
-See `include/blackhole_ds/viz/disk_image.hpp` for the full derivation and
-`tests/disk_tests.cpp` for the symmetry invariants that validate it.
+See `include/blackhole_ds/viz/disk_image.hpp` for the disk derivation and
+`tests/disk_tests.cpp` for its symmetry invariants;
+`include/blackhole_ds/geodesics/kerr_shadow.hpp` for the Kerr shadow boundary
+and `tests/kerr_shadow_tests.cpp` for the circle-limit and asymmetry tests.

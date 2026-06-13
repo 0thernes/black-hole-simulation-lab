@@ -61,6 +61,37 @@ Licensing (S19.09, S19.10, S19.11):
 Verified: clang-format idempotent on all 15 files, build clean, 7/7 CTest
 suites pass, validation green.
 
+## 2026-06-13 (M5 proper: the Kerr (spinning) black-hole shadow)
+
+The first true *spin* physics: the asymmetric, D-shaped shadow of a rotating
+black hole — the defining visual signature of angular momentum and the
+quantity the Event Horizon Telescope uses to constrain spin.
+
+- `geodesics/kerr_shadow.hpp`: the shadow boundary as the closed-form
+  projection of the unstable spherical photon orbits (Bardeen 1973). Conserved
+  quantities `xi(r) = -(r^3 - 3r^2 + a^2(r+1))/(a(r-1))` and
+  `eta(r) = r^3(4a^2 - r(r-3)^2)/(a^2(r-1)^2)`; celestial coordinates
+  `alpha = -xi/sin i`, `beta = +/- sqrt(eta + a^2 cos^2 i - xi^2 cot^2 i)`
+  swept over the equatorial photon-orbit range `[r_prograde, r_retrograde]`.
+  No numerical geodesic integration — the boundary is exact (`analytic_classical`).
+- `viz/kerr_shadow_image.hpp`: rasterises the D-shaped silhouette (black) with
+  a thin photon-ring rim (a `visualization_metaphor`); `shadow_alpha_extent`
+  quantifies the spin displacement.
+- CLI: `--kerr-shadow <file.ppm>` (reuses `--spin` and `--inclination`),
+  reporting the horizontal alpha-extent and its asymmetry.
+- `tests/kerr_shadow_tests.cpp`: validates the equatorial photon-orbit radii
+  (3M at a=0; 1M / 4M at a=1), the **a -> 0 reduction to the exact sqrt(27) M
+  circle**, the alpha-asymmetry + beta-symmetry of the D-shape at high spin,
+  and point-in-shadow behaviour. New `blackhole_ds_kerr_shadow_tests` target +
+  a `--kerr-shadow` CLI smoke test: **15 CTest suites, all green.**
+- `docs/images/kerr_shadow_a099_i80.png`: reference render at a/M = 0.99,
+  i = 80 deg (horizontal alpha-extent [-2.28, 6.95] M, asymmetry 4.67 M vs 0
+  for Schwarzschild). Registered in the validation gate.
+- Honesty: the shadow boundary is exact GR (Bardeen 1973), anchored by the
+  tested Schwarzschild limit. The photon-ring rim is decorative. The lensed
+  *disk* image remains Schwarzschild — frame dragging is not yet in the disk
+  ray trace (next increment).
+
 ## 2026-06-13 (Render polish: supersampling anti-aliasing)
 
 - `viz/disk_image.hpp`: `render_disk_image` now averages `samples x samples`

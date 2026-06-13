@@ -10,6 +10,15 @@ Doppler beaming of the orbiting material (∝ g⁴), the EHT-style asymmetry. Th
 lensing geometry and the redshift factor g are GR-exact; the emissivity/colour
 ramp is a `visualization_metaphor`. See [docs/images/](docs/images/README.md).*
 
+![Asymmetric D-shaped shadow of a spinning Kerr black hole, a/M = 0.99](docs/images/kerr_shadow_a099_i80.png)
+
+*The shadow of a **spinning** (Kerr) black hole, a/M = 0.99 at 80 deg
+inclination. Spin breaks the circular symmetry: the co-rotating side is
+flattened and the whole shadow is displaced (here by 4.67 M across its
+horizontal extent). This is the closed-form Bardeen 1973 boundary — exact GR,
+anchored by its reduction to the sqrt(27) M circle as spin → 0 — and the
+signature the Event Horizon Telescope uses to constrain black-hole spin.*
+
 Research-first C++20 black hole simulation lab, building toward a **visual,
 GPU-accelerated black hole simulation you can run on your own machine**.
 The development target is an RTX-class consumer GPU (reference hardware:
@@ -64,6 +73,12 @@ ctest --test-dir build -C Release --output-on-failure
 # Render a real raster image (shadow + photon ring) to a PPM file:
 .\build\Release\blackhole_ds.exe --image shadow.ppm
 # View it in any image viewer, or convert: magick shadow.ppm shadow.png
+
+# Render the iconic gravitationally lensed accretion disk (near edge-on):
+.\build\Release\blackhole_ds.exe --disk disk.ppm --inclination 80
+
+# Render the asymmetric shadow of a SPINNING (Kerr) black hole:
+.\build\Release\blackhole_ds.exe --kerr-shadow kerr.ppm --spin 0.99 --inclination 80
 ```
 
 New here? Read [docs/INDEX.md](docs/INDEX.md) (the documentation map) and
@@ -71,22 +86,28 @@ New here? Read [docs/INDEX.md](docs/INDEX.md) (the documentation map) and
 
 ## Current Status
 
-A validated analytic core that now bends light and draws its first images —
-not yet a GRMHD or numerical-relativity solver, and not yet a lensed
-accretion-disk render, but past "calculator" and onto the visual ladder.
+A validated analytic core that bends light and renders relativistic images:
+the gravitationally lensed accretion disk (shown above, with Doppler beaming),
+the bare shadow + photon ring, and — with spin — the asymmetric **Kerr
+shadow**. Not yet a GRMHD or numerical-relativity solver or a GPU renderer,
+but well up the visual ladder.
 
 Implemented now:
 
 - C++20 modular kernel: `core/` (constants, truth labels), `metrics/`
   (exact Schwarzschild and Kerr observables), `integrators/` (tested RK4 +
   adaptive Dormand-Prince), `geodesics/` (Schwarzschild photon orbits —
-  light bending, validated against the Eddington 4M/b deflection),
-  `viz/` (ASCII shadow + PPM raster shadow/photon-ring render),
-  `data/` (full-precision CSV export).
+  light bending, validated against the Eddington 4M/b deflection; plus the
+  closed-form Bardeen 1973 Kerr shadow boundary),
+  `viz/` (ASCII shadow, PPM shadow/photon-ring, lensed Doppler-beamed disk,
+  and Kerr asymmetric-shadow renders), `data/` (full-precision CSV export).
 - CLI executable with `--mass`, `--spin`, `--format text|csv`, `--steps`,
-  `--deflection <b/M>` (light bending), `--shadow` (ASCII shadow), and
+  `--deflection <b/M>` (light bending), `--shadow` (ASCII shadow),
   `--image <file.ppm>` (raster shadow + photon ring, with the measured
-  shadow radius validated against the analytic sqrt(27) M).
+  shadow radius validated against the analytic sqrt(27) M),
+  `--disk <file.ppm> --inclination <deg>` (lensed accretion disk with
+  gravitational + Doppler redshift), and `--kerr-shadow <file.ppm>` (the
+  spinning black hole's asymmetric D-shaped shadow, exact at a → 0).
 - Strong physical-units header (`include/blackhole_ds/units.hpp`) with
   compile-time dimensional safety, enforced by tests.
 - Brain/Soul reasoning-lens corpus: 20 XML profiles (physicists,
@@ -287,7 +308,11 @@ The visual simulation is the destination; these are the steps in order.
 3. E2E test: run executable, emit data, validate schema ingest round-trip.
 4. A/B harness for integrator candidate comparison (error, runtime,
    stability).
-5. Kerr geodesics + first lensed-image computation on CPU.
+5. First lensed-image computation on CPU — DONE (lensed Doppler-beamed disk +
+   shadow/photon ring). Kerr shadow — DONE (closed-form Bardeen boundary,
+   `--kerr-shadow`). Remaining: fold frame dragging into the *disk* ray trace
+   (full Kerr geodesics with the Carter constant), so the disk image itself is
+   spinning, not just the silhouette.
 6. GPU port of the ray marcher (CUDA, RTX 5070 Ti class) - the first
    visual prototype: gravitationally lensed accretion-disk render with
    honest tier labeling (visualization_metaphor for color mapping,
