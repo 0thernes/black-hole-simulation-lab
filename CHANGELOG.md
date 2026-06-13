@@ -3,6 +3,35 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-06-12 (Phase C: 500-point inspection + remediation batch 1)
+
+- `docs/audits/INSPECTION-500-POINT.md`: a 25-section, 500-point grounded
+  inspection. Each section was inspected by an independent agent that read
+  the actual files (run in waves to respect rate limits). Honest result
+  distribution: 333 PASS (67%), 110 PARTIAL, 41 FAIL, 14 TODO, 2 N/A — not
+  a wall of PASS, which is the point. Resolves the previously dangling
+  links in README and docs/INDEX.md.
+- Began burning down the 41 FAIL findings (remediation batch 1):
+  - S01.03: removed the phantom `.oppengrok/` line from HIERARCHY.md.
+  - S01.08/09: removed 14 redundant `.gitkeep` files from populated dirs;
+    kept only the 11 in genuinely empty directories.
+  - S12.05: added `CHECK` constraints to `dim_observer` (inclination
+    0..90, distance_rg > 0) enforcing the documented domains.
+  - S12.16: rewrote `data/schema.sql` header/footer — removed the "Ralph
+    Wiggum daemons" meme cruft and fabricated "250-point audit" process
+    claims; documented the real ADR-gated change process and the
+    truth-tier-column gap honestly.
+  - S20.12 (Charter violation): `tools/blackhole_ds_harness.py`
+    `lyapunov_estimate` no longer injects Gaussian noise "for realism" —
+    it returns None (NULL) until a real estimator exists. Fabricated data
+    dressed as measurement is exactly what the Integrity Charter forbids.
+  - S16.01/16.18: removed unused imports (typing + openpyxl) and a no-op
+    14-iteration column-width loop from the harness.
+  - S15.09: broadened the secret-name pattern to catch `app.env`,
+    `prod.env`, and `*.env` suffix forms, not just `.env`/`.env.prod`.
+  - S08.10: added `.github/dependabot.yml` (weekly github-actions + pip).
+- Validation green; harness runs with NULL Lyapunov (no fabricated data).
+
 ## 2026-06-12 (Phase D: CI/CD and formatting upgrades)
 
 - `.clang-format` (LLVM base, 4-space, 80-col, no string-literal splitting)

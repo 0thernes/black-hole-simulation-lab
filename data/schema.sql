@@ -1,18 +1,24 @@
 -- BlackHoleDS — Canonical Analytical Data Model (SQLite + Star Schema)
--- Primary data warehouse for all simulation runs, trajectories, chaos metrics, graph features
--- Directly consumable by Power BI, Excel (Power Query), pandas, DAX, and the C++ exporter
+-- Data warehouse for simulation runs, trajectories, and chaos/graph metrics.
+-- Consumable by Power BI, Excel (Power Query), pandas, and the C++ exporter.
 --
--- Design Goals (Gold Standard D02, D12, D14, D16):
--- - Immutable fact tables (runs, trajectories, chaos_stats, causal_graph_features)
--- - Full temporal + ensemble versioning (run_id, seed, metric, timestamp)
--- - Every derived quantity (shadow diameter, Lyapunov, ISCO, Hawking temp samples) is stored
---   so that DAX measures and inductive analysis are reproducible and fast
--- - Star schema: one fact (trajectories or run_metrics) surrounded by clean dimensions
--- - All quantities use the same physical units as the C++ layer (geometric units by default)
--- - Supports both deductive (forward GR simulation) and inductive (ensemble statistics, causal discovery) modes
+-- Design goals:
+-- - Append-only fact tables (runs, trajectories, chaos_stats).
+-- - Full ensemble + provenance versioning (run_id, seed, git_commit, timestamp).
+-- - Derived quantities (shadow diameter, ISCO, Lyapunov, ...) are stored so
+--   downstream analysis is reproducible and fast.
+-- - Star schema: fact tables surrounded by clean dimensions.
+-- - Geometric units (G = c = 1) by default, matching the C++ kernel.
 --
--- Ralph Wiggum daemons and CI will regenerate this schema + seed data on every significant physics change.
--- Never hand-edit the schema without also updating the C++ exporter, the DAX library, and the 250-point audit.
+-- Process: this schema is hand-authored. Any change is gated by an ADR (see
+-- docs/architecture/ERD.md) and must be matched in the C++ exporter,
+-- tools/blackhole_ds_harness.py, and the ERM/ERD docs in the same commit.
+--
+-- KNOWN GAP: there is no per-row truth-tier (model_status) column yet, so
+-- exact analytic values (e.g. isco_rg) and placeholder/heuristic values
+-- (e.g. lyapunov_max, which the harness currently leaves NULL) share tables
+-- without a row-level label. Adding that column is milestone M2 work
+-- (see docs/planning/ROADMAP.md and the Scientific Integrity Charter).
 
 PRAGMA foreign_keys = ON;
 PRAGMA journal_mode = WAL;
@@ -35,7 +41,9 @@ CREATE TABLE IF NOT EXISTS dim_observer (
     observer_id INTEGER PRIMARY KEY,
     inclination_deg REAL NOT NULL,                -- 0..90 (edge-on = 90)
     distance_rg REAL NOT NULL,                    -- observer distance in r_g
-    phi_offset_deg REAL NOT NULL DEFAULT 0
+    phi_offset_deg REAL NOT NULL DEFAULT 0,
+    CHECK (inclination_deg BETWEEN 0 AND 90),     -- enforce documented domain
+    CHECK (distance_rg > 0)
 );
 
 CREATE TABLE IF NOT EXISTS dim_ensemble (
@@ -212,5 +220,5 @@ INSERT OR IGNORE INTO dim_observer (observer_id, inclination_deg, distance_rg) V
 INSERT OR IGNORE INTO dim_ensemble (ensemble_id, name, n_runs, base_seed, theory_version) VALUES
 (1, 'First-Light-Kerr-Ensemble', 27, 42, 'v0.1-units-header');
 
--- End of canonical schema. The C++ exporter, Python harness, and DAX library must stay in sync with this.
--- Any change here is a 250-point audit event (points 126-150).
+-- End of canonical schema. The C++ exporter and Python harness must stay in
+-- sync with this file. Any change is gated by an ADR (docs/architecture/ERD.md).

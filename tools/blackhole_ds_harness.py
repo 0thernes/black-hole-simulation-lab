@@ -27,7 +27,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List
 
 
 def current_git_commit() -> str:
@@ -63,10 +63,8 @@ except ImportError:
 # Try openpyxl for real .xlsx with charts and formulas (graceful fallback if missing)
 try:
     from openpyxl import Workbook
-    from openpyxl.chart import LineChart, ScatterChart, Reference
-    from openpyxl.chart.series import DataPoint
+    from openpyxl.chart import ScatterChart, Reference
     from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-    from openpyxl.utils.dataframe import dataframe_to_rows
     from openpyxl.utils import get_column_letter
     OPENPYXL_AVAILABLE = True
 except ImportError:
@@ -122,18 +120,19 @@ def shadow_diameter_rg(spin_a_over_M: float) -> float:
     _ = spin_a_over_M  # spin dependence intentionally omitted; see docstring
     return 2.0 * math.sqrt(27.0)
 
-def lyapunov_estimate(spin_a_over_M: float, r_start: float, rng=None) -> float:
-    """Crude but useful proxy for largest Lyapunov exponent near the photon sphere."""
-    # Real version uses shadow-trajectory or variational method in C++
-    base = 0.015 + 0.085 * abs(spin_a_over_M)
-    chaos_boost = max(0.0, 0.8 - abs(r_start - photon_sphere_rg(spin_a_over_M))) * 0.12
-    if NUMPY_AVAILABLE and rng is not None and hasattr(rng, "normal"):
-        noise = float(rng.normal(0, 0.002))
-    elif rng is not None:
-        noise = float(rng.gauss(0, 0.002))
-    else:
-        noise = 0.0
-    return base + chaos_boost + noise  # tiny stochasticity for realism
+def lyapunov_estimate(spin_a_over_M: float, r_start: float, rng=None):
+    """Largest Lyapunov exponent — NOT YET COMPUTED.
+
+    Returns None. A real estimate requires variational/shadow-trajectory
+    integration of geodesics near the photon sphere (planned for the C++
+    kernel, roadmap M1+). The previous version of this function returned a
+    hand-tuned heuristic with INJECTED GAUSSIAN NOISE "for realism" — that
+    is fabricated data masquerading as a measurement, which the Scientific
+    Integrity Charter (section V) forbids. Until a real estimator exists the
+    column is left NULL rather than filled with a plausible-looking number.
+    """
+    _ = (spin_a_over_M, r_start, rng)  # signature kept for the future estimator
+    return None
 
 # =============================================================================
 # SCHEMA-CONTRACTED RUN GENERATION
@@ -168,7 +167,8 @@ def generate_ensemble(n: int, base_seed: int, metric: str = "Kerr") -> List[Dict
             "photon_sphere_rg": round(photon_sphere_rg(a), 6),
             "isco_rg": round(isco_rg(a), 6),
             "shadow_diameter_rg": round(shadow_diameter_rg(a), 6),
-            "lyapunov_max": round(lyapunov_estimate(a, photon_sphere_rg(a) + r_offset, rng), 8),
+            # NULL until a real estimator exists (see lyapunov_estimate).
+            "lyapunov_max": lyapunov_estimate(a, photon_sphere_rg(a) + r_offset, rng),
             "rng_seed": int(base_seed + i),
             "integrator": "numpy-reference-v1",
             "git_commit": git_commit,
@@ -319,8 +319,9 @@ def export_xlsx(runs: List[Dict], xlsx_path: Path, ensemble_name: str):
     ws2["A10"] = "3. The .xlsx already contains derived columns that map 1:1 to the DAX above."
     ws2["A12"] = "4. For temporal quantum / cosmology extensions, add a time_intelligence dimension table and use DATESYTD etc."
 
-    for row in range(1, 15):
-        ws2.column_dimensions[get_column_letter(1)].width = 120
+    # Widen the single guidance column (the old loop set the same column 14
+    # times — a no-op repeated assignment).
+    ws2.column_dimensions[get_column_letter(1)].width = 120
 
     wb.save(xlsx_path)
     print(f"[OK] Rich .xlsx with charts + DAX guide -> {xlsx_path}")

@@ -35,6 +35,8 @@ REQUIRED_FILES = [
     "docs/architecture/diagrams/erd.mmd",
     "docs/architecture/diagrams/system_pipeline.mmd",
     "docs/audits/INITIAL_250_POINT_GOLD_STANDARD_AUDIT.md",
+    "docs/audits/AUDIT-2026-06-12-FULL-REPO-REVIEW.md",
+    "docs/audits/INSPECTION-500-POINT.md",
     "docs/log/DAILY_LOG.md",
     "docs/log/DECISIONS.md",
     "docs/operations/DIRECT_LOCAL_GITHUB_WORKFLOW.md",
@@ -100,8 +102,14 @@ FORBIDDEN_TRACKED_PATTERNS = [
 ]
 
 SECRET_NAME_PATTERN = re.compile(
-    r"(^|[/\\])(\.env(\.|$)|.*(secret|secrets|credential|credentials|token|api[_-]?key|apikey|private[_-]?key|password|passwd).*)$"
+    # .env, .env.prod (dotfile forms) AND app.env, prod.env (suffix forms)
+    r"(^|[/\\])\.env(\.|$)"
+    r"|(^|[/\\])[^/\\]*\.env$"
+    # credential-ish basenames anywhere in the name
+    r"|(^|[/\\]).*(secret|secrets|credential|credentials|token|api[_-]?key|apikey|private[_-]?key|password|passwd).*$"
+    # key material by extension
     r"|(\.pem|\.pfx|\.p12|\.key|\.keystore|\.jks)$"
+    # SSH private keys
     r"|(^|[/\\])id_(rsa|dsa|ecdsa|ed25519)",
     re.IGNORECASE,
 )

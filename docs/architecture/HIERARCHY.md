@@ -5,10 +5,10 @@ top-level directory or change ownership semantics.
 
 ```text
 .
-|-- .github/                           CI workflows
-|   `-- workflows/ci.yml
+|-- .github/                           CI workflows + Dependabot
+|   |-- workflows/ci.yml
+|   `-- dependabot.yml
 |-- .vscode/                           VS Code workspace
-|-- .oppengrok/                        Agent coordination (claim files, swarm board)
 |
 |-- assets/                            Source diagrams, charts, icons
 |   `-- diagrams/                      Mermaid (.mmd), SVG, PlantUML sources
