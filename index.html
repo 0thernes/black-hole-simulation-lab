@@ -1,0 +1,22 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Black Hole Simulation Lab — Render Gallery</title><style>
+body{margin:0;background:#05060a;color:#e8eef6;font-family:system-ui,Segoe UI,sans-serif}
+header{padding:34px 20px;text-align:center;border-bottom:1px solid #1b2330}
+h1{margin:0 0 8px;font-size:1.7rem;background:linear-gradient(90deg,#ffd27f,#ff7a59,#9b6bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sub{margin:0;color:#8a93a6;font-size:.92rem}
+.grid{max-width:1120px;margin:26px auto;padding:0 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+figure{margin:0;background:#0c1018;border:1px solid #1b2330;border-radius:12px;overflow:hidden}
+figure img{width:100%;display:block;background:#000}
+figcaption{padding:10px 14px;font-size:.8rem;color:#aab3c5}
+footer{padding:30px 20px;text-align:center;color:#5a6373;font-size:.78rem;border-top:1px solid #1b2330}
+</style></head><body>
+<header><h1>Black Hole Simulation Lab</h1><p class="sub">GR-exact Schwarzschild null-geodesic ray tracer — gravitationally lensed accretion-disk renders</p></header>
+<div class="grid">
+<figure><img src="lensed_disk_i80.png" alt=""><figcaption>Lensed thin accretion disk, 80° inclination — far side bent over the shadow</figcaption></figure>
+<figure><img src="lensed_disk_i20.png" alt=""><figcaption>Lensed accretion disk, 20° inclination</figcaption></figure>
+<figure><img src="kerr_disk_a09_i78.png" alt=""><figcaption>Kerr disk a=0.9, 78° — relativistic Doppler beaming asymmetry</figcaption></figure>
+<figure><img src="kerr_shadow_a099_i80.png" alt=""><figcaption>Kerr shadow a=0.99, 80°</figcaption></figure>
+<figure><img src="shadow_photon_ring.png" alt=""><figcaption>Shadow and photon ring</figcaption></figure>
+</div>
+<footer>Proprietary — All Rights Reserved · Patent Pending. Static showcase of pre-rendered output; the interactive engine is a native C/C++ application.</footer>
+</body></html>
