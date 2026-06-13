@@ -7,5 +7,5 @@
 # enforcement of the source-card corpus (jsonschema).
 #
 # Install:  pip install -r requirements-dev.txt
-lxml>=5.0
+lxml>=6.1.1
 jsonschema>=4.0
