@@ -3,6 +3,30 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-06-12 (Phase B: comprehensive documentation suite)
+
+- `docs/INDEX.md`: the documentation map / table of contents for the whole
+  docs tree, with role-based reading paths (new contributor, academic, VC,
+  engineer).
+- `docs/GLOSSARY.md`: physics, numerics, and project-convention terms,
+  pitched for a software-strong reader learning GR.
+- `docs/architecture/ERM.md`: the conceptual entity-relationship model and
+  a full data dictionary (every column: type, unit, constraint, meaning),
+  with cardinalities, business rules, the conceptual→logical→physical
+  layering, and the open data-model gaps.
+- `docs/planning/ROADMAP.md`: milestones M0-M6 with explicit exit criteria,
+  a Mermaid flow, and the sequencing rule (physics never outruns evidence).
+- `docs/process/KANBAN.md`: a file-based Kanban with column policies, a
+  WIP limit, and cards seeded from the roadmap and open audit findings.
+- `docs/operations/ENGINEERING_RESOURCE_PLAN.md`: the "ERP" reinterpreted
+  for a GPU-driven project - compute/toolchain needs per milestone, who
+  can run what, and the VRAM/core capacity reasoning behind the
+  laptop-GPU render goal.
+- README: added a table of contents, a copy-paste quickstart, a license/CI
+  status line, and a documentation map section.
+- ARCHITECTURE deepened with the integrators section (in Phase A).
+- Validate-ResearchOS.py REQUIRED_FILES extended for the new docs.
+
 ## 2026-06-12 (Phase A: numerical integrators + complexity reference)
 
 First real DSA: the ODE machinery the geodesic solver (milestone 1) needs.

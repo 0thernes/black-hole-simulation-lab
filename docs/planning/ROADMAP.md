@@ -1,0 +1,119 @@
+# Roadmap
+
+The destination is a **visual, GPU-accelerated black hole simulation** that
+runs on RTX-class consumer hardware and is scientifically honest about
+every pixel. This roadmap is the ordered path from the current validated
+analytic core to that destination.
+
+Each milestone has an explicit **exit criterion**. A milestone is not
+"done" until its exit criterion is met, tested, and merged.
+
+```mermaid
+flowchart LR
+    M0[M0 Analytic core<br/>DONE] --> M1[M1 Geodesic integrator]
+    M1 --> M2[M2 Data contract<br/>+ truth tiers]
+    M2 --> M3[M3 CPU lensing]
+    M3 --> M4[M4 GPU ray marcher<br/>VISUAL PROTOTYPE]
+    M4 --> M5[M5 Kerr + accretion]
+    M5 --> M6[M6 Ecosystem + scale]
+```
+
+---
+
+## M0 — Analytic core and research infrastructure (DONE)
+
+- Strong-typed units, exact Schwarzschild/Kerr observables, CLI, CSV export.
+- RK4 + adaptive Dormand-Prince integrators with convergence tests.
+- Brain corpus, source-card corpus, vision/charter, ADRs, CI green.
+
+**Exit criterion (met):** every analytic value matches the literature to
+the documented tolerance; CI is green on `windows-latest`; all gates gate.
+
+## M1 — Geodesic integrator
+
+Build the Schwarzschild null-geodesic right-hand side as a derivative
+functor over an 8-component state, integrated by `rk45_integrate`.
+
+- Geodesic equations in the equatorial plane (conserved E, L).
+- Conserved-quantity monitoring with the Kahan accumulator.
+- Validate: weak-field deflection 4GM/(c^2 b); critical impact parameter
+  b_crit = √27 M asymptotes to the photon sphere; bound vs plunge vs escape
+  classification.
+
+**Exit criterion:** a ray bundle reproduces the analytic deflection curve
+and the photon-sphere capture boundary within 1e-8 (relative), with a
+regression test.
+
+## M2 — Data contract and truth tiers
+
+- Add the `model_status` column to `runs`; update the C++ exporter and the
+  Python harness together (schema-change ADR).
+- JSON exporter alongside CSV.
+- First C++ → SQLite path.
+- E2E test: run → emit → ingest → validate.
+
+**Exit criterion:** a reproducible run produces queryable, truth-tier
+labeled data that round-trips through the schema, verified by an E2E test.
+
+## M3 — CPU gravitational lensing
+
+- One ray per image pixel; integrate backward from the camera.
+- Map escaped rays to a background; map captured rays to the shadow; map
+  rays that cross the disk plane to accretion-disk emission.
+- Schwarzschild first (no spin), equatorial thin disk.
+
+**Exit criterion:** a CPU render of the Schwarzschild shadow + lensed disk
+whose shadow diameter matches 2√27 M (the analytic value) to within one
+pixel, with the image checked into `docs/` as a reference.
+
+## M4 — GPU ray marcher (the visual prototype)
+
+- Port the per-pixel ray integration to CUDA (one thread per pixel).
+- Target the RTX 5070 Ti (~8900 CUDA cores, 12 GB GDDR7).
+- Interactive or near-interactive frame times for a moderate resolution.
+- Honest tier labeling baked into the render metadata (geometry tiers
+  analytic/numerical; color mapping `visualization_metaphor`).
+
+**Exit criterion:** the GPU render matches the M3 CPU reference image to
+within numerical tolerance, runs at least an order of magnitude faster, and
+ships with a documented build path for RTX-class hardware.
+
+## M5 — Kerr, spin, and accretion physics
+
+- Kerr null geodesics (Carter constant).
+- Frame dragging and the asymmetric shadow.
+- Doppler beaming and gravitational redshift on the disk
+  (`numerical_approximation` / `observational_constraint` as appropriate).
+
+**Exit criterion:** a Kerr render shows the characteristic asymmetric
+photon ring; shadow asymmetry vs spin matches published EHT-style curves
+qualitatively, with the comparison documented.
+
+## M6 — Ecosystem integration and scale
+
+- First `tsotchke/libirrep` integration (symmetry math) per ADR-0005.
+- Eshkol DSL layer for metric definitions (ADR + staged rollout).
+- A/B integrator harness, PI step controller, performance regression suite.
+- Optional: GRMHD / numerical-relativity comparison against the Einstein
+  Toolkit or BHAC as a benchmark.
+
+**Exit criterion:** at least one external integration is wired,
+SHA-pinned, and opt-in per the policy; performance regressions are caught
+by CI.
+
+---
+
+## Cross-cutting tracks (run continuously)
+
+- **Audit remediation.** Burn down the 47 open findings from the
+  2026-06-12 report; never let the open-critical count rise above zero.
+- **Research corpus.** Grow the source cards and brain profiles as physics
+  is implemented; every formula gets a source card before it ships.
+- **CI/CD.** Keep the matrix green; add checks as the surface grows.
+
+## Sequencing rule
+
+Physics never outruns evidence, and code never outruns tests. A milestone
+that would add a visual or a number without a validation path is reordered
+until the validation exists. Beauty is the reward for correctness, not a
+substitute for it.

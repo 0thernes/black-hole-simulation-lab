@@ -16,6 +16,39 @@ This is the real local repository. Source code, research notes, audits,
 tests, logs, and architecture decisions belong here and get committed
 through Git. ZIP files are intake artifacts only, never the source of truth.
 
+> **License:** AGPL-3.0 · **CI:** GitHub Actions on `windows-latest`
+> (MSVC, green) · **Language:** C++20 + Python 3.11 · **Build:** CMake ≥ 3.20
+
+## Table of Contents
+
+- [Current Status](#current-status)
+- [Quickstart](#quickstart)
+- [Repository Layout](#repository-layout)
+- [Build and Test](#build-and-test)
+- [Scientific Truth Labels](#scientific-truth-labels)
+- [Development Workflow](#development-workflow)
+- [Documentation Map](#documentation-map)
+- [Project Rules](#project-rules)
+- [Next Milestones](#next-milestones)
+
+## Quickstart
+
+```powershell
+# Clone, build, test, run — Windows PowerShell.
+git clone https://github.com/0thernes/Stress-Test-Agents-Maxxxing.git
+cd Stress-Test-Agents-Maxxxing
+
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+ctest --test-dir build -C Release --output-on-failure
+
+# Analytic observables for a 10 solar-mass, spin-0.9 black hole as CSV:
+.\build\Release\blackhole_ds.exe --mass 10 --spin 0.9 --format csv
+```
+
+New here? Read [docs/INDEX.md](docs/INDEX.md) (the documentation map) and
+[docs/GLOSSARY.md](docs/GLOSSARY.md).
+
 ## Current Status
 
 A validated analytic core with research infrastructure — not yet a GRMHD
@@ -181,6 +214,23 @@ powershell.exe -ExecutionPolicy Bypass -File .\scripts\local\Sync-OppengrokLocal
 
 That script archives and extracts packages under `_incoming/`, creates a backup
 branch, validates, commits, rebases, and pushes only when `-Push` is supplied.
+
+## Documentation Map
+
+Full index: [docs/INDEX.md](docs/INDEX.md). The essentials:
+
+| Area | Document |
+|---|---|
+| Vision / why | [VISION](docs/vision/VISION.md), [MISSION](docs/vision/MISSION.md) |
+| Scientific rules | [Integrity Charter](docs/vision/SCIENTIFIC_INTEGRITY_CHARTER.md) |
+| Architecture | [ARCHITECTURE](docs/architecture/ARCHITECTURE.md), [HIERARCHY](docs/architecture/HIERARCHY.md) |
+| Data model | [ERM + data dictionary](docs/architecture/ERM.md), [ERD](docs/architecture/ERD.md) |
+| Algorithms | [COMPLEXITY](docs/engineering/COMPLEXITY.md) |
+| Plan | [ROADMAP](docs/planning/ROADMAP.md), [KANBAN](docs/process/KANBAN.md) |
+| Resources | [Engineering Resource Plan](docs/operations/ENGINEERING_RESOURCE_PLAN.md) |
+| Decisions | [ADRs](docs/log/DECISIONS.md), [Daily Log](docs/log/DAILY_LOG.md) |
+| Quality | [Full Audit](docs/audits/AUDIT-2026-06-12-FULL-REPO-REVIEW.md), [500-Point Inspection](docs/audits/INSPECTION-500-POINT.md) |
+| Terms | [GLOSSARY](docs/GLOSSARY.md) |
 
 ## Project Rules
 
