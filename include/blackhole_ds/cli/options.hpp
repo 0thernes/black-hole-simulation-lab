@@ -24,6 +24,7 @@ struct Options {
     bool show_help = false;
     bool deflection_set = false; // whether --deflection was given
     double deflection_b = 0.0;   // impact parameter b/M for light bending
+    bool shadow = false;         // render the ASCII shadow
 };
 
 [[nodiscard]] inline bool parse_double(std::string_view s, double& out) {
@@ -105,6 +106,8 @@ struct Options {
                 return false;
             }
             opt.deflection_set = true;
+        } else if (arg == "--shadow") {
+            opt.shadow = true;
         } else {
             err << "unknown argument: " << arg << '\n';
             return false;

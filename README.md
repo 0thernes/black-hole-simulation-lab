@@ -44,6 +44,12 @@ ctest --test-dir build -C Release --output-on-failure
 
 # Analytic observables for a 10 solar-mass, spin-0.9 black hole as CSV:
 .\build\Release\blackhole_ds.exe --mass 10 --spin 0.9 --format csv
+
+# Bend a light ray (impact parameter b/M = 5.5 -> ~146 degree deflection):
+.\build\Release\blackhole_ds.exe --deflection 5.5
+
+# Render the black-hole shadow as ASCII art:
+.\build\Release\blackhole_ds.exe --shadow
 ```
 
 New here? Read [docs/INDEX.md](docs/INDEX.md) (the documentation map) and
@@ -57,9 +63,13 @@ or numerical-relativity solver, and not yet visual.
 Implemented now:
 
 - C++20 modular kernel: `core/` (constants, truth labels), `metrics/`
-  (exact Schwarzschild and Kerr observables), `data/` (full-precision,
-  truth-tier-labeled CSV export).
-- CLI executable with `--mass`, `--spin`, `--format text|csv`, `--steps`.
+  (exact Schwarzschild and Kerr observables), `integrators/` (tested RK4 +
+  adaptive Dormand-Prince), `geodesics/` (Schwarzschild photon orbits —
+  light bending, validated against the Eddington 4M/b deflection),
+  `viz/` (ASCII shadow render), `data/` (full-precision CSV export).
+- CLI executable with `--mass`, `--spin`, `--format text|csv`, `--steps`,
+  `--deflection <b/M>` (light bending), and `--shadow` (renders the
+  black-hole shadow as ASCII).
 - Strong physical-units header (`include/blackhole_ds/units.hpp`) with
   compile-time dimensional safety, enforced by tests.
 - Brain/Soul reasoning-lens corpus: 20 XML profiles (physicists,
@@ -73,8 +83,12 @@ Implemented now:
 
 Not implemented yet (in build order):
 
-- Geodesic integrator (next major milestone).
-- Ray-marched photon renderer / visual layer (GPU; the headline goal).
+- Full equatorial geodesic with conserved-quantity tracking (the current
+  photon module integrates the orbit shape; finishing M1).
+- Lensed background + accretion-disk rendering (the ASCII shadow is a
+  silhouette only — no lensing of a star field, no disk, no colour yet).
+- Ray-marched photon renderer on the GPU (the headline goal; the CPU
+  shadow is the seed of it).
 - GRMHD or numerical-relativity solver.
 - Truth-tier column in the SQLite schema.
 - Production Power BI/Excel templates.

@@ -61,6 +61,30 @@ Licensing (S19.09, S19.10, S19.11):
 Verified: clang-format idempotent on all 15 files, build clean, 7/7 CTest
 suites pass, validation green.
 
+## 2026-06-13 (First image: the black-hole shadow)
+
+The project draws its first picture of a black hole.
+
+- `include/blackhole_ds/viz/ascii_shadow.hpp`: renders the Schwarzschild
+  shadow as ASCII. Each image-plane cell (x, y in units of M) maps to a ray
+  of impact parameter b = sqrt(x^2 + y^2); the validated geodesic
+  classifier decides captured (shadow) vs escaping (sky). The shadow is the
+  exact photon-capture disk of radius sqrt(27) M ~ 5.196 M, with the rim
+  drawn as a photon-ring band.
+- `tests/shadow_tests.cpp`: verifies the shadow radius equals b_crit,
+  membership at the centre/rim/exterior, isotropy, and that the rendered
+  captured-pixel area matches the analytic disk area pi*b_crit^2 within 3%.
+  CTest is now 9 suites.
+- `src/cli/main.cpp`: `--shadow` flag prints the ASCII shadow with truth
+  tiers (the silhouette is visualization_metaphor; the radius is
+  analytic_classical). `blackhole_ds --shadow` shows a round shadow ringed
+  by the photon band.
+
+Capability ladder: this is the simplest form of rung 3 (a shadow image),
+built entirely from the validated geodesic physics - no fudged graphics.
+Next toward the full visual: a lensed background and an accretion disk,
+then the GPU port.
+
 ## 2026-06-13 (Milestone M1: first geodesics - the engine bends light)
 
 The jump from "calculator" to "can trace a ray" - the gateway to every

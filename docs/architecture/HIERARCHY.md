@@ -45,6 +45,7 @@ top-level directory or change ownership semantics.
 |       |-- metrics/                   schwarzschild.hpp, kerr.hpp
 |       |-- integrators/               ode_state.hpp, rk4.hpp, rk45.hpp (DP 5(4))
 |       |-- geodesics/                  schwarzschild_photon.hpp (light bending)
+|       |-- viz/                         ascii_shadow.hpp (first image)
 |       |-- cli/                        options.hpp (testable arg parser)
 |       `-- data/                      csv_writer.hpp (export contracts)
 |

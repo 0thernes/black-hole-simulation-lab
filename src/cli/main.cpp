@@ -23,6 +23,7 @@
 #include "blackhole_ds/geodesics/schwarzschild_photon.hpp"
 #include "blackhole_ds/metrics/kerr.hpp"
 #include "blackhole_ds/metrics/schwarzschild.hpp"
+#include "blackhole_ds/viz/ascii_shadow.hpp"
 
 namespace bhds = blackhole_ds;
 using bhds::cli::Options;
@@ -40,6 +41,7 @@ void print_help(std::ostream& os) {
           "(default 9 -> 10 rows)\n"
        << "  --deflection <b/M>   Light deflection for impact parameter b "
           "(in units of M)\n"
+       << "  --shadow             Render the black-hole shadow as ASCII art\n"
        << "  --help               Print this help\n"
        << "\n"
        << "Truth label of all printed values: analytic_classical.\n";
@@ -149,6 +151,13 @@ int main(int argc, char** argv) {
     }
     if (opt.deflection_set) {
         emit_deflection(opt);
+        return EXIT_SUCCESS;
+    }
+    if (opt.shadow) {
+        std::cout << "Schwarzschild black-hole shadow (silhouette)\n"
+                  << "Truth tier: visualization_metaphor; the shadow radius "
+                     "sqrt(27) M is analytic_classical\n\n";
+        bhds::viz::render_shadow(std::cout);
         return EXIT_SUCCESS;
     }
     if (opt.format == "csv") {
