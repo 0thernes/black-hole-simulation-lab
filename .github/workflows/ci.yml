@@ -6,11 +6,25 @@ on:
   pull_request:
     branches: [main]
 
-jobs:
-  validate:
-    name: Validate and test (windows)
-    runs-on: windows-latest
+# Least privilege: the workflow only reads the repo.
+permissions:
+  contents: read
 
+# Opt into Node.js 24 for JS-based actions (Node 20 is deprecated on
+# GitHub-hosted runners). Keeps the pinned action majors working past the
+# Node 20 removal date without guessing at newer action versions.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    name: clang-format check
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,8 +34,35 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install clang-format (pinned)
+        # Pin the exact version the code was formatted with so the check
+        # cannot fail on cross-version reflow differences. The pip wheel is
+        # platform-independent, unlike the apt package whose version drifts.
+        run: pip install "clang-format==19.1.7"
+
+      - name: Check C++ formatting
+        run: |
+          files=$(git ls-files '*.hpp' '*.cpp')
+          echo "Checking formatting of:"
+          echo "$files"
+          clang-format --dry-run --Werror $files
+
+  validate:
+    name: Validate corpora and gates
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
       - name: Install validation dependencies
-        run: pip install lxml jsonschema
+        run: pip install -r requirements-dev.txt
 
       - name: Rebuild brain corpus
         run: python scripts/brains/build_brains.py
@@ -30,10 +71,9 @@ jobs:
         run: python scripts/research/build_source_cards.py
 
       - name: Corpus drift gate
-        # Generators are deterministic (dates come from the seed JSON), so
-        # regeneration must be byte-identical to the committed artifacts.
-        # A diff here means someone edited generated files by hand or
-        # committed a seed change without regenerating - both are errors.
+        # Deterministic generators must reproduce the committed artifacts
+        # byte-for-byte. A diff means a hand-edited generated file or a
+        # seed change committed without regenerating.
         run: git diff --exit-code
 
       - name: Validate Research OS
@@ -45,11 +85,23 @@ jobs:
       - name: Validate source-card corpus
         run: python scripts/research/validate_source_cards.py
 
+  build:
+    name: Build and test (${{ matrix.config }})
+    runs-on: windows-latest
+    needs: [validate]
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Release, Debug]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: CMake configure
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config }}
 
       - name: CMake build
-        run: cmake --build build --config Release
+        run: cmake --build build --config ${{ matrix.config }}
 
       - name: CTest
-        run: ctest --test-dir build -C Release --output-on-failure
+        run: ctest --test-dir build -C ${{ matrix.config }} --output-on-failure

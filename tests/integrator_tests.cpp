@@ -63,8 +63,7 @@ int main() {
     {
         const State<1> y0{1.0};
         const auto err_at = [&](int steps) {
-            const State<1> y =
-                rk4_integrate<1>(exp_deriv, 0.0, 1.0, y0, steps);
+            const State<1> y = rk4_integrate<1>(exp_deriv, 0.0, 1.0, y0, steps);
             return std::abs(y[0] - e);
         };
         const double e1 = err_at(10);
@@ -79,8 +78,8 @@ int main() {
         const State<2> y0{1.0, 0.0};
         const State<2> y =
             rk4_integrate<2>(sho_deriv, 0.0, 2.0 * kPi, y0, 2000);
-        CHECK(close_to(y[0], 1.0, 1e-6));   // back to cos(2pi) = 1
-        CHECK(close_to(y[1], 0.0, 1e-6));   // v = -sin(2pi) = 0
+        CHECK(close_to(y[0], 1.0, 1e-6)); // back to cos(2pi) = 1
+        CHECK(close_to(y[1], 0.0, 1e-6)); // v = -sin(2pi) = 0
     }
 
     // --- Adaptive DP45 hits the exponential within tolerance ---
@@ -129,11 +128,11 @@ int main() {
 
     // --- Backward integration (t1 < t0) works ---
     {
-        State<1> y{e};  // start at e^1
+        State<1> y{e}; // start at e^1
         AdaptiveOptions opt;
         const AdaptiveResult r = rk45_integrate<1>(exp_deriv, 1.0, 0.0, y, opt);
         CHECK(r.success);
-        CHECK(close_to(y[0], 1.0, 1e-6));  // e^0 = 1
+        CHECK(close_to(y[0], 1.0, 1e-6)); // e^0 = 1
     }
 
     if (failures == 0) {

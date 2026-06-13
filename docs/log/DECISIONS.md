@@ -121,6 +121,60 @@ Numbers are assigned in order. Do not renumber.
   - Use a package manager like Conan or vcpkg (deferred: adds another
     moving part. Revisit when there are >= 3 active external integrations).
 
+## ADR-0007: clang-format is canonical and enforced in CI
+
+- Date: 2026-06-12
+- Status: accepted
+- Context: The C++ was hand-formatted with no automated enforcement. For a
+  repo aiming to pass professional scrutiny, "the author's eye" is not a
+  defensible formatting policy: it invites style drift and bikeshedding in
+  review. A formatter that is enforced is worth more to a reviewer than
+  manual alignment that is occasionally prettier.
+- Decision:
+  1. Adopt `.clang-format` (LLVM base, 4-space indent, 80-column target,
+     `PenaltyBreakString` high to avoid splitting most string literals) as
+     the single source of truth for C++ style.
+  2. Reformat the entire C++ tree once to conform; the result is
+     idempotent under the config.
+  3. Enforce it in CI with a `clang-format --dry-run --Werror` job, using
+     `clang-format==19.1.7` pinned via pip so the CI version exactly
+     matches the version the tree was formatted with (cross-version reflow
+     differences cannot cause spurious failures).
+  4. Provide `scripts/dev/format.ps1` so contributors apply or check
+     formatting locally before pushing.
+- Consequences:
+  - Style is no longer a review topic; the bot decides.
+  - A small cosmetic cost: long string literals in `<<` chains may be split
+    into adjacent literals (compile-time concatenation, behavior
+    identical).
+  - Contributors must run the formatter or CI will reject the PR.
+- Alternatives considered:
+  - Advisory-only format check (rejected: a gate that does not gate is
+    exactly the anti-pattern the 2026-06-12 audit flagged elsewhere).
+  - `apt`-installed clang-format in CI (rejected: version drift vs the
+    local formatting version causes spurious failures).
+
+## ADR-0008: Explicit line-ending policy via .gitattributes
+
+- Date: 2026-06-12
+- Status: accepted
+- Context: The repo had only `* text=auto`, which normalizes to LF in the
+  repository but checks out CRLF on Windows. That produced constant "LF
+  will be replaced by CRLF" warnings and, more seriously, risked CRLF
+  contaminating generated shell artifacts (the pre-commit hook's
+  `#!/bin/sh` shebang). Audit finding F-022.
+- Decision: Add explicit `eol` attributes. Source, scripts, docs, data,
+  and config that must be LF are pinned `eol=lf`; PowerShell is pinned
+  `eol=crlf` (its native convention); binary asset types are marked
+  `binary`. The pre-commit hook installer additionally normalizes its
+  generated hook to LF in code, so it is robust regardless of how the
+  `.ps1` itself is checked out.
+- Consequences:
+  - Deterministic line endings across platforms; no more churn warnings on
+    the files that matter.
+  - A one-time `git add --renormalize .` applies the policy to existing
+    files.
+
 ## ADR-0006: The project license is AGPL-3.0 (corrects ADR-0004)
 
 - Date: 2026-06-12

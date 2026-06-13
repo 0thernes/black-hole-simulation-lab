@@ -34,15 +34,15 @@
 namespace blackhole_ds::integrators {
 
 struct AdaptiveOptions {
-    double abs_tol = 1e-10;       // absolute tolerance per component
-    double rel_tol = 1e-10;       // relative tolerance per component
-    double initial_step = 1e-3;   // first trial step
-    double min_step = 1e-12;      // floor; below this we give up
-    double max_step = 1e6;        // ceiling on a single step
-    double safety = 0.9;          // step-growth safety factor
-    double min_scale = 0.2;       // never shrink faster than this
-    double max_scale = 10.0;      // never grow faster than this
-    int max_steps = 1'000'000;    // hard iteration cap (runaway guard)
+    double abs_tol = 1e-10;     // absolute tolerance per component
+    double rel_tol = 1e-10;     // relative tolerance per component
+    double initial_step = 1e-3; // first trial step
+    double min_step = 1e-12;    // floor; below this we give up
+    double max_step = 1e6;      // ceiling on a single step
+    double safety = 0.9;        // step-growth safety factor
+    double min_scale = 0.2;     // never shrink faster than this
+    double max_scale = 10.0;    // never grow faster than this
+    int max_steps = 1'000'000;  // hard iteration cap (runaway guard)
 };
 
 struct AdaptiveResult {
@@ -100,8 +100,7 @@ inline constexpr double bs7 = 1.0 / 40.0;
 // and k7 (== deriv at t+h, y5) is written for the next step's reuse.
 template <std::size_t N, typename Deriv>
 void dp_step(Deriv&& deriv, double t, const State<N>& y, double h,
-             const State<N>& k1, State<N>& y5, State<N>& err,
-             State<N>& k7) {
+             const State<N>& k1, State<N>& y5, State<N>& err, State<N>& k7) {
     using namespace dp;
 
     const State<N> k2 = deriv(t + c2 * h, axpy(y, h * a21, k1));
@@ -120,22 +119,21 @@ void dp_step(Deriv&& deriv, double t, const State<N>& y, double h,
 
     State<N> y5s = y;
     for (std::size_t i = 0; i < N; ++i) {
-        y5s[i] += h * (a51 * k1[i] + a52 * k2[i] + a53 * k3[i] +
-                       a54 * k4[i]);
+        y5s[i] += h * (a51 * k1[i] + a52 * k2[i] + a53 * k3[i] + a54 * k4[i]);
     }
     const State<N> k5 = deriv(t + c5 * h, y5s);
 
     State<N> y6 = y;
     for (std::size_t i = 0; i < N; ++i) {
-        y6[i] += h * (a61 * k1[i] + a62 * k2[i] + a63 * k3[i] +
-                      a64 * k4[i] + a65 * k5[i]);
+        y6[i] += h * (a61 * k1[i] + a62 * k2[i] + a63 * k3[i] + a64 * k4[i] +
+                      a65 * k5[i]);
     }
     const State<N> k6 = deriv(t + h, y6);
 
     // 5th-order solution.
     for (std::size_t i = 0; i < N; ++i) {
-        y5[i] = y[i] + h * (b1 * k1[i] + b3 * k3[i] + b4 * k4[i] +
-                            b5 * k5[i] + b6 * k6[i]);
+        y5[i] = y[i] + h * (b1 * k1[i] + b3 * k3[i] + b4 * k4[i] + b5 * k5[i] +
+                            b6 * k6[i]);
     }
 
     // FSAL: 7th stage is the derivative at the new point.
@@ -143,9 +141,9 @@ void dp_step(Deriv&& deriv, double t, const State<N>& y, double h,
 
     // Error = 5th order minus 4th order embedded solution.
     for (std::size_t i = 0; i < N; ++i) {
-        const double y4th = y[i] + h * (bs1 * k1[i] + bs3 * k3[i] +
-                                        bs4 * k4[i] + bs5 * k5[i] +
-                                        bs6 * k6[i] + bs7 * k7[i]);
+        const double y4th =
+            y[i] + h * (bs1 * k1[i] + bs3 * k3[i] + bs4 * k4[i] + bs5 * k5[i] +
+                        bs6 * k6[i] + bs7 * k7[i]);
         err[i] = y5[i] - y4th;
     }
 }
@@ -158,8 +156,7 @@ void dp_step(Deriv&& deriv, double t, const State<N>& y, double h,
 //   scale = safety * e^(-1/5)
 // clamped to [min_scale, max_scale]. A step is accepted when e <= 1.
 template <std::size_t N, typename Deriv>
-AdaptiveResult rk45_integrate(Deriv&& deriv, double t0, double t1,
-                              State<N>& y,
+AdaptiveResult rk45_integrate(Deriv&& deriv, double t0, double t1, State<N>& y,
                               const AdaptiveOptions& opt = {}) {
     AdaptiveResult result;
     const double direction = (t1 >= t0) ? 1.0 : -1.0;
@@ -188,8 +185,8 @@ AdaptiveResult rk45_integrate(Deriv&& deriv, double t0, double t1,
 
         dp_step<N>(deriv, t, y, h, k1, y5, err, k7);
 
-        const double e = weighted_rms_norm<N>(err, y, y5, opt.abs_tol,
-                                              opt.rel_tol);
+        const double e =
+            weighted_rms_norm<N>(err, y, y5, opt.abs_tol, opt.rel_tol);
 
         if (e <= 1.0) {
             // Accept.
@@ -226,8 +223,8 @@ AdaptiveResult rk45_integrate(Deriv&& deriv, double t0, double t1,
     result.t_final = t;
     if (!result.success) {
         // Loop exited on max_steps without reaching t1.
-        result.success = ((direction > 0 && t >= t1) ||
-                          (direction < 0 && t <= t1));
+        result.success =
+            ((direction > 0 && t >= t1) || (direction < 0 && t <= t1));
     }
     return result;
 }

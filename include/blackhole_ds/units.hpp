@@ -49,14 +49,13 @@ struct MassTag {};
 struct EnergyTag {};
 struct AngularMomentumTag {};
 struct VelocityTag {};
-struct DimensionlessTag {};   // redshift factor g, spin a/M, etc.
+struct DimensionlessTag {}; // redshift factor g, spin a/M, etc.
 
 // ============================================================================
 // Strong Quantity Template
 // ============================================================================
 
-template <typename Tag, typename Rep = double>
-class Quantity {
+template <typename Tag, typename Rep = double> class Quantity {
 public:
     using tag_type = Tag;
     using rep_type = Rep;
@@ -64,7 +63,9 @@ public:
     constexpr Quantity() noexcept : value_(Rep{0}) {}
     constexpr explicit Quantity(Rep v) noexcept : value_(v) {}
 
-    [[nodiscard]] constexpr Rep value() const noexcept { return value_; }
+    [[nodiscard]] constexpr Rep value() const noexcept {
+        return value_;
+    }
 
     constexpr Quantity& operator+=(const Quantity& rhs) noexcept {
         value_ += rhs.value_;
@@ -87,22 +88,26 @@ public:
         return Quantity{-value_};
     }
 
-    [[nodiscard]] constexpr bool operator==(const Quantity& rhs) const noexcept {
+    [[nodiscard]] constexpr bool
+    operator==(const Quantity& rhs) const noexcept {
         return value_ == rhs.value_;
     }
-    [[nodiscard]] constexpr bool operator!=(const Quantity& rhs) const noexcept {
+    [[nodiscard]] constexpr bool
+    operator!=(const Quantity& rhs) const noexcept {
         return !(*this == rhs);
     }
     [[nodiscard]] constexpr bool operator<(const Quantity& rhs) const noexcept {
         return value_ < rhs.value_;
     }
-    [[nodiscard]] constexpr bool operator<=(const Quantity& rhs) const noexcept {
+    [[nodiscard]] constexpr bool
+    operator<=(const Quantity& rhs) const noexcept {
         return value_ <= rhs.value_;
     }
     [[nodiscard]] constexpr bool operator>(const Quantity& rhs) const noexcept {
         return value_ > rhs.value_;
     }
-    [[nodiscard]] constexpr bool operator>=(const Quantity& rhs) const noexcept {
+    [[nodiscard]] constexpr bool
+    operator>=(const Quantity& rhs) const noexcept {
         return value_ >= rhs.value_;
     }
 
@@ -133,8 +138,8 @@ operator-(Quantity<Tag, Rep> lhs, const Quantity<Tag, Rep>& rhs) noexcept {
 }
 
 template <typename Tag, typename Rep>
-[[nodiscard]] constexpr Quantity<Tag, Rep>
-operator*(Quantity<Tag, Rep> q, Rep scalar) noexcept {
+[[nodiscard]] constexpr Quantity<Tag, Rep> operator*(Quantity<Tag, Rep> q,
+                                                     Rep scalar) noexcept {
     q *= scalar;
     return q;
 }
@@ -147,8 +152,8 @@ operator*(Rep scalar, Quantity<Tag, Rep> q) noexcept {
 }
 
 template <typename Tag, typename Rep>
-[[nodiscard]] constexpr Quantity<Tag, Rep>
-operator/(Quantity<Tag, Rep> q, Rep scalar) noexcept {
+[[nodiscard]] constexpr Quantity<Tag, Rep> operator/(Quantity<Tag, Rep> q,
+                                                     Rep scalar) noexcept {
     q /= scalar;
     return q;
 }
@@ -157,34 +162,54 @@ operator/(Quantity<Tag, Rep> q, Rep scalar) noexcept {
 // Dimension-Specific Aliases
 // ============================================================================
 
-using Length            = Quantity<LengthTag>;
-using Time              = Quantity<TimeTag>;
-using Mass              = Quantity<MassTag>;
-using Energy            = Quantity<EnergyTag>;
-using AngularMomentum   = Quantity<AngularMomentumTag>;
-using Velocity          = Quantity<VelocityTag>;
-using Dimensionless     = Quantity<DimensionlessTag>;
+using Length = Quantity<LengthTag>;
+using Time = Quantity<TimeTag>;
+using Mass = Quantity<MassTag>;
+using Energy = Quantity<EnergyTag>;
+using AngularMomentum = Quantity<AngularMomentumTag>;
+using Velocity = Quantity<VelocityTag>;
+using Dimensionless = Quantity<DimensionlessTag>;
 
 // ============================================================================
 // User-Defined Literals
 // ============================================================================
 
-constexpr Length operator""_m(long double v) noexcept { return Length{static_cast<double>(v)}; }
-constexpr Length operator""_m(unsigned long long v) noexcept { return Length{static_cast<double>(v)}; }
+constexpr Length operator""_m(long double v) noexcept {
+    return Length{static_cast<double>(v)};
+}
+constexpr Length operator""_m(unsigned long long v) noexcept {
+    return Length{static_cast<double>(v)};
+}
 
-constexpr Time operator""_s(long double v) noexcept { return Time{static_cast<double>(v)}; }
-constexpr Time operator""_s(unsigned long long v) noexcept { return Time{static_cast<double>(v)}; }
+constexpr Time operator""_s(long double v) noexcept {
+    return Time{static_cast<double>(v)};
+}
+constexpr Time operator""_s(unsigned long long v) noexcept {
+    return Time{static_cast<double>(v)};
+}
 
-constexpr Mass operator""_kg(long double v) noexcept { return Mass{static_cast<double>(v)}; }
-constexpr Mass operator""_kg(unsigned long long v) noexcept { return Mass{static_cast<double>(v)}; }
+constexpr Mass operator""_kg(long double v) noexcept {
+    return Mass{static_cast<double>(v)};
+}
+constexpr Mass operator""_kg(unsigned long long v) noexcept {
+    return Mass{static_cast<double>(v)};
+}
 
 // Solar mass (common in GR astrophysics)
-constexpr Mass operator""_Msun(long double v) noexcept { return Mass{static_cast<double>(v) * 1.98847e30}; }
-constexpr Mass operator""_Msun(unsigned long long v) noexcept { return Mass{static_cast<double>(v) * 1.98847e30}; }
+constexpr Mass operator""_Msun(long double v) noexcept {
+    return Mass{static_cast<double>(v) * 1.98847e30};
+}
+constexpr Mass operator""_Msun(unsigned long long v) noexcept {
+    return Mass{static_cast<double>(v) * 1.98847e30};
+}
 
 // Geometric units (G = c = 1)
-constexpr Mass operator""_M(long double v) noexcept { return Mass{static_cast<double>(v)}; }
-constexpr Length operator""_rg(long double v) noexcept { return Length{static_cast<double>(v)}; } // r_g = GM/c^2
+constexpr Mass operator""_M(long double v) noexcept {
+    return Mass{static_cast<double>(v)};
+}
+constexpr Length operator""_rg(long double v) noexcept {
+    return Length{static_cast<double>(v)};
+} // r_g = GM/c^2
 
 // ============================================================================
 // Explicit cross-dimension operations (each one physically meaningful)
@@ -206,8 +231,7 @@ constexpr Length operator""_rg(long double v) noexcept { return Length{static_ca
 // horizons, where naive accumulation loses precision.
 // ============================================================================
 
-template <typename Q>
-class KahanAccumulator {
+template <typename Q> class KahanAccumulator {
 public:
     constexpr void add(Q term) noexcept {
         auto y = term.value() - correction_;
@@ -216,8 +240,13 @@ public:
         sum_ = t;
     }
 
-    [[nodiscard]] constexpr Q total() const noexcept { return Q{sum_}; }
-    constexpr void reset() noexcept { sum_ = 0.0; correction_ = 0.0; }
+    [[nodiscard]] constexpr Q total() const noexcept {
+        return Q{sum_};
+    }
+    constexpr void reset() noexcept {
+        sum_ = 0.0;
+        correction_ = 0.0;
+    }
 
 private:
     double sum_{0.0};
@@ -246,16 +275,19 @@ namespace detail {
 } // namespace detail
 
 // Schwarzschild photon sphere radius: r_ph = 3 GM/c^2 = 1.5 r_s (exact).
-[[nodiscard]] constexpr bool photon_sphere_radius_valid(Length r_photon, Mass M) noexcept {
+[[nodiscard]] constexpr bool photon_sphere_radius_valid(Length r_photon,
+                                                        Mass M) noexcept {
     const double expected = 3.0 * M.value();
-    const double rel_err = detail::abs_val(r_photon.value() - expected) / expected;
+    const double rel_err =
+        detail::abs_val(r_photon.value() - expected) / expected;
     return rel_err < 1e-12;
 }
 
 // Schwarzschild ISCO: r_isco = 6 GM/c^2 = 3 r_s (exact).
 [[nodiscard]] constexpr bool isco_radius_valid(Length r_isco, Mass M) noexcept {
     const double expected = 6.0 * M.value();
-    const double rel_err = detail::abs_val(r_isco.value() - expected) / expected;
+    const double rel_err =
+        detail::abs_val(r_isco.value() - expected) / expected;
     return rel_err < 1e-12;
 }
 
@@ -272,10 +304,12 @@ namespace detail {
 // mean diameter shrinks by only a few percent toward extremal spin and
 // depends on observer inclination. A Kerr shadow validator belongs with a
 // real ray tracer, not a polynomial guess.
-[[nodiscard]] constexpr bool schwarzschild_shadow_diameter_valid(Length d_shadow, Mass M) noexcept {
+[[nodiscard]] constexpr bool
+schwarzschild_shadow_diameter_valid(Length d_shadow, Mass M) noexcept {
     constexpr double two_sqrt27 = 10.392304845413264; // 2*sqrt(27) = 6*sqrt(3)
     const double expected = two_sqrt27 * M.value();
-    const double rel_err = detail::abs_val(d_shadow.value() - expected) / expected;
+    const double rel_err =
+        detail::abs_val(d_shadow.value() - expected) / expected;
     return rel_err < 1e-12;
 }
 

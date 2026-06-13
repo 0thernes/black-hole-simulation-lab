@@ -15,8 +15,8 @@
 #include "blackhole_ds/metrics/schwarzschild.hpp"
 #include "blackhole_ds/units.hpp"
 
-using blackhole_ds::core::TruthLabel;
 using blackhole_ds::core::to_string;
+using blackhole_ds::core::TruthLabel;
 namespace kerr_m = blackhole_ds::metrics::kerr;
 namespace sch_m = blackhole_ds::metrics::schwarzschild;
 using namespace blackhole_ds::units;
@@ -48,8 +48,10 @@ concept Addable = requires(A a, B b) { a + b; };
 
 static_assert(Addable<Length, Length>, "same-dimension addition must compile");
 static_assert(Addable<Energy, Energy>, "same-dimension addition must compile");
-static_assert(!Addable<Length, Time>, "cross-dimension addition must NOT compile");
-static_assert(!Addable<Mass, Energy>, "cross-dimension addition must NOT compile");
+static_assert(!Addable<Length, Time>,
+              "cross-dimension addition must NOT compile");
+static_assert(!Addable<Mass, Energy>,
+              "cross-dimension addition must NOT compile");
 
 int main() {
     // Units header still resolves.
@@ -65,7 +67,8 @@ int main() {
 
     // Truth labels stringify as expected.
     CHECK(to_string(TruthLabel::AnalyticClassical) == "analytic_classical");
-    CHECK(to_string(TruthLabel::SpeculativeExtension) == "speculative_extension");
+    CHECK(to_string(TruthLabel::SpeculativeExtension) ==
+          "speculative_extension");
 
     // Schwarzschild analytic values for 1 solar mass.
     const double r_s_expected =

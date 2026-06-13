@@ -26,5 +26,11 @@ $body = @'
 set -e
 python scripts/Validate-ResearchOS.py
 '@
-Set-Content -Path $hook -Value $body -Encoding ASCII -NoNewline
-Write-Host "Installed pre-commit hook at $hook" -ForegroundColor Green
+# Force LF line endings. If this .ps1 is checked out with CRLF (the Windows
+# default), the here-string would otherwise carry CRLF into the generated
+# sh hook, producing an invalid "#!/bin/sh\r" shebang that Git's hook
+# runner rejects. Writing raw bytes bypasses Set-Content's platform
+# newline handling entirely. (Audit 2026-06-12, finding F-022.)
+$body = $body -replace "`r`n", "`n"
+[System.IO.File]::WriteAllText($hook, $body, [System.Text.UTF8Encoding]::new($false))
+Write-Host "Installed pre-commit hook at $hook (LF-normalized)" -ForegroundColor Green

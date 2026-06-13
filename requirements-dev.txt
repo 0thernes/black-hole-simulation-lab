@@ -1,0 +1,11 @@
+# Development and CI Python dependencies.
+#
+# Runtime tooling (validators, generators, harness) uses only the standard
+# library, so the project has no runtime requirements file. These are the
+# extras that turn the "skipped when absent" validation paths into hard
+# gates: full XSD validation of the brain corpus (lxml) and JSON Schema
+# enforcement of the source-card corpus (jsonschema).
+#
+# Install:  pip install -r requirements-dev.txt
+lxml>=5.0
+jsonschema>=4.0

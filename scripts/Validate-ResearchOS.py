@@ -83,7 +83,12 @@ REQUIRED_FILES = [
     "scripts/dev/build.ps1",
     "scripts/dev/test.ps1",
     "scripts/dev/audit.ps1",
+    "scripts/dev/format.ps1",
     "scripts/dev/Daily-Commit.ps1",
+    # Tooling config
+    ".clang-format",
+    ".gitattributes",
+    "requirements-dev.txt",
 ]
 
 FORBIDDEN_TRACKED_PATTERNS = [

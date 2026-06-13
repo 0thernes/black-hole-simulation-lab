@@ -145,9 +145,9 @@ void emit_text(const Options& opt) {
     std::cout << "Spin a/M    ISCO (r/M)    Photon (r/M)\n";
     for (int i = 0; i <= opt.steps; ++i) {
         const double a = -0.998 + (1.996 * i) / opt.steps;
-        std::cout << std::setw(8) << a << "    "
-                  << std::setw(10) << isco_dimensionless(a) << "    "
-                  << std::setw(10) << photon_sphere_dimensionless(a) << '\n';
+        std::cout << std::setw(8) << a << "    " << std::setw(10)
+                  << isco_dimensionless(a) << "    " << std::setw(10)
+                  << photon_sphere_dimensionless(a) << '\n';
     }
 }
 
@@ -163,8 +163,7 @@ void emit_csv(const Options& opt) {
     w.write_row(TruthLabel::AnalyticClassical, opt.mass_solar, 0.0,
                 "photon_sphere_m",
                 bhds::metrics::schwarzschild::photon_sphere_m(opt.mass_solar));
-    w.write_row(TruthLabel::AnalyticClassical, opt.mass_solar, 0.0,
-                "isco_m",
+    w.write_row(TruthLabel::AnalyticClassical, opt.mass_solar, 0.0, "isco_m",
                 bhds::metrics::schwarzschild::isco_m(opt.mass_solar));
 
     for (int i = 0; i <= opt.steps; ++i) {

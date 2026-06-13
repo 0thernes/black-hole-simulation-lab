@@ -1,0 +1,28 @@
+# clang-format configuration for BlackHoleDS.
+# Style: LLVM base with 4-space indent and an 80-column target, matching the
+# hand-written kernel. Run `clang-format -i <files>` to apply.
+---
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 80
+AccessModifierOffset: -4
+NamespaceIndentation: None
+PointerAlignment: Left
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Attach
+SortIncludes: CaseSensitive
+IncludeBlocks: Preserve
+SpaceAfterCStyleCast: false
+# Never split string literals across lines (mechanical splits hurt
+# readability for CSV headers and messages). Bin-pack arguments to keep
+# signatures compact.
+PenaltyBreakString: 100000
+BinPackParameters: true
+BinPackArguments: true
+Standard: c++20
+...

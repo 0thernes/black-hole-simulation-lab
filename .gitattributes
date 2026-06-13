@@ -1,2 +1,42 @@
-# Auto detect text files and perform LF normalization
+# Line-ending and diff policy.
+#
+# Default: let Git auto-detect text and normalize to LF in the repository.
 * text=auto
+
+# Files that MUST be LF regardless of platform. Shell scripts and the
+# generated git hook break with CRLF (`#!/bin/sh\r` is not a valid shebang).
+*.sh        text eol=lf
+*.py        text eol=lf
+*.cpp       text eol=lf
+*.hpp       text eol=lf
+*.cmake     text eol=lf
+CMakeLists.txt text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.json      text eol=lf
+*.jsonl     text eol=lf
+*.md        text eol=lf
+*.xml       text eol=lf
+*.xsd       text eol=lf
+*.sql       text eol=lf
+*.mmd       text eol=lf
+.gitignore  text eol=lf
+.gitattributes text eol=lf
+.clang-format text eol=lf
+
+# PowerShell is happy with either ending; CRLF is the Windows-native
+# convention and avoids noisy checkout warnings on the reference platform.
+*.ps1       text eol=crlf
+
+# Binary assets: never normalize, never diff as text.
+*.png       binary
+*.jpg       binary
+*.pdf       binary
+*.zip       binary
+*.sqlite    binary
+*.db        binary
+*.xlsx      binary
+*.pbix      binary
+
+# Generated/curated data: keep diffs readable but do not let Git guess.
+*.csv       text eol=lf

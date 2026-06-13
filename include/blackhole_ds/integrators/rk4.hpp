@@ -32,8 +32,8 @@ namespace blackhole_ds::integrators {
 //   h:      step size
 // Returns the state at t + h.
 template <std::size_t N, typename Deriv>
-[[nodiscard]] State<N> rk4_step(Deriv&& deriv, double t,
-                                const State<N>& y, double h) {
+[[nodiscard]] State<N> rk4_step(Deriv&& deriv, double t, const State<N>& y,
+                                double h) {
     const State<N> k1 = deriv(t, y);
     const State<N> k2 = deriv(t + 0.5 * h, axpy(y, 0.5 * h, k1));
     const State<N> k3 = deriv(t + 0.5 * h, axpy(y, 0.5 * h, k2));

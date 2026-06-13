@@ -18,8 +18,7 @@
 
 namespace blackhole_ds::integrators {
 
-template <std::size_t N>
-using State = std::array<double, N>;
+template <std::size_t N> using State = std::array<double, N>;
 
 // y = a + b
 template <std::size_t N>
@@ -45,8 +44,7 @@ template <std::size_t N>
 
 // y = s * a
 template <std::size_t N>
-[[nodiscard]] constexpr State<N> scale(double s,
-                                       const State<N>& a) noexcept {
+[[nodiscard]] constexpr State<N> scale(double s, const State<N>& a) noexcept {
     State<N> out{};
     for (std::size_t i = 0; i < N; ++i) {
         out[i] = s * a[i];
@@ -59,10 +57,9 @@ template <std::size_t N>
 // momentum) are compared fairly. Hairer, Norsett, Wanner, "Solving
 // Ordinary Differential Equations I" (1993), section II.4.
 template <std::size_t N>
-[[nodiscard]] double weighted_rms_norm(const State<N>& error,
-                                       const State<N>& y_old,
-                                       const State<N>& y_new,
-                                       double atol, double rtol) noexcept {
+[[nodiscard]] double
+weighted_rms_norm(const State<N>& error, const State<N>& y_old,
+                  const State<N>& y_new, double atol, double rtol) noexcept {
     double sum_sq = 0.0;
     for (std::size_t i = 0; i < N; ++i) {
         const double scale_i =

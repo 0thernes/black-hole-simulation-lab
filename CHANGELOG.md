@@ -3,6 +3,33 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-06-12 (Phase D: CI/CD and formatting upgrades)
+
+- `.clang-format` (LLVM base, 4-space, 80-col, no string-literal splitting)
+  adopted as canonical; the whole C++ tree reformatted to conform
+  (idempotent). ADR-0007.
+- `.github/workflows/ci.yml` rebuilt into three jobs:
+  - `format`: clang-format `--dry-run --Werror`, version pinned to
+    19.1.7 via pip so CI matches the formatting version exactly.
+  - `validate`: corpus rebuild + drift gate + all validators, with pip
+    caching keyed to requirements-dev.txt.
+  - `build`: a Debug + Release matrix (was Release only), needs validate.
+  Plus least-privilege `permissions: contents: read`, `concurrency`
+  cancellation of superseded runs, and `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`
+  to clear the Node 20 deprecation without guessing action versions.
+- `.gitattributes` rewritten with explicit eol policy (LF for source/docs/
+  scripts/data, CRLF for `.ps1`, binary for assets). ADR-0008. Files
+  renormalized.
+- `scripts/dev/Install-PreCommitHook.ps1` now writes the generated sh hook
+  with forced LF, so a CRLF checkout can no longer corrupt the shebang
+  (audit F-022).
+- `scripts/dev/format.ps1`: apply or `-Check` formatting locally with the
+  same style CI enforces.
+- `requirements-dev.txt`: lxml + jsonschema (turns the optional validation
+  paths into hard gates in CI).
+- Verified: clang-format idempotent, both Debug and Release build and pass
+  3/3 CTest suites, full validation green.
+
 ## 2026-06-12 (Phase B: comprehensive documentation suite)
 
 - `docs/INDEX.md`: the documentation map / table of contents for the whole

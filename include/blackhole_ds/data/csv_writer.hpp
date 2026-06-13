@@ -24,22 +24,19 @@ public:
     explicit CsvWriter(std::ostream& out) : out_(out) {}
 
     void write_header() {
-        out_ << "model_status,mass_solar,spin_a_over_M,quantity,value_si_meters\n";
+        out_ << "model_status,mass_solar,spin_a_over_M,quantity,value_si_"
+                "meters\n";
     }
 
-    void write_row(core::TruthLabel label,
-                   double mass_solar,
-                   double spin_a_over_M,
-                   std::string_view quantity,
+    void write_row(core::TruthLabel label, double mass_solar,
+                   double spin_a_over_M, std::string_view quantity,
                    double value_si_meters) {
         const auto saved_precision = out_.precision();
         const auto saved_flags = out_.flags();
         out_ << std::setprecision(std::numeric_limits<double>::max_digits10);
-        out_ << core::to_string(label) << ','
-             << mass_solar << ','
-             << spin_a_over_M << ','
-             << quantity << ','
-             << value_si_meters << '\n';
+        out_ << core::to_string(label) << ',' << mass_solar << ','
+             << spin_a_over_M << ',' << quantity << ',' << value_si_meters
+             << '\n';
         out_.precision(saved_precision);
         out_.flags(saved_flags);
     }
