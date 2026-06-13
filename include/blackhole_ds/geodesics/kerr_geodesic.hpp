@@ -188,4 +188,54 @@ polar_residual(const KGState& y, const GeodesicConstants& k) noexcept {
            k.Lz * k.Lz * cot2;
 }
 
+// --- Observer image plane -> constants of motion (Cunningham-Bardeen) ----
+// A photon received at image-plane coordinates (alpha, beta) by a distant
+// observer at inclination i (polar angle of the observer, degrees) carries,
+// with the natural normalization E = 1:
+//
+//     L_z = -alpha sin i
+//     Q   =  beta^2 + (alpha^2 - a^2) cos^2 i
+//
+// alpha is the apparent displacement perpendicular to the projected spin
+// axis; beta is parallel to it. This is the exact map that turns each pixel
+// into a geodesic to trace backward. (Cunningham & Bardeen 1973.)
+//
+// Self-consistency identity, used as a test anchor: substituting these into
+// the polar potential gives Theta(i) = beta^2 exactly, so the initial polar
+// velocity is |beta| and the ray is on-shell at the observer.
+[[nodiscard]] inline GeodesicConstants
+constants_from_image(double alpha, double beta, double inclination_deg,
+                     double a) noexcept {
+    const double i = inclination_deg * kg_pi / 180.0;
+    const double sin_i = std::sin(i);
+    const double cos_i = std::cos(i);
+    GeodesicConstants k{};
+    k.a = a;
+    k.E = 1.0;
+    k.Lz = -alpha * sin_i;
+    k.Q = beta * beta + (alpha * alpha - a * a) * cos_i * cos_i;
+    return k;
+}
+
+// Build the on-shell initial state for that pixel's photon, placed at a large
+// observer radius and aimed inward (ingoing: dr/dlambda < 0). theta starts at
+// the observer inclination; the polar velocity sign follows -beta (the image
+// "up" direction). Both residuals are zero at this state by construction.
+// (alpha enters only through the constants k, so it is not a parameter here.)
+[[nodiscard]] inline KGState
+initial_state_from_image(double beta, double inclination_deg,
+                         const GeodesicConstants& k,
+                         double r_observer = 1000.0) noexcept {
+    const double i = inclination_deg * kg_pi / 180.0;
+    KGState y{};
+    y[KG_R] = r_observer;
+    y[KG_TH] = i;
+    y[KG_PHI] = 0.0;
+    y[KG_T] = 0.0;
+    const double R0 = kg_R(r_observer, k);
+    y[KG_RDOT] = -std::sqrt(R0 > 0.0 ? R0 : 0.0); // ingoing
+    y[KG_THDOT] = -beta;                          // Theta(i) == beta^2
+    return y;
+}
+
 } // namespace blackhole_ds::geodesics::kerr

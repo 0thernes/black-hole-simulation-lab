@@ -88,6 +88,14 @@ Boyer-Lindquist coordinates using the separated constants of motion.
   integrator finds R=R'=0, and a photon launched there stays on the circle.
 - New `blackhole_ds_kerr_geodesic_tests` target; registered in the validation
   gate. **16 CTest suites, all green.**
+- Observer image-plane → constants-of-motion map (Cunningham-Bardeen 1973):
+  `constants_from_image(alpha, beta, i, a)` gives `L_z = -alpha sin i`,
+  `Q = beta^2 + (alpha^2 - a^2) cos^2 i`, and `initial_state_from_image`
+  builds the on-shell ingoing photon at a far observer radius — the bridge
+  that turns each pixel into a geodesic to trace. Tested by the
+  self-consistency identity `Theta(i) == beta^2`, the a → 0 form, on-shell
+  residuals, and an **exact round-trip** against the closed-form shadow
+  boundary (a boundary point maps back to its orbit's L_z = xi, Q = eta).
 - Truth tier: the equations of motion are `analytic_classical` (Carter 1968);
   the trajectories are `numerical_approximation` (RK4) with bounded,
   test-checked conserved-quantity drift. No CLI/image surface yet — this is

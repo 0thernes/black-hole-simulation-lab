@@ -182,6 +182,64 @@ int main() {
         CHECK(on_circle);
     }
 
+    // --- 6. Cunningham-Bardeen observer map: image plane -> constants -----
+    {
+        const double a = 0.6;
+        const double inc = 70.0;
+        const double i = inc * kg::kg_pi / 180.0;
+        const double alpha = 3.5, beta = 2.0;
+        const kg::GeodesicConstants k =
+            kg::constants_from_image(alpha, beta, inc, a);
+
+        // Definitional identities.
+        CHECK(close_to(k.Lz, -alpha * std::sin(i), 1.0e-12));
+        CHECK(close_to(k.Q,
+                       beta * beta +
+                           (alpha * alpha - a * a) * std::cos(i) * std::cos(i),
+                       1.0e-12));
+        // Self-consistency: Theta(i) == beta^2 (ties the map to the potential).
+        CHECK(close_to(kg::kg_Theta(i, k), beta * beta, 1.0e-9));
+
+        // a -> 0 form: Q = beta^2 + alpha^2 cos^2 i.
+        const kg::GeodesicConstants k0 =
+            kg::constants_from_image(alpha, beta, inc, 0.0);
+        CHECK(close_to(k0.Q,
+                       beta * beta + alpha * alpha * std::cos(i) * std::cos(i),
+                       1.0e-12));
+
+        // The initial state is on-shell and ingoing.
+        const kg::KGState y0 =
+            kg::initial_state_from_image(beta, inc, k, 1000.0);
+        CHECK(y0[kg::KG_RDOT] < 0.0);
+        CHECK(std::abs(kg::radial_residual(y0, k)) < 1.0e-3);
+        CHECK(std::abs(kg::polar_residual(y0, k)) < 1.0e-9);
+        CHECK(close_to(y0[kg::KG_TH], i, 1.0e-12));
+    }
+
+    // --- 7. Exact round-trip: a point built from a known photon orbit on
+    //     the shadow boundary maps back to that orbit's (L_z, Q) -----------
+    {
+        const double a = 0.6;
+        const double inc = 70.0;
+        const double i = inc * kg::kg_pi / 180.0;
+        const double sin_i = std::sin(i), cos_i = std::cos(i);
+        const double cot2 = (cos_i * cos_i) / (sin_i * sin_i);
+
+        const double rc = 0.5 * (kg::photon_orbit_prograde(a) +
+                                 kg::photon_orbit_retrograde(a));
+        const double xi = kg::bardeen_xi(rc, a);
+        const double eta = kg::bardeen_eta(rc, a);
+        const double beta2 = eta + a * a * cos_i * cos_i - xi * xi * cot2;
+        CHECK(beta2 > 0.0); // this orbit is on the visible boundary
+
+        const double alpha = -xi / sin_i;
+        const double beta = std::sqrt(beta2);
+        const kg::GeodesicConstants k =
+            kg::constants_from_image(alpha, beta, inc, a);
+        CHECK(close_to(k.Lz, xi, 1.0e-9)); // recovers L_z/E = xi
+        CHECK(close_to(k.Q, eta, 1.0e-9)); // recovers Q/E^2 = eta
+    }
+
     if (failures == 0) {
         std::puts("kerr_geodesic_tests passed");
         return EXIT_SUCCESS;
