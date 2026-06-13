@@ -10,8 +10,8 @@ top-level directory or change ownership semantics.
 |   `-- dependabot.yml
 |-- .vscode/                           VS Code workspace
 |
-|-- assets/                            Source diagrams, charts, icons
-|   `-- diagrams/                      Mermaid (.mmd), SVG, PlantUML sources
+|-- assets/                            Reserved for charts/icons (empty today;
+|   `-- diagrams/                      architecture .mmd live under docs/)
 |
 |-- data/                              Curated data and schema
 |   `-- schema.sql                     Canonical SQLite star schema

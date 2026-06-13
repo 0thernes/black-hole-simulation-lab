@@ -20,12 +20,12 @@ First exact non-trivial solution to Einstein's vacuum field equations. Describes
 - **Statement:** Outside a spherically symmetric mass M, in vacuum, the metric takes the Schwarzschild form.
   - Tier: `analytic_classical`
   - Equation: `ds^2 = -(1 - 2GM/(rc^2)) c^2 dt^2 + (1 - 2GM/(rc^2))^{-1} dr^2 + r^2 (d\theta^2 + \sin^2\theta d\phi^2)`
-  - Used in: `include/blackhole_ds/units.hpp`, `src/BlackHoleDS.cpp`, `tests/smoke_tests.cpp`
+  - Used in: `include/blackhole_ds/units.hpp`, `include/blackhole_ds/metrics/schwarzschild.hpp`, `tests/smoke_tests.cpp`
 
 - **Statement:** The Schwarzschild radius is r_s = 2GM/c^2.
   - Tier: `analytic_classical`
   - Equation: `r_s = 2GM/c^2`
-  - Used in: `src/BlackHoleDS.cpp`
+  - Used in: `include/blackhole_ds/metrics/schwarzschild.hpp`
 
 ## Related Brain Profiles
 

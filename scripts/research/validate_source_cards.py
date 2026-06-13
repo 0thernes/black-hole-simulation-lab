@@ -82,6 +82,14 @@ def main() -> int:
         print("validate_source_cards: jsonschema not installed, schema "
               "validation skipped (structural checks still ran)")
 
+    # Cross-corpus referential integrity: every related_brains slug must
+    # resolve to a real brain profile (inspection finding S14.12).
+    brain_manifest = ROOT / "knowledge" / "brains" / "MANIFEST.json"
+    brain_slugs: set[str] = set()
+    if brain_manifest.exists():
+        bm = json.loads(brain_manifest.read_text(encoding="utf-8"))
+        brain_slugs = {p["slug"] for p in bm.get("profiles", [])}
+
     slugs: set[str] = set()
     for src in sources:
         slug = src.get("slug")
@@ -99,6 +107,21 @@ def main() -> int:
             ct = c.get("tier")
             if ct not in ALLOWED_TIERS:
                 fail(f"{slug}: claim has invalid tier {ct!r}")
+            # where_used paths must exist (a file, or a directory target).
+            # Inspection finding S14.14.
+            for wu in c.get("where_used") or []:
+                if not (ROOT / wu).exists():
+                    fail(f"{slug}: where_used path does not exist: {wu}")
+
+        # related_brains referential integrity (only enforced when the
+        # brain manifest is present, i.e. the corpus is built).
+        if brain_slugs:
+            for rb in src.get("related_brains") or []:
+                if rb not in brain_slugs:
+                    fail(
+                        f"{slug}: related_brains slug {rb!r} not found in "
+                        "the brain corpus"
+                    )
 
         card_path = CARDS_DIR / f"{slug}.md"
         if not card_path.exists():

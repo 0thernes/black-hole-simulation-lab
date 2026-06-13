@@ -3,6 +3,32 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-06-12 (Remediation batch 3: accuracy + referential integrity)
+
+More inspection FAILs closed, weighted toward "gates that gate".
+
+- S14.13: corrected source-card `where_used` paths — three pointed at the
+  empty `src/BlackHoleDS.cpp` shim; now point at the real headers
+  (`metrics/schwarzschild.hpp`, `metrics/kerr.hpp`).
+- S14.12 + S14.14 (new gates): `validate_source_cards.py` now enforces
+  cross-corpus referential integrity — every `related_brains` slug must
+  resolve to a real brain profile, and every claim `where_used` path must
+  exist on disk. These prevent the S14.13 class of drift from recurring.
+- S06.11: `constants.hpp` now *derives* `geometric_meters_per_solar_mass`
+  from the IAU 2015 nominal `GM_sun = 1.3271244e20 m^3/s^2` and `c^2`
+  (anchoring on the well-measured GM_sun rather than the poorly-known
+  product G*M_sun), with a `static_assert` pinning the result to ~1476.6 m.
+- S11.03: HIERARCHY.md no longer claims the `.mmd` diagrams live under
+  `assets/diagrams/` — they are under `docs/architecture/diagrams/`.
+- S11.05: SYSTEM_DIAGRAM.md's layer responsibilities now say the physics
+  kernel is header-only under `include/` today (not `src/`).
+- S02.11: enabling a `BHDS_ENABLE_*` integration flag now emits a CMake
+  `message(WARNING)` that the adapter is not wired yet, so the option is
+  honest instead of a silent no-op.
+
+Verified: build clean, 7/7 CTest pass, source cards regenerate and pass the
+new referential-integrity gates, full validation green.
+
 ## 2026-06-12 (Remediation batch 2: tests + licensing)
 
 Burning down more inspection FAILs, focused on test coverage and AGPL

@@ -29,6 +29,20 @@ if(BHDS_ENABLE_LIBIRREP OR BHDS_ENABLE_ESHKOL OR BHDS_ENABLE_QGT OR BHDS_ENABLE_
     include(FetchContent)
 endif()
 
+# No adapter is wired yet (each lands via its own ADR + PR per ADR-0005).
+# Until then, enabling a flag must not silently build as if the integration
+# were present, so we warn loudly. This keeps the option honest rather than
+# a no-op (inspection finding S02.11).
+foreach(_bhds_flag IN ITEMS
+        BHDS_ENABLE_LIBIRREP BHDS_ENABLE_ESHKOL
+        BHDS_ENABLE_QGT BHDS_ENABLE_MOONLAB)
+    if(${_bhds_flag})
+        message(WARNING
+            "${_bhds_flag}=ON, but its adapter is not wired yet (ADR pending; "
+            "see docs/integrations/). Building WITHOUT the integration.")
+    endif()
+endforeach()
+
 # Example adapter wiring (commented; real adapters land via ADR + PR):
 #
 # if(BHDS_ENABLE_LIBIRREP)

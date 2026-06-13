@@ -17,9 +17,25 @@ inline constexpr double gravitational_constant_si =
 // Astronomical constants.
 inline constexpr double solar_mass_kg = 1.98847e30;
 
-// Convenience: GM_sun / c^2 in meters. The geometric-units scale factor
-// for one solar mass. See MTW 1973 and Bardeen, Press, Teukolsky 1972.
+// Standard gravitational parameter of the Sun, GM_sun.
+// Source: IAU 2015 nominal value, GM_sun = 1.3271244e20 m^3 s^-2. This is
+// measured directly and to far higher precision than G * M_sun (because G
+// is the least-well-known constant), so we anchor on it rather than on the
+// product gravitational_constant_si * solar_mass_kg.
+inline constexpr double sun_gm_si = 1.3271244e20; // m^3 s^-2
+
+// GM_sun / c^2 in meters: the geometric-units length scale of one solar
+// mass (r_g for the Sun). Derived from the IAU GM_sun above.
+// See MTW 1973; Bardeen, Press, Teukolsky 1972.
 inline constexpr double geometric_meters_per_solar_mass =
-    1.476625038e3; // meters
+    sun_gm_si / (speed_of_light_m_per_s * speed_of_light_m_per_s); // meters
+
+// Sanity check: the published rounded value (1476.625... m) must agree with
+// the derived one to better than 1e-4 relative. (Not a tight equality: the
+// inputs carry their own rounding.) Pure arithmetic keeps this constexpr
+// and MSVC-portable, per units.hpp.
+static_assert((geometric_meters_per_solar_mass > 1476.0) &&
+                  (geometric_meters_per_solar_mass < 1477.0),
+              "GM_sun/c^2 must be ~1476.6 m; check sun_gm_si and c");
 
 } // namespace blackhole_ds::core::constants

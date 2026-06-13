@@ -19,7 +19,7 @@ Definitive analytic treatment of equatorial geodesics in Kerr. Source of the clo
 
 - **Statement:** Prograde Kerr ISCO in geometric units satisfies r_ISCO = 3 + Z2 - sign(a)*sqrt((3 - Z1)(3 + Z1 + 2 Z2)).
   - Tier: `analytic_classical`
-  - Used in: `src/BlackHoleDS.cpp`, `tests/smoke_tests.cpp`
+  - Used in: `include/blackhole_ds/metrics/kerr.hpp`, `tests/smoke_tests.cpp`
 
 - **Statement:** Schwarzschild limit a -> 0 gives r_ISCO = 6.0 exactly.
   - Tier: `analytic_classical`

@@ -25,7 +25,7 @@
           "equation": "ds^2 = -(1 - 2GM/(rc^2)) c^2 dt^2 + (1 - 2GM/(rc^2))^{-1} dr^2 + r^2 (d\\theta^2 + \\sin^2\\theta d\\phi^2)",
           "where_used": [
             "include/blackhole_ds/units.hpp",
-            "src/BlackHoleDS.cpp",
+            "include/blackhole_ds/metrics/schwarzschild.hpp",
             "tests/smoke_tests.cpp"
           ]
         },
@@ -34,7 +34,7 @@
           "tier": "analytic_classical",
           "equation": "r_s = 2GM/c^2",
           "where_used": [
-            "src/BlackHoleDS.cpp"
+            "include/blackhole_ds/metrics/schwarzschild.hpp"
           ]
         }
       ],
@@ -107,7 +107,7 @@
           "statement": "Prograde Kerr ISCO in geometric units satisfies r_ISCO = 3 + Z2 - sign(a)*sqrt((3 - Z1)(3 + Z1 + 2 Z2)).",
           "tier": "analytic_classical",
           "where_used": [
-            "src/BlackHoleDS.cpp",
+            "include/blackhole_ds/metrics/kerr.hpp",
             "tests/smoke_tests.cpp"
           ]
         },

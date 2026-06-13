@@ -39,10 +39,13 @@ with subgraphs and labeled flows.
 - **Contracts** — `units.hpp` for type safety, `data/schema.sql` for the
   data model, `schemas/` for XML and JSON schemas. Contracts change rarely
   and only via ADRs.
-- **Physics Kernel** — `src/core/`, `src/metrics/`, `src/integrators/`. No
-  I/O, no schema dependencies. Pure computation on typed quantities.
-- **Data Layer** — `src/data/` and `tools/blackhole_ds_harness.py`.
-  Translates kernel output into the schema, exports to CSV/JSON/SQLite.
+- **Physics Kernel** — currently header-only under
+  `include/blackhole_ds/{core,metrics,integrators}/`; compiled units will
+  appear under `src/{core,metrics,integrators}/` as modules grow. No I/O,
+  no schema dependencies. Pure computation on typed quantities.
+- **Data Layer** — `include/blackhole_ds/data/csv_writer.hpp` (and future
+  `src/data/`) plus `tools/blackhole_ds_harness.py`. Translates kernel
+  output into the schema; exports CSV today, JSON/SQLite planned.
 - **Visualization Layer** — future `src/viz/` and Power BI/Excel
   consumers. Reads exported data; never owns physics.
 - **External Ecosystem** — `tsotchke` repositories and established
