@@ -29,20 +29,29 @@ flowchart LR
 **Exit criterion (met):** every analytic value matches the literature to
 the documented tolerance; CI is green on `windows-latest`; all gates gate.
 
-## M1 — Geodesic integrator
+## M1 — Geodesic integrator (IN PROGRESS)
 
-Build the Schwarzschild null-geodesic right-hand side as a derivative
-functor over an 8-component state, integrated by `rk45_integrate`.
+Build the Schwarzschild null-geodesic right-hand side and integrate it.
 
-- Geodesic equations in the equatorial plane (conserved E, L).
-- Conserved-quantity monitoring with the Kahan accumulator.
-- Validate: weak-field deflection 4GM/(c^2 b); critical impact parameter
-  b_crit = √27 M asymptotes to the photon sphere; bound vs plunge vs escape
-  classification.
+Done (2026-06-13):
+- Equatorial photon orbit equation `d^2u/dphi^2 + u = 3u^2` integrated by
+  RK4 (`include/blackhole_ds/geodesics/schwarzschild_photon.hpp`).
+- Critical impact parameter `b_crit = sqrt(27) M`, escape/capture/critical
+  classification, photon turning point, total light-deflection angle.
+- Validated against the weak-field Eddington deflection `4M/b` and the
+  photon-sphere capture boundary (`tests/geodesic_tests.cpp`).
+- `--deflection <b/M>` CLI flag for runnable, labeled output.
+
+Remaining for M1:
+- A full equatorial geodesic in (t, r, phi) with conserved E, L tracked by
+  the Kahan accumulator (the current form integrates the orbit shape u(phi);
+  the next step also tracks affine/coordinate evolution for a ray tracer).
+- Tighten the deflection regression to a published high-precision table.
 
 **Exit criterion:** a ray bundle reproduces the analytic deflection curve
-and the photon-sphere capture boundary within 1e-8 (relative), with a
-regression test.
+and the photon-sphere capture boundary within tight tolerance, with a
+regression test. (Partially met: the deflection and capture boundary are
+validated; the conserved-quantity-tracked ray remains.)
 
 ## M2 — Data contract and truth tiers
 

@@ -20,6 +20,7 @@
 #include "blackhole_ds/cli/options.hpp"
 #include "blackhole_ds/core/truth_label.hpp"
 #include "blackhole_ds/data/csv_writer.hpp"
+#include "blackhole_ds/geodesics/schwarzschild_photon.hpp"
 #include "blackhole_ds/metrics/kerr.hpp"
 #include "blackhole_ds/metrics/schwarzschild.hpp"
 
@@ -37,6 +38,8 @@ void print_help(std::ostream& os) {
        << "  --format <text|csv>  Output format (default text)\n"
        << "  --steps <N>          Kerr spin intervals; table has N+1 rows "
           "(default 9 -> 10 rows)\n"
+       << "  --deflection <b/M>   Light deflection for impact parameter b "
+          "(in units of M)\n"
        << "  --help               Print this help\n"
        << "\n"
        << "Truth label of all printed values: analytic_classical.\n";
@@ -98,6 +101,38 @@ void emit_csv(const Options& opt) {
     }
 }
 
+void emit_deflection(const Options& opt) {
+    namespace sch = bhds::geodesics::schwarzschild;
+    const double b = opt.deflection_b;
+
+    std::cout << "Schwarzschild light bending (geometric units, M = 1)\n"
+              << "Truth tier: numerical_approximation (RK4 geodesic; "
+                 "weak-field limit 4M/b is analytic_classical)\n\n";
+    std::cout << std::fixed << std::setprecision(6);
+    std::cout << "Impact parameter b/M:   " << b << '\n';
+    std::cout << "Critical b/M (shadow):  " << sch::b_critical
+              << "  (= sqrt(27))\n";
+
+    switch (sch::classify(b)) {
+    case sch::RayFate::Captured:
+        std::cout << "Fate: CAPTURED (b < b_critical) -- this ray falls into "
+                     "the black hole.\n";
+        break;
+    case sch::RayFate::Critical:
+        std::cout << "Fate: CRITICAL -- asymptotes to the photon sphere at "
+                     "r = 3M.\n";
+        break;
+    case sch::RayFate::Escapes: {
+        const double d = sch::light_deflection_angle(b);
+        std::cout << "Fate: ESCAPES.\n";
+        std::cout << "Deflection angle:       " << d << " rad ("
+                  << d * 180.0 / sch::pi << " deg)\n";
+        std::cout << "Weak-field 4M/b:        " << 4.0 / b << " rad\n";
+        break;
+    }
+    }
+}
+
 } // namespace
 
 int main(int argc, char** argv) {
@@ -110,6 +145,10 @@ int main(int argc, char** argv) {
     }
     if (opt.show_help) {
         print_help(std::cout);
+        return EXIT_SUCCESS;
+    }
+    if (opt.deflection_set) {
+        emit_deflection(opt);
         return EXIT_SUCCESS;
     }
     if (opt.format == "csv") {

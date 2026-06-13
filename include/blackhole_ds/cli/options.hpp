@@ -22,6 +22,8 @@ struct Options {
     std::string format = "text"; // "text" or "csv"
     int steps = 9;               // spin intervals; table has steps + 1 rows
     bool show_help = false;
+    bool deflection_set = false; // whether --deflection was given
+    double deflection_b = 0.0;   // impact parameter b/M for light bending
 };
 
 [[nodiscard]] inline bool parse_double(std::string_view s, double& out) {
@@ -95,6 +97,14 @@ struct Options {
                 err << "invalid --steps value\n";
                 return false;
             }
+        } else if (arg == "--deflection") {
+            const auto v = need_value("--deflection");
+            if (v.empty() || !parse_double(v, opt.deflection_b) ||
+                opt.deflection_b <= 0.0) {
+                err << "invalid --deflection value (need b/M > 0)\n";
+                return false;
+            }
+            opt.deflection_set = true;
         } else {
             err << "unknown argument: " << arg << '\n';
             return false;

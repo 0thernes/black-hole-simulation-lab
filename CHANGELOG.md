@@ -61,6 +61,32 @@ Licensing (S19.09, S19.10, S19.11):
 Verified: clang-format idempotent on all 15 files, build clean, 7/7 CTest
 suites pass, validation green.
 
+## 2026-06-13 (Milestone M1: first geodesics - the engine bends light)
+
+The jump from "calculator" to "can trace a ray" - the gateway to every
+visual capability.
+
+- `include/blackhole_ds/geodesics/schwarzschild_photon.hpp`: equatorial
+  null geodesics in Schwarzschild, via the photon orbit equation
+  d^2u/dphi^2 + u = 3u^2 (u = M/r) integrated by the existing RK4 stepper.
+  Provides: the critical impact parameter b_crit = sqrt(27) M (the shadow
+  boundary), ray classification (escapes / captured / critical), the photon
+  turning point via a robust bisection, and the total light-deflection
+  angle.
+- `tests/geodesic_tests.cpp`: validates against closed-form results - the
+  weak-field deflection converges to the Eddington 4M/b (0.3% at b=1000,
+  3% at b=100, with the correct positive GR correction), b_crit = 3*sqrt(3),
+  capture below critical, NaN handling, and the turning point solving its
+  defining equation to 1e-12. CTest is now 8 suites.
+- `src/cli/main.cpp`: new `--deflection <b/M>` flag. `blackhole_ds
+  --deflection 5.5` reports a 146-degree bend near the photon sphere;
+  `--deflection 3` reports CAPTURED. Real, runnable, truth-tier-labeled
+  output that demonstrates light bending around a black hole.
+
+This places the project at rung 2 of the capability ladder (single
+geodesic integration). Next: assemble many rays into a CPU shadow/lensing
+image (M3).
+
 ## 2026-06-12 (Phase C: 500-point inspection + remediation batch 1)
 
 - `docs/audits/INSPECTION-500-POINT.md`: a 25-section, 500-point grounded
