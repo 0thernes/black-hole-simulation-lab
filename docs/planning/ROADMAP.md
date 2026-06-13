@@ -64,16 +64,27 @@ validated; the conserved-quantity-tracked ray remains.)
 **Exit criterion:** a reproducible run produces queryable, truth-tier
 labeled data that round-trips through the schema, verified by an E2E test.
 
-## M3 — CPU gravitational lensing
+## M3 — CPU gravitational lensing (SUBSTANTIALLY DONE, 2026-06-13)
 
-- One ray per image pixel; integrate backward from the camera.
-- Map escaped rays to a background; map captured rays to the shadow; map
-  rays that cross the disk plane to accretion-disk emission.
-- Schwarzschild first (no spin), equatorial thin disk.
+- One ray per image pixel; integrate backward from the camera. DONE
+  (`include/blackhole_ds/viz/disk_image.hpp`).
+- Map escaped rays to a background; captured rays to the shadow; rays that
+  cross the disk plane to accretion-disk emission. DONE.
+- Schwarzschild (no spin), equatorial thin disk, general inclination. DONE.
+- Reference renders checked into `docs/images/` (lensed disk at 80 deg and
+  20 deg, bare shadow + photon ring); shown at the top of the README. DONE.
+- Shadow radius validated to within one pixel of sqrt(27) M
+  (`tests/render_tests.cpp`); disk geometry validated by exact symmetry
+  invariants (`tests/disk_tests.cpp`). DONE.
+
+Remaining polish (carried into M5): brightness is currently a radius-based
+visualization_metaphor; physically-correct surface brightness with Doppler
+beaming and gravitational redshift is M5.
 
 **Exit criterion:** a CPU render of the Schwarzschild shadow + lensed disk
-whose shadow diameter matches 2√27 M (the analytic value) to within one
-pixel, with the image checked into `docs/` as a reference.
+whose shadow diameter matches 2√27 M to within one pixel, with the image
+checked into `docs/` as a reference. **MET** (shadow radius within 1px;
+reference images committed).
 
 ## M4 — GPU ray marcher (the visual prototype)
 

@@ -25,6 +25,7 @@
 #include "blackhole_ds/metrics/kerr.hpp"
 #include "blackhole_ds/metrics/schwarzschild.hpp"
 #include "blackhole_ds/viz/ascii_shadow.hpp"
+#include "blackhole_ds/viz/disk_image.hpp"
 #include "blackhole_ds/viz/shadow_image.hpp"
 
 namespace bhds = blackhole_ds;
@@ -46,6 +47,10 @@ void print_help(std::ostream& os) {
        << "  --shadow             Render the black-hole shadow as ASCII art\n"
        << "  --image <file.ppm>   Render the shadow + photon ring to a PPM "
           "image\n"
+       << "  --disk <file.ppm>    Render a lensed accretion disk (PPM); see "
+          "--inclination\n"
+       << "  --inclination <deg>  Observer inclination for --disk (0 face-on "
+          ".. 89.9; default 78)\n"
        << "  --help               Print this help\n"
        << "\n"
        << "Truth label of all printed values: analytic_classical.\n";
@@ -181,6 +186,27 @@ int main(int argc, char** argv) {
                   << std::setprecision(3) << r
                   << " M (analytic sqrt(27) = " << bhds::viz::shadow_radius_M()
                   << " M)\n";
+        return EXIT_SUCCESS;
+    }
+    if (opt.disk_set) {
+        bhds::viz::DiskView dv;
+        dv.inclination_deg = opt.inclination_deg;
+        const bhds::viz::Image img = bhds::viz::render_disk_image(dv);
+        std::ofstream out(opt.disk_path, std::ios::binary);
+        if (!out) {
+            std::cerr << "could not open disk image path: " << opt.disk_path
+                      << '\n';
+            return EXIT_FAILURE;
+        }
+        img.write_ppm(out);
+        std::cout << "Wrote " << img.width() << "x" << img.height()
+                  << " PPM lensed accretion-disk image to " << opt.disk_path
+                  << "\nObserver inclination: " << std::fixed
+                  << std::setprecision(1) << dv.inclination_deg << " deg; disk "
+                  << dv.r_in_M << "-" << dv.r_out_M << " M\n"
+                  << "Truth tier: lensing geometry numerical_approximation; "
+                     "colour visualization_metaphor (no Doppler/redshift "
+                     "yet)\n";
         return EXIT_SUCCESS;
     }
     if (opt.format == "csv") {

@@ -1,5 +1,14 @@
 # OPPENGROK Black Hole Simulation Lab
 
+![Lensed accretion disk around a Schwarzschild black hole, 80 deg inclination](docs/images/lensed_disk_i80.png)
+
+*A gravitationally lensed thin accretion disk at 80 deg inclination, rendered
+by this engine from the validated Schwarzschild null-geodesic equation. The
+disk's far side is bent up and over the shadow by spacetime curvature — the
+canonical lensed-black-hole image. Geometry is `numerical_approximation`;
+colour is a `visualization_metaphor` (no Doppler/redshift yet). See
+[docs/images/](docs/images/README.md).*
+
 Research-first C++20 black hole simulation lab, building toward a **visual,
 GPU-accelerated black hole simulation you can run on your own machine**.
 The development target is an RTX-class consumer GPU (reference hardware:

@@ -162,12 +162,28 @@ else()
     target_compile_options(blackhole_ds_render_tests PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+add_executable(blackhole_ds_disk_tests
+    tests/disk_tests.cpp
+)
+
+target_include_directories(blackhole_ds_disk_tests
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+if(MSVC)
+    target_compile_options(blackhole_ds_disk_tests PRIVATE /W4)
+else()
+    target_compile_options(blackhole_ds_disk_tests PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
 add_test(NAME blackhole_ds_smoke_tests COMMAND blackhole_ds_smoke_tests)
 add_test(NAME blackhole_ds_integrator_tests COMMAND blackhole_ds_integrator_tests)
 add_test(NAME blackhole_ds_cli_tests COMMAND blackhole_ds_cli_tests)
 add_test(NAME blackhole_ds_geodesic_tests COMMAND blackhole_ds_geodesic_tests)
 add_test(NAME blackhole_ds_shadow_tests COMMAND blackhole_ds_shadow_tests)
 add_test(NAME blackhole_ds_render_tests COMMAND blackhole_ds_render_tests)
+add_test(NAME blackhole_ds_disk_tests COMMAND blackhole_ds_disk_tests)
 
 # The bare-run test asserts on output content, not just the exit code, so a
 # silently-broken CLI cannot pass (inspection finding S07.08).
@@ -196,3 +212,10 @@ add_test(NAME blackhole_ds_image
     COMMAND blackhole_ds --image ${CMAKE_CURRENT_BINARY_DIR}/shadow_test.ppm)
 set_tests_properties(blackhole_ds_image PROPERTIES
     PASS_REGULAR_EXPRESSION "Measured shadow radius: 5\\.[12]")
+
+# Lensed accretion-disk render runs and reports its inclination.
+add_test(NAME blackhole_ds_disk
+    COMMAND blackhole_ds --disk ${CMAKE_CURRENT_BINARY_DIR}/disk_test.ppm
+            --inclination 80)
+set_tests_properties(blackhole_ds_disk PROPERTIES
+    PASS_REGULAR_EXPRESSION "lensed accretion-disk image")

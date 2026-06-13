@@ -22,11 +22,14 @@ struct Options {
     std::string format = "text"; // "text" or "csv"
     int steps = 9;               // spin intervals; table has steps + 1 rows
     bool show_help = false;
-    bool deflection_set = false; // whether --deflection was given
-    double deflection_b = 0.0;   // impact parameter b/M for light bending
-    bool shadow = false;         // render the ASCII shadow
-    std::string image_path;      // --image <file.ppm>: render to PPM
-    bool image_set = false;      // whether --image was given
+    bool deflection_set = false;   // whether --deflection was given
+    double deflection_b = 0.0;     // impact parameter b/M for light bending
+    bool shadow = false;           // render the ASCII shadow
+    std::string image_path;        // --image <file.ppm>: render to PPM
+    bool image_set = false;        // whether --image was given
+    std::string disk_path;         // --disk <file.ppm>: lensed accretion disk
+    bool disk_set = false;         // whether --disk was given
+    double inclination_deg = 78.0; // --inclination <deg> for the disk view
 };
 
 [[nodiscard]] inline bool parse_double(std::string_view s, double& out) {
@@ -118,6 +121,21 @@ struct Options {
             }
             opt.image_path = std::string(v);
             opt.image_set = true;
+        } else if (arg == "--disk") {
+            const auto v = need_value("--disk");
+            if (v.empty()) {
+                err << "invalid --disk value (need an output path)\n";
+                return false;
+            }
+            opt.disk_path = std::string(v);
+            opt.disk_set = true;
+        } else if (arg == "--inclination") {
+            const auto v = need_value("--inclination");
+            if (v.empty() || !parse_double(v, opt.inclination_deg) ||
+                opt.inclination_deg < 0.0 || opt.inclination_deg > 89.9) {
+                err << "invalid --inclination value (need 0..89.9 deg)\n";
+                return false;
+            }
         } else {
             err << "unknown argument: " << arg << '\n';
             return false;
