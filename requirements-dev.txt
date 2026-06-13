@@ -8,4 +8,4 @@
 #
 # Install:  pip install -r requirements-dev.txt
 lxml>=5.0
-jsonschema>=4.0
+jsonschema>=4.26.0
