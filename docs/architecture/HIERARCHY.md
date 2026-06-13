@@ -41,10 +41,10 @@ top-level directory or change ownership semantics.
 |-- include/                           Public C++ headers
 |   `-- blackhole_ds/
 |       |-- units.hpp                  Strong-typed physical quantities (units, validators)
-|       |-- core/                      Core types
-|       |-- metrics/                   Schwarzschild, Kerr, Kerr-Newman ...
-|       |-- integrators/               Geodesic integrators
-|       `-- data/                      Export/import contracts
+|       |-- core/                      constants.hpp, truth_label.hpp
+|       |-- metrics/                   schwarzschild.hpp, kerr.hpp
+|       |-- integrators/               ode_state.hpp, rk4.hpp, rk45.hpp (DP 5(4))
+|       `-- data/                      csv_writer.hpp (export contracts)
 |
 |-- knowledge/                         Research knowledge corpus
 |   |-- brains/                        Scientist reasoning-lens XML profiles
@@ -68,15 +68,14 @@ top-level directory or change ownership semantics.
 |   `-- local/                         Local sync scripts
 |
 |-- src/                               C++ implementation
-|   |-- BlackHoleDS.cpp                Current seed executable (will be split)
-|   |-- core/                          Future: core engine
-|   |-- metrics/                       Future: spacetime metrics implementations
-|   |-- integrators/                   Future: geodesic integrators
-|   |-- data/                          Future: CSV/JSON exporters
-|   `-- cli/                           Future: CLI front end
+|   |-- BlackHoleDS.cpp                Empty shim (program moved to cli/main.cpp)
+|   |-- cli/main.cpp                   CLI entry point (done)
+|   |-- core/ metrics/ integrators/ data/   Future compiled units (headers
+|   |                                  are header-only today)
 |
 |-- tests/                             CTest targets
-|   `-- smoke_tests.cpp                Analytic + units smoke tests
+|   |-- smoke_tests.cpp                Analytic + dimensional-safety tests
+|   `-- integrator_tests.cpp           ODE convergence + adaptive-step tests
 |
 |-- tools/                             Standalone Python tools
 |   `-- blackhole_ds_harness.py        Reference data-science harness

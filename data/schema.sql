@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS runs (
     -- Key derived observables (computed by C++ or validated Python reference)
     photon_sphere_rg REAL NOT NULL,               -- must be ~3.0 for a=0
     isco_rg REAL NOT NULL,                        -- 6.0 for a=0, down to ~1.0 for a~1
-    shadow_diameter_rg REAL NOT NULL,             -- ~5.2 for a=0, the famous number for EHT comparisons
+    shadow_diameter_rg REAL NOT NULL,             -- DIAMETER ~10.39 (2*sqrt(27)) for a=0. NOTE: 5.196 is the shadow RADIUS (b_crit); EHT's "~5.2" is in Schwarzschild radii since r_s = 2M.
     hawking_temp_kelvin REAL,                     -- for quantum-corrected runs
 
     -- Chaos & Graph Theory features (the "why this is data science, not just pretty pictures")

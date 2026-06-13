@@ -10,12 +10,18 @@ run only when appropriate.
    - `python scripts/Validate-ResearchOS.py`
    - required files, docs, forbidden tracked artifacts, secret-like names
 
-2. C++ unit and smoke tests
-   - `blackhole_ds_smoke_tests`
-   - analytic limits and type-safety checks
+2. C++ unit and smoke tests (CTest)
+   - `blackhole_ds_smoke_tests`: analytic limits (Schwarzschild/Kerr),
+     dimensional-safety contract (compile-time `Addable` concept checks),
+     shadow radius-vs-diameter guard, Kahan accumulator.
+   - `blackhole_ds_integrator_tests`: RK4 fourth-order convergence
+     (empirical error ratio), adaptive Dormand-Prince accuracy and
+     tolerance/step scaling, energy conservation, backward integration.
+   - Both use a `CHECK` macro so they behave identically in Debug and
+     Release (CI runs both configs).
 
 3. CLI E2E tests
-   - run `blackhole_ds`
+   - run `blackhole_ds` (registered as the `blackhole_ds_runs` CTest case)
    - assert stable output, exit code, and generated files once exporters exist
 
 4. Data E2E tests
