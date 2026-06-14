@@ -89,6 +89,16 @@ int main() {
     CHECK(kerr_m::photon_sphere_dimensionless(0.9) < 3.0);
     CHECK(kerr_m::photon_sphere_dimensionless(-0.9) > 3.0);
 
+    // Extremal + near-extremal spin (audit 2026-06-14: the spin clamp was
+    // widened from 0.999 to the physical [-1, 1]). The BPT closed form is exact
+    // at extremal: prograde ISCO -> 1, retrograde -> 9, prograde photon -> 1.
+    CHECK(close_to(kerr_m::isco_dimensionless(1.0), 1.0, 1.0e-9));
+    CHECK(close_to(kerr_m::isco_dimensionless(-1.0), 9.0, 1.0e-9));
+    CHECK(close_to(kerr_m::photon_sphere_dimensionless(1.0), 1.0, 1.0e-9));
+    // A valid near-extremal spin (schema admits up to 0.9999) is no longer
+    // silently clamped to the a = 0.999 value (isco(0.999) ~ 1.182).
+    CHECK(kerr_m::isco_dimensionless(0.9999) < 1.10);
+
     // Analytic validators pass for exact canonical inputs.
     CHECK(validators::photon_sphere_radius_valid(Length{3.0}, Mass{1.0}));
     CHECK(validators::isco_radius_valid(Length{6.0}, Mass{1.0}));

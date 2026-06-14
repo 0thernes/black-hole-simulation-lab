@@ -3,6 +3,45 @@
 All notable project changes should be recorded here. Keep this human-readable;
 use `docs/reports/PROJECT_LOG.md` for detailed operational notes.
 
+## 2026-06-14 (Adversarial audit remediation + Eshkol/Tsotchke capability study)
+
+A multi-agent, adversarially-verified audit (34 raw findings → 8 confirmed real)
+plus a source-grounded study of the Eshkol/Tsotchke ecosystem. Fixes:
+
+- **`integrators/rk45.hpp` — false-failure bug fixed.** The `min_step` abort
+  could fire on the step proposed *after* the integration already reached `t1`
+  (a deliberately tiny final clamped step), returning `success = false` with the
+  correct state in `y`. Added an endpoint-reached check immediately after step
+  acceptance, before the `min_step` floor. Verified by a new regression in
+  `tests/integrator_tests.cpp` (lands on `t1` via a 1e-14 final step → success).
+- **`integrators/ode_state.hpp` — divide-by-zero floor.** `weighted_rms_norm`
+  divided by `scale_i = atol + rtol*|y|`, which is `0` when `abs_tol == 0` and a
+  component is identically zero (→ NaN poisons the controller). Floored the
+  weight; new regression asserts a finite norm in that configuration.
+- **`metrics/kerr.hpp` — spin clamp widened to the physical `[-1, 1]`.** ISCO
+  and photon-sphere clamped spin to `0.999`, silently mis-reporting valid
+  near-extremal spins (the schema admits up to `0.9999`; ~9% ISCO error). The
+  BPT closed form is finite and exact at extremal (`isco(1)=1`, `isco(-1)=9`,
+  `photon(1)=1`); new `smoke_tests.cpp` checks cover this.
+- **Truth-tier / doc-accuracy corrections** (Scientific Integrity Charter):
+  the Kerr-disk header and `docs/images/README.md` no longer claim the disk
+  tracer's conserved-quantity drift "is bounded and tested" (those tests cover
+  the *second-order* integrator; the disk uses a first-order on-shell form);
+  the disk "shadow boundary … is exact" line now correctly reads
+  numerical horizon-capture (distinct from the closed-form Bardeen boundary in
+  `kerr_shadow.hpp`); `kerr_geodesic.hpp` now cross-references that the disk
+  ray tracer does **not** ride on its second-order integrator; ROADMAP M5's
+  stale "Kerr disk ray trace remain[s]" parenthetical corrected.
+- **Integration plans corrected to match upstream source** (`ESHKOL_INTEGRATION.md`,
+  `TSOTCHKE_ECOSYSTEM.md`): Eshkol has no `.es → .hpp` transpiler (it compiles
+  to native via LLVM) and is MIT, not GPL/AGPL; `quantum_geometric_tensor` is a
+  *quantum*-state (Fubini-Study) library, not a GR Christoffel/Riemann backend
+  (category error removed); `libirrep` (MIT) remains the correct first adapter.
+  Net: the classical-GR kernel needs none of these on its critical path; the
+  one genuine reuse is `differential_geometry.c` as a verification *oracle*.
+
+Build clean (0 warnings), **17 CTest suites green**, format + validation gates pass.
+
 ## 2026-06-13 (Relicense to proprietary + workspace relocation + Tier-1 audit)
 
 Three coupled changes, all recorded in ADRs.

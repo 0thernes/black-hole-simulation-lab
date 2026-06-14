@@ -46,16 +46,18 @@ blackhole_ds --kerr-disk kerr_disk_a09_i78.ppm --spin 0.9 --inclination 78
   1973 boundary (`kerr_shadow_a099_i80.png`): the boundary curve is
   `analytic_classical` (exact GR, no integration), validated by its a → 0
   reduction to the sqrt(27) M circle. The photon-ring rim drawn around it is a
-  `visualization_metaphor`. The lensed *disk* image is still Schwarzschild —
-  frame dragging is not yet folded into the disk ray trace.
+  `visualization_metaphor`. (The frame-dragged Kerr *disk* render is described
+  in the next item.)
 
 - The **Kerr lensed disk** (`kerr_disk_a09_i78.png`) is ray-traced through
   real Kerr null geodesics (`viz/kerr_disk_image.hpp`): the lensing geometry
-  and trajectory are `numerical_approximation` (geodesic integration whose
-  conserved-quantity drift is bounded and tested), the Kerr circular-orbit
-  redshift factor is `analytic_classical`, and the emissivity/colour ramp is a
-  `visualization_metaphor`. Its correctness is anchored by an a → 0 regression:
-  at zero spin it reproduces the Schwarzschild disk tracer.
+  and trajectory are `numerical_approximation` (a first-order on-shell geodesic
+  integration), the Kerr circular-orbit redshift factor is `analytic_classical`,
+  and the emissivity/colour ramp is a `visualization_metaphor`. Its correctness
+  is anchored by an a → 0 regression — at zero spin it reproduces the
+  Schwarzschild disk tracer (`tests/kerr_disk_tests.cpp`); the conserved-quantity
+  drift tests live in `tests/kerr_geodesic_tests.cpp` and cover the second-order
+  integrator, not this first-order render path.
 
 See `include/blackhole_ds/viz/disk_image.hpp` for the Schwarzschild disk and
 `tests/disk_tests.cpp` for its symmetry invariants;

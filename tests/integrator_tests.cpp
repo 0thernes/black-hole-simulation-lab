@@ -137,6 +137,39 @@ int main() {
         CHECK(close_to(y[0], 1.0, 1e-6)); // e^0 = 1
     }
 
+    // --- Regression (audit 2026-06-14): an integration that reaches t1 via a
+    //     sub-min_step final clamped step must report success, not a stall.
+    //     With y' = 1 and initial_step = 1, the stepper lands on t = 1 exactly,
+    //     then clamps a 1e-14 final step to reach t1; the next proposed step
+    //     (1e-14 * max_scale) underflowed min_step and the OLD code returned
+    //     success = false despite the correct result. ---
+    {
+        State<1> y{0.0};
+        AdaptiveOptions opt;
+        opt.initial_step = 1.0;
+        const double t1 = 1.0 + 1e-14;
+        const AdaptiveResult r = rk45_integrate<1>(
+            [](double, const State<1>& s) {
+                (void)s;
+                return State<1>{1.0};
+            },
+            0.0, t1, y, opt);
+        CHECK(r.success);                // was false before the fix
+        CHECK(close_to(y[0], t1, 1e-9)); // y(t) = t, endpoint reached
+    }
+
+    // --- Regression (audit 2026-06-14): weighted_rms_norm must not divide by
+    //     zero when abs_tol == 0 and a state component is identically zero
+    //     (scale = 0). OLD: 0/0 = NaN poisons the norm; FIXED: weight floored.
+    //     ---
+    {
+        const State<2> err{0.0, 1e-7}; // identically-zero component, ~0 error
+        const State<2> y_old{0.0, 1.0};
+        const State<2> y_new{0.0, 1.0}; // component 0 stays exactly zero
+        const double n = weighted_rms_norm<2>(err, y_old, y_new, 0.0, 1e-8);
+        CHECK(std::isfinite(n));
+    }
+
     if (failures == 0) {
         std::puts("integrator_tests passed");
         return EXIT_SUCCESS;

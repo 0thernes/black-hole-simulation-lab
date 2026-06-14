@@ -3,7 +3,12 @@
 // blackhole_ds/geodesics/kerr_geodesic.hpp
 // Roadmap M5: NULL GEODESICS in the Kerr (spinning) spacetime.
 //
-// This is the engine the spinning-disk ray trace will ride on. Where the
+// This module provides the Kerr null-geodesic machinery -- the constants of
+// motion, the R(r)/Theta(theta) potentials, and a SECOND-ORDER integrator used
+// for short, turning-point-heavy verification orbits. NOTE: the production
+// disk ray tracer (viz/kerr_disk_image.hpp) does NOT ride on this second-order
+// integrator; it reuses only the potentials/constants here and integrates a
+// FIRST-ORDER on-shell form instead -- see the caveat below. Where the
 // Schwarzschild photon obeys the planar orbit equation d2u/dphi2 + u = 3u^2,
 // a Kerr photon does NOT stay in a plane -- frame dragging twists it -- so we
 // integrate the full geodesic in Boyer-Lindquist coordinates (t, r, theta,
@@ -19,7 +24,13 @@
 //
 // and differentiating once removes the square root -- so there is NO sign
 // flip to track at the radial/polar turning points (where R or Theta -> 0),
-// which is exactly where a naive first-order sqrt integrator breaks. We
+// which is exactly where a naive first-order sqrt integrator breaks for SHORT
+// orbits. (Caveat, audit 2026-06-14: over the huge observer-to-hole radius
+// range the RK4-integrated second-order accelerations DRIFT off the constraint
+// surface -- dr/dlambda can cross zero spuriously and turn an infalling ray
+// around -- so the disk ray tracer (viz/kerr_disk_image.hpp) instead uses a
+// FIRST-ORDER on-shell form recomputed each step with sign flips at genuine
+// turning points. Both forms are correct in their own regime.) We
 // integrate the accelerations
 //
 //     d2r/dlambda^2     = (1/2) R'(r)

@@ -64,8 +64,13 @@ weighted_rms_norm(const State<N>& error, const State<N>& y_old,
                   const State<N>& y_new, double atol, double rtol) noexcept {
     double sum_sq = 0.0;
     for (std::size_t i = 0; i < N; ++i) {
-        const double scale_i =
+        const double raw =
             atol + rtol * std::max(std::abs(y_old[i]), std::abs(y_new[i]));
+        // Floor the weight: with atol == 0 (a pure-relative tolerance) a state
+        // component passing exactly through zero gives scale_i == 0 and a
+        // div-by-zero (inf/NaN) that poisons the controller. (Audit
+        // 2026-06-14.)
+        const double scale_i = (raw > 1e-300) ? raw : 1e-300;
         const double ratio = error[i] / scale_i;
         sum_sq += ratio * ratio;
     }

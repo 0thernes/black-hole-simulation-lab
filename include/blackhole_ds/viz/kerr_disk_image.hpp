@@ -28,11 +28,20 @@
 // hit map matches the Schwarzschild tracer on sample pixels.
 //
 // Truth tiers: the lensing GEOMETRY and the trajectory are
-// numerical_approximation (RK4-integrated geodesic; the integrator's
-// conserved-quantity drift is bounded and tested). The redshift factor g is
+// numerical_approximation (RK4-integrated first-order on-shell geodesic).
+// Correctness is validated by the a -> 0 regression against the Schwarzschild
+// tracer in tests/kerr_disk_tests.cpp; the first-order scheme is pinned to the
+// constraint surface by construction (it recomputes sqrt(R), sqrt(Theta) from
+// the current position each step), so it does not accumulate the off-shell
+// drift the second-order form would -- but note that the conserved-quantity-
+// drift tests (recover_Q etc.) live in kerr_geodesic_tests.cpp and exercise the
+// SECOND-order integrator, not this one. The redshift factor g is
 // analytic_classical (exact GR for a circular-geodesic emitter). The shadow
-// boundary (horizon capture) is exact. The intrinsic emissivity profile and
-// colour ramp remain a visualization_metaphor.
+// here is determined by NUMERICAL horizon capture (r <= r_+ * 1.02, a ~2%
+// band) inside the approximate integrator -- numerical_approximation, distinct
+// from the exact closed-form Bardeen-1973 shadow boundary in kerr_shadow.hpp.
+// The intrinsic emissivity profile and colour ramp remain a
+// visualization_metaphor.
 // References: Bardeen 1973; Cunningham 1975; Luminet 1979; Gralla-Lupsasca
 // 2020 (Mino-time geodesics).
 

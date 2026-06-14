@@ -200,6 +200,17 @@ AdaptiveResult rk45_integrate(Deriv&& deriv, double t0, double t1, State<N>& y,
             ++result.rejected_steps;
         }
 
+        // Endpoint reached (often via a deliberately tiny final clamped step):
+        // succeed here, BEFORE the min_step floor below. Otherwise the next
+        // proposed step can underflow min_step and the integration -- already
+        // complete, with the correct state in y -- is misreported as a stall
+        // failure. (Audit 2026-06-14.)
+        if ((direction > 0 && t >= t1) || (direction < 0 && t <= t1)) {
+            result.success = true;
+            result.t_final = t;
+            return result;
+        }
+
         // Propose the next step. e == 0 means take the biggest allowed jump.
         double scale;
         if (e == 0.0) {

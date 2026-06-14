@@ -9,6 +9,45 @@ that compiles down to fast C++ kernels.
 This is the integration plan. No code lands here yet. Adoption requires
 ADR-NNNN with explicit scope, build-system impact, and rollback plan.
 
+> ## ⚠️ Reality Check (2026-06-14 source-grounded capability study)
+>
+> A direct reading of the upstream Eshkol source (not its README) found that
+> the central mechanism this plan is built on **does not exist as written**,
+> and several risks below are mis-stated. Corrections, with evidence:
+>
+> - **The ".es → .hpp transpiler" is fictional.** Eshkol compiles *directly to
+>   native machine code* via an LLVM AOT/JIT backend (`lib/backend/llvm_codegen.cpp`)
+>   plus a bytecode VM for WASM. There is **no source-to-C++ transpiler**, so the
+>   "transpile each `.es` to a `.hpp`" build step (Goals §1, Architecture,
+>   Build pipeline, Stage 2's "byte-for-byte" header) cannot be implemented.
+>   The only real integration paths are: **(a)** compile `.es` to a native
+>   static library and call it through Eshkol's **C FFI** behind an ADR-0005
+>   adapter at `include/blackhole_ds/external/eshkol.hpp`; or **(b)** — preferred —
+>   use Eshkol purely as an **offline authoring/checking aid** that emits values
+>   compared against the hand-written C++ in a CTest, with **no runtime dependency**.
+> - **License: Eshkol is MIT**, which is compatible with this project's
+>   proprietary license (ADR-0009). The GPL/AGPL copyleft concern in *Risks*
+>   below **does not apply** to this upstream (notices must still be preserved).
+> - **Windows toolchain:** upstream claims a native VS2022/ClangCL build +
+>   pybind11 FFI, but Eshkol has **never been built or run in this workspace**
+>   (upstream's own `T-004-local-windows-build` is an open P1, zero build
+>   artifacts present). Treat all capability as *unverified-locally* until built.
+> - **Eshkol's genuine edge is automatic differentiation** (forward dual-number,
+>   reverse tape, symbolic), which **forward classical-GR geodesic integration
+>   does not use**. Eshkol becomes relevant only *if* this project pursues
+>   **differentiable / inverse rendering** (fitting M, spin, or camera params to
+>   a target image by gradient descent through the integrator) — and even then,
+>   mature C++ AD (Enzyme/Clad) or JAX is the better choice than an
+>   unbuilt-on-Windows, single-maintainer, ~15-commits/day language.
+> - **Maturity:** real and substantial (~218k LOC), but **prototype-grade** and
+>   AI-swarm-generated; its docs over-claim ("consciousness engine", "quantum
+>   RNG") — trust the code/tests over the prose.
+>
+> **Net:** keep the C++20 kernel as the source of truth; do not gate metric
+> definitions on an Eshkol transpile. See the companion study findings in this
+> directory and `TSOTCHKE_ECOSYSTEM.md`. The disciplined ADR-0005 policy and the
+> OFF-by-default CMake gate remain correct and protect against premature adoption.
+
 ## Goals
 
 1. **DSL-first metric definitions.** Express Schwarzschild, Kerr,

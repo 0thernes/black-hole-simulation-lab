@@ -124,8 +124,8 @@ ships with a documented build path for RTX-class hardware.
 **Exit criterion:** a Kerr render shows the characteristic asymmetric
 photon ring; shadow asymmetry vs spin matches published EHT-style curves
 qualitatively, with the comparison documented. (Shadow boundary + asymmetry
-metric done and tested; quantitative spin-vs-asymmetry curve comparison and
-the Kerr disk ray trace remain.)
+metric and the Kerr disk ray trace are done and tested; the quantitative
+spin-vs-asymmetry curve comparison against published EHT-style values remains.)
 
 ## M6 — Ecosystem integration and scale
 

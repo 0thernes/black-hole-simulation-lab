@@ -10,6 +10,48 @@ This is a planning document, not an implementation. Adding any of these as
 real dependencies requires an Architecture Decision Record (ADR) in
 `docs/log/DECISIONS.md` and an entry in `docs/integrations/`.
 
+> ## ⚠️ Reality Check (2026-06-14 source-grounded capability study)
+>
+> A direct reading of the upstream sources (not the READMEs) corrected several
+> roles below. The headline issue: **most of the "geometric/quantum/tensor"
+> repos are misleadingly named for a *classical*-GR renderer.** Evidence-based
+> corrections:
+>
+> - **`quantum_geometric_tensor` is NOT a GR Christoffel/Riemann/Ricci backend
+>   — wiring it as one (Tier C) is a category error.** Its "geometric tensor"
+>   is the *quantum* Fubini-Study / Bures metric on quantum state space CP^n
+>   (Hermitian inner products `⟨u, conj(v)⟩`); it targets geometric quantum
+>   error correction and natural-gradient QML, not Lorentzian spacetime. Its
+>   `quantum_gravity_operations` module is LQG/spin-foam/AdS-CFT scaffolding,
+>   not Schwarzschild/Kerr. **Re-tier as `speculative_extension`, not a tensor
+>   backend.** The *one* genuinely useful artifact is a single file —
+>   `src/quantum_geometric/distributed/differential_geometry.c` — a generic
+>   (finite-difference, complex-Hermitian) metric→Christoffel→Riemann→RK4-geodesic
+>   pipeline. Use it as a **read-only verification oracle** (cross-check our
+>   analytic Schwarzschild/Kerr Christoffels against its numerical ones in a
+>   CTest), **never** as a dependency.
+> - **`tensorcore` has zero geometry in its code** — every "geodesic/Riemannian/
+>   metric" string is in marketing markdown only. It is a Metal/CUDA GEMM +
+>   FlashAttention library. Not a GR backend; already correctly Out of scope.
+> - **`PINN` cannot solve the geodesic ODEs or the field equations.** As
+>   implemented it trains on one hardcoded point, never backpropagates its
+>   physics losses, has no autodiff and no metric, and contains an
+>   uninitialized-read bug. It is not a usable surrogate; downgrade Tier-D
+>   expectations accordingly.
+> - **`eshkol` Tier-C mechanism is wrong** — there is no `.es → .hpp` transpiler
+>   (it compiles to native via LLVM). See `ESHKOL_INTEGRATION.md` Reality Check.
+> - **`libirrep` (Tier B) is accurate and remains the right first integration** —
+>   a real C11 SO(3)/SU(2)/O(3)/SE(3) library (Wigner-D, Clebsch-Gordan, spherical
+>   harmonics), genuinely relevant to ringdown/QNM/spinor symmetry, smallest blast
+>   radius. Proceed as planned to validate the ADR-0005 adapter pipeline end-to-end.
+> - **Licenses verified (2026-06): `eshkol`, `libirrep`, and `quantum_geometric_tensor`
+>   are all MIT** — compatible with ADR-0009 (notices preserved). The per-integration
+>   license review still stands, but the copyleft worry does not bite for these three.
+>
+> **Net:** the classical-GR kernel needs none of these on its critical path; the
+> highest genuine value is `differential_geometry.c` as a *verification oracle*
+> and `libirrep` as the first real adapter. Keep all `BHDS_ENABLE_*` flags OFF.
+
 ## Why compound on this ecosystem
 
 The Scientific Integrity Charter, Vision, and Mission all point to the
