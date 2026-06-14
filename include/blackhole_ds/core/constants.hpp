@@ -9,10 +9,14 @@
 
 namespace blackhole_ds::core::constants {
 
-// SI constants. Source: CODATA 2018.
-inline constexpr double speed_of_light_m_per_s = 299792458.0;
+// SI constants. Source: CODATA 2018 / SI 2019 (exact defined values where
+// noted).
+inline constexpr double speed_of_light_m_per_s = 299792458.0; // exact (SI)
 inline constexpr double gravitational_constant_si =
     6.67430e-11; // m^3 kg^-1 s^-2
+inline constexpr double reduced_planck_si =
+    1.054571817e-34;                                 // J s (CODATA 2018)
+inline constexpr double boltzmann_si = 1.380649e-23; // J/K (exact, SI 2019)
 
 // Astronomical constants.
 inline constexpr double solar_mass_kg = 1.98847e30;
