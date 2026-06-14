@@ -104,10 +104,16 @@ bool kernel_four_velocity(double r, double theta,
     return true;
 }
 
-// A photon's 4-velocity from the kernel must be null per the independent
-// metric.
-void check_null(double a, double E, double Lz, double Q, double r, double theta,
-                const char* label) {
+// A photon's 4-velocity from the kernel must, per the INDEPENDENT metric:
+//   (a) be null:  g_munu u^mu u^nu = 0; and
+//   (b) reproduce the conserved energy E = -p_t and axial angular momentum
+//       L_z = p_phi, where p_mu = g_mu_nu u^nu / Sigma (the kernel works in
+//       Mino time lambda with dzeta = Sigma dlambda, so the affine momentum is
+//       the Mino 4-velocity divided by Sigma). (b) tests the kernel's
+//       dt/dlambda and dphi/dlambda equations of motion, not just the
+//       constraint -- a stronger, independent check of the separated form.
+void check_photon(double a, double E, double Lz, double Q, double r,
+                  double theta, const char* label) {
     kg::GeodesicConstants k{a, E, Lz, Q};
     double ut, ur, uth, uph;
     if (!kernel_four_velocity(r, theta, k, -1.0, ut, ur, uth, uph)) {
@@ -116,14 +122,32 @@ void check_null(double a, double E, double Lz, double Q, double r, double theta,
         return;
     }
     const Metric g = kerr_metric(r, theta, a);
+
+    // (a) Null condition. Scale by the largest term for a relative tolerance
+    // (components are O(r^2) ~ O(1e2-1e4) and cancel to ~0).
     const double n = null_norm(g, ut, ur, uth, uph);
-    // Scale by the largest term so the tolerance is relative (components are
-    // O(r^2) ~ O(1e2-1e4) and cancel to ~0).
     const double scale = std::abs(g.rr * ur * ur) + std::abs(g.tt * ut * ut) +
                          std::abs(g.phph * uph * uph) + 1.0;
     if (std::abs(n) / scale > 1e-9) {
         std::fprintf(stderr, "FAIL null %s: |g_uu|/scale = %.3e (n=%.6e)\n",
                      label, std::abs(n) / scale, n);
+        ++failures;
+    }
+
+    // (b) Conserved-quantity recovery via the metric (p_r, p_theta do not enter
+    // p_t or p_phi because g has no t-r/t-theta/phi-r/phi-theta components).
+    const double cth = std::cos(theta);
+    const double Sigma = r * r + a * a * cth * cth;
+    const double E_rec = -(g.tt * ut + g.tph * uph) / Sigma;
+    const double Lz_rec = (g.tph * ut + g.phph * uph) / Sigma;
+    if (std::abs(E_rec - E) > 1e-8) {
+        std::fprintf(stderr, "FAIL E %s: recovered %.9f vs %.9f\n", label,
+                     E_rec, E);
+        ++failures;
+    }
+    if (std::abs(Lz_rec - Lz) > 1e-8) {
+        std::fprintf(stderr, "FAIL Lz %s: recovered %.9f vs %.9f\n", label,
+                     Lz_rec, Lz);
         ++failures;
     }
 }
@@ -132,17 +156,20 @@ void check_null(double a, double E, double Lz, double Q, double r, double theta,
 
 int main() {
     // Equatorial photons (Q = 0, theta = pi/2) across spin and radius.
-    check_null(0.0, 1.0, 4.0, 0.0, 8.0, kg::kg_pi / 2.0, "schwarzschild-eq");
-    check_null(0.6, 1.0, 2.0, 0.0, 10.0, kg::kg_pi / 2.0, "kerr-eq-a0.6");
-    check_null(0.9, 1.0, -3.0, 0.0, 6.0, kg::kg_pi / 2.0, "kerr-eq-retrograde");
-    check_null(0.99, 1.0, 1.5, 0.0, 4.0, kg::kg_pi / 2.0,
-               "kerr-eq-near-extremal");
+    check_photon(0.0, 1.0, 4.0, 0.0, 8.0, kg::kg_pi / 2.0, "schwarzschild-eq");
+    check_photon(0.6, 1.0, 2.0, 0.0, 10.0, kg::kg_pi / 2.0, "kerr-eq-a0.6");
+    check_photon(0.9, 1.0, -3.0, 0.0, 6.0, kg::kg_pi / 2.0,
+                 "kerr-eq-retrograde");
+    check_photon(0.99, 1.0, 1.5, 0.0, 4.0, kg::kg_pi / 2.0,
+                 "kerr-eq-near-extremal");
 
     // Non-equatorial photons (Q > 0, theta != pi/2) -- exercises Theta and the
     // a^2 cos^2 theta terms in both the kernel and the metric.
-    check_null(0.6, 1.0, 2.0, 3.0, 12.0, kg::kg_pi / 3.0, "kerr-offplane-a0.6");
-    check_null(0.8, 1.0, 1.0, 5.0, 15.0, kg::kg_pi / 4.0, "kerr-offplane-a0.8");
-    check_null(0.5, 1.0, 0.0, 9.0, 20.0, kg::kg_pi / 6.0, "kerr-polar-Lz0");
+    check_photon(0.6, 1.0, 2.0, 3.0, 12.0, kg::kg_pi / 3.0,
+                 "kerr-offplane-a0.6");
+    check_photon(0.8, 1.0, 1.0, 5.0, 15.0, kg::kg_pi / 4.0,
+                 "kerr-offplane-a0.8");
+    check_photon(0.5, 1.0, 0.0, 9.0, 20.0, kg::kg_pi / 6.0, "kerr-polar-Lz0");
 
     // The a -> 0 metric must reduce to Schwarzschild: g_tt = -(1-2/r),
     // g_rr = 1/(1-2/r), g_phph = r^2 sin^2, g_tph = 0.
