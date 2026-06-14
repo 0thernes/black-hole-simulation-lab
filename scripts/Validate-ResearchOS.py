@@ -86,6 +86,7 @@ REQUIRED_FILES = [
     "tests/kerr_shadow_tests.cpp",
     "tests/kerr_geodesic_tests.cpp",
     "tests/kerr_disk_tests.cpp",
+    "tests/kerr_metric_cross_check_tests.cpp",
     "docs/engineering/COMPLEXITY.md",
     "NOTICE",
     "AUTHORS",
