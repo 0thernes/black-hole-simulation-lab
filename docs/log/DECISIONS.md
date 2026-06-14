@@ -293,3 +293,64 @@ Numbers are assigned in order. Do not renumber.
     ignored build state; a move preserves everything).
   - Leave it in `Orca\Workspaces` (rejected: the author explicitly wants one
     consolidated CLAUDECODE portfolio).
+
+## ADR-0011: Quasinormal-mode (QNM) module
+
+- Date: 2026-06-14
+- Status: accepted
+- Context: Catalogue problem #11 (testing the no-hair theorem / black-hole
+  spectroscopy) is the catalogue entry most coupled to this simulator, but the
+  coupling was aspirational — the kernel rendered Kerr shadows yet had no
+  ringdown/QNM capability, so the cross-link pointed at nothing concrete.
+- Decision: Add a header-only QNM module under `include/blackhole_ds/qnm/`:
+  `leaver.hpp` (Leaver continued-fraction solver — the Schwarzschild radial
+  recurrence plus the Kerr coupled angular-spheroidal + radial recurrences, with
+  n-continuation seeding for overtones and spin continuation for Kerr),
+  `wkb.hpp` (an independent 3rd-order WKB cross-check), `kerr_fit.hpp`
+  (the Berti-Cardoso-Will closed-form fit), and `spectroscopy.hpp` (physical
+  ringdown frequencies/damping times and the mass-independent no-hair
+  fingerprint, `no_hair_signature`). All outputs carry
+  `TruthLabel::NumericalApproximation`. `tests/qnm_tests.cpp` validates against
+  published Berti/Leaver/Konoplya reference values to < 1e-4, and the two
+  independent solvers (Schwarzschild s=+2 Regge-Wheeler vs Kerr s=-2 Teukolsky)
+  agree at a=0 — an internal oracle cross-check.
+- Consequences:
+  - The catalogue #11 `simulator_angle` now references real, verified code; the
+    no-hair test has a computational home (`no_hair_signature(j)` returns the
+    spin-only Kerr fingerprint a measured ringdown is checked against).
+  - `std::complex<double>` enters the kernel for the first time here — justified,
+    QNM frequencies are intrinsically complex; the public result structs still
+    expose real/imag doubles in the project idiom.
+  - New CI test target `blackhole_ds_qnm_tests` (13th test).
+- Alternatives considered:
+  - WKB-only (rejected: ~few-percent accuracy on the imaginary part for low l;
+    a cross-check, not a precision tool — Leaver is exact to machine precision).
+  - Pre-tabulated frequencies (rejected: not a solver; cannot explore (M, j)).
+  - Runtime dependency on Leo Stein's `qnm` Python package (rejected: adds a
+    language/runtime dependency; instead used only during development to
+    cross-check the published oracle, not imported by the deliverable).
+
+## ADR-0012: Authorship attribution and AI-assistance disclosure
+
+- Date: 2026-06-14
+- Status: accepted
+- Context: The repository is public and the companion catalogue is being made
+  public. Authorship and the role of AI in producing the work must be stated
+  honestly, and the human author credited.
+- Decision: The human author, director, and reviewer — the Human-in-the-Loop —
+  is **Alexander Donahue** (GitHub `0thernes`, `0_0@0thernes.art`). The code and
+  documentation were produced with substantial AI assistance (Anthropic Claude /
+  Claude Code and a multi-agent research-and-verification system) under his
+  direction and review. This is recorded in `CITATION.cff` and `AUTHORS`.
+  Physics results are validated against independent published references (the
+  oracle pattern), not asserted on authority.
+- Consequences:
+  - Clear, honest academic citation; AI involvement is disclosed rather than
+    hidden.
+  - The proprietary All-Rights-Reserved license (ADR-0009) is unchanged — public
+    visibility is source-viewing per LICENSE §2, and scholarly citation and
+    academic review are expressly welcomed (citation is fair use and needs no
+    grant).
+- Alternatives considered:
+  - Omit the AI-assistance disclosure (rejected: dishonest).
+  - Claim unaided sole human authorship (rejected: false).

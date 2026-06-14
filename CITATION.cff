@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+title: "Black Hole Simulation Lab (BlackHoleDS / OPPENGROK)"
+message: >-
+  If you use or refer to this software, please cite it as below.
+  The human author and Human-in-the-Loop is Alexander Donahue; the
+  work was produced with substantial AI assistance under his direction
+  and review (see AUTHORS and docs/log/DECISIONS.md, ADR-0012).
+type: software
+authors:
+  - given-names: Alexander
+    family-names: Donahue
+    alias: 0thernes
+    email: 0_0@0thernes.art
+    roles:
+      - "Author"
+      - "Director"
+      - "Reviewer (Human-in-the-Loop)"
+repository-code: "https://github.com/0thernes/black-hole-simulation-lab"
+abstract: >-
+  A research-first, C++20 general-relativity black-hole simulation lab:
+  a Carter-separated Kerr null-geodesic engine, closed-form Bardeen
+  shadow rendering, a verification-oracle test discipline, black-hole
+  thermodynamics, and a quasinormal-mode module (Leaver continued-fraction
+  solver for Schwarzschild and Kerr, WKB cross-check, and a spectroscopy
+  front-end realizing the no-hair consistency test). Every published value
+  carries an explicit scientific truth tier. AI-assisted, human-directed and
+  human-reviewed; physics validated against independent published references.
+keywords:
+  - general relativity
+  - black holes
+  - Kerr metric
+  - quasinormal modes
+  - black-hole spectroscopy
+  - no-hair theorem
+  - numerical relativity
+  - AI-assisted research
+license: LicenseRef-Proprietary-AllRightsReserved

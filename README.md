@@ -38,6 +38,14 @@ through Git. ZIP files are intake artifacts only, never the source of truth.
 > **License:** Proprietary — All Rights Reserved (see `LICENSE`, ADR-0009) ·
 > **CI:** GitHub Actions on `windows-latest`
 > (MSVC, green) · **Language:** C++20 + Python 3.11 · **Build:** CMake ≥ 3.20
+>
+> **Author (Human-in-the-Loop):** Alexander Donahue
+> ([0thernes](https://github.com/0thernes)). Created and directed by Alexander
+> Donahue with substantial AI assistance (Anthropic Claude / Claude Code and a
+> multi-agent research-and-verification system); every physics result is
+> validated against independent published references, not asserted on
+> authority. See [`AUTHORS`](AUTHORS), [`CITATION.cff`](CITATION.cff), and
+> ADR-0012. Scholarly citation and academic review are welcome.
 
 ## Table of Contents
 

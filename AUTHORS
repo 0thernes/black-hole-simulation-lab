@@ -1,10 +1,20 @@
 # Authors and Copyright Holders
 
-The following have contributed to BlackHoleDS / OPPENGROK and hold copyright
-in their contributions under the project's AGPL-3.0-or-later license.
+Human author, director, and reviewer (the Human-in-the-Loop):
 
-0thernes <0_0@0thernes.art>  — creator and maintainer
+  Alexander Donahue (GitHub: 0thernes) <0_0@0thernes.art>
+    — creator, maintainer, and sole copyright holder.
 
-Contributions are accepted under the inbound=outbound model (AGPL-3.0); see
-CONTRIBUTING.md. New contributors may add themselves to this file in the
-same pull request as their first contribution.
+This work was produced with substantial AI assistance — Anthropic Claude /
+Claude Code and a multi-agent research-and-verification system — under
+Alexander Donahue's direction and review. He is responsible for the project's
+scope, decisions, and acceptance of every result. AI involvement is disclosed
+deliberately (see docs/log/DECISIONS.md, ADR-0012); it is not hidden.
+
+Physics results are validated against independent published references (the
+oracle / cross-check pattern, e.g. tests/kerr_metric_cross_check_tests.cpp and
+tests/qnm_tests.cpp), not asserted on authority.
+
+License: Proprietary — All Rights Reserved (see LICENSE; ADR-0009). Public
+visibility is source-viewing only; scholarly citation and academic review are
+expressly welcomed (see CITATION.cff).

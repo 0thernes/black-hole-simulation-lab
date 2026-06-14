@@ -252,6 +252,21 @@ else()
     target_compile_options(blackhole_ds_thermo_tests PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+add_executable(blackhole_ds_qnm_tests
+    tests/qnm_tests.cpp
+)
+
+target_include_directories(blackhole_ds_qnm_tests
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+if(MSVC)
+    target_compile_options(blackhole_ds_qnm_tests PRIVATE /W4)
+else()
+    target_compile_options(blackhole_ds_qnm_tests PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
 add_test(NAME blackhole_ds_smoke_tests COMMAND blackhole_ds_smoke_tests)
 add_test(NAME blackhole_ds_integrator_tests COMMAND blackhole_ds_integrator_tests)
 add_test(NAME blackhole_ds_cli_tests COMMAND blackhole_ds_cli_tests)
@@ -264,6 +279,7 @@ add_test(NAME blackhole_ds_kerr_geodesic_tests COMMAND blackhole_ds_kerr_geodesi
 add_test(NAME blackhole_ds_kerr_disk_tests COMMAND blackhole_ds_kerr_disk_tests)
 add_test(NAME blackhole_ds_kerr_metric_cross_check_tests COMMAND blackhole_ds_kerr_metric_cross_check_tests)
 add_test(NAME blackhole_ds_thermo_tests COMMAND blackhole_ds_thermo_tests)
+add_test(NAME blackhole_ds_qnm_tests COMMAND blackhole_ds_qnm_tests)
 
 # The bare-run test asserts on output content, not just the exit code, so a
 # silently-broken CLI cannot pass (inspection finding S07.08).
