@@ -314,8 +314,56 @@ add_test(NAME blackhole_ds_kerr_geodesic_tests COMMAND blackhole_ds_kerr_geodesi
 add_test(NAME blackhole_ds_kerr_disk_tests COMMAND blackhole_ds_kerr_disk_tests)
 add_test(NAME blackhole_ds_kerr_metric_cross_check_tests COMMAND blackhole_ds_kerr_metric_cross_check_tests)
 add_test(NAME blackhole_ds_thermo_tests COMMAND blackhole_ds_thermo_tests)
+add_executable(blackhole_ds_classical_physics_tests
+    tests/classical_physics_tests.cpp
+)
+
+target_include_directories(blackhole_ds_classical_physics_tests
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+if(MSVC)
+    target_compile_options(blackhole_ds_classical_physics_tests PRIVATE /W4)
+else()
+    target_compile_options(blackhole_ds_classical_physics_tests PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+add_executable(blackhole_ds_qrng_sample_tests
+    tests/qrng_sample_tests.cpp
+)
+
+target_include_directories(blackhole_ds_qrng_sample_tests
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+if(MSVC)
+    target_compile_options(blackhole_ds_qrng_sample_tests PRIVATE /W4)
+else()
+    target_compile_options(blackhole_ds_qrng_sample_tests PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+# Pinned 0thernes/quantum_rng (commit 1a77e77). The upstream headers need
+# POSIX unistd.h / sys/time.h, which the MSVC CI image does not provide.
+enable_language(C)
+include(CheckIncludeFile)
+check_include_file(unistd.h BHDS_HAVE_UNISTD_H)
+if(BHDS_HAVE_UNISTD_H)
+    add_library(bhds_qrng STATIC
+        external/quantum_rng/quantum_rng.c
+    )
+    target_include_directories(bhds_qrng PUBLIC
+        ${PROJECT_SOURCE_DIR}/external/quantum_rng
+    )
+    target_link_libraries(blackhole_ds_qrng_sample_tests PRIVATE bhds_qrng)
+    target_compile_definitions(blackhole_ds_qrng_sample_tests PRIVATE BHDS_HAS_QRNG=1)
+endif()
+
 add_test(NAME blackhole_ds_qnm_tests COMMAND blackhole_ds_qnm_tests)
 add_test(NAME blackhole_ds_starfield_tests COMMAND blackhole_ds_starfield_tests)
+add_test(NAME blackhole_ds_classical_physics_tests COMMAND blackhole_ds_classical_physics_tests)
+add_test(NAME blackhole_ds_qrng_sample_tests COMMAND blackhole_ds_qrng_sample_tests)
 
 # The bare-run test asserts on output content, not just the exit code, so a
 # silently-broken CLI cannot pass (inspection finding S07.08).
