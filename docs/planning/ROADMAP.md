@@ -18,6 +18,13 @@ flowchart LR
     M5 --> M6[M6 Ecosystem + scale]
 ```
 
+Status note, 2026-11-10. The diagram above is the original order. M1, M3,
+and the Kerr disk/shadow work under M5 are in the tree and tested. The
+Schwarzschild disk now has a star field on escaped rays. M4 has a stage-0
+seam only (ADR-0013): pixels are still shaded on the CPU, and CI does not
+need a GPU. M2 and M6 are not done. The living checklist is the README's
+milestone list and `docs/process/KANBAN.md`.
+
 ---
 
 ## M0 — Analytic core and research infrastructure (DONE)

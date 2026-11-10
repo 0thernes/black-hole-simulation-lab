@@ -25,8 +25,6 @@ finding id (e.g. `F-005`).
 
 ## Backlog
 
-- `K-101` Geodesic right-hand side: Schwarzschild null-geodesic derivative
-  functor feeding `rk45_integrate` (N=8). [milestone 1]
 - `K-102` Add `model_status` column to `runs` + exporter + harness. [audit
   F-013/F-018 cluster, data-model item 1]
 - `K-103` Adopt strong `units` types in the metrics layer or document the
@@ -37,13 +35,10 @@ finding id (e.g. `F-005`).
 - `K-106` E2E test: run executable → emit data → validate schema ingest.
 - `K-107` A/B integrator harness (RK4 vs DP45: error, runtime, steps).
 - `K-108` PI step-size controller for `rk45_integrate` (fewer rejections).
-- `K-109` Kerr null geodesics (Carter constant; equatorial first).
-- `K-110` CPU photon-ring image (one ray per pixel; lensed disk).
-- `K-111` CUDA port of the ray marcher (RTX 5070 Ti). [headline visual goal]
+- `K-125` Star field on the Kerr disk, once `trace_kerr_pixel` returns an
+  escape direction. The Schwarzschild field is `K-123`.
 - `K-112` First `tsotchke/libirrep` integration per ADR-0005.
 - `K-113` Expand brain corpus toward the full 700-profile roster.
-- `K-114` `.gitattributes` explicit eol rules for `.ps1`/`.sh`/binary.
-  [audit F-024 cluster]
 - `K-115` Remaining audit majors not yet ticketed (triage from the
   2026-06-12 report; 47 open findings).
 - `K-116` Add a `model_status` truth-tier column to the data model so exact
@@ -64,22 +59,36 @@ finding id (e.g. `F-005`).
 
 ## Ready
 
-- `K-101` Geodesic RHS — acceptance: a null ray at large impact parameter
-  deflects by the weak-field GR value 4GM/(c^2 b) within tolerance; a ray
-  at the critical impact parameter asymptotes to the photon sphere.
-- `K-114` `.gitattributes` eol rules — acceptance: fresh clone on Windows
-  produces an LF pre-commit hook and no CRLF churn warnings on `.ps1`.
+*(empty)*
 
 ## In Progress
 
-*(empty — WIP capacity available)*
+- `K-111` CUDA port of the ray marcher (RTX 5070 Ti). Stage 0 only:
+  ADR-0013, `viz/renderer.hpp` still shades on the CPU, and
+  `src/viz/cuda_probe.cu` is a device-count probe compiled only when
+  `BHDS_ENABLE_CUDA=ON` and `nvcc` is present. Acceptance for the port
+  itself is still open: a device image matches the CPU image.
 
 ## Review
 
-*(empty)*
+- `K-123` Star field behind the Schwarzschild lensed disk. Escaped rays
+  sample a synthetic celestial sphere at the geodesic escape azimuth.
+  Acceptance: shadow center stays black, disk pixels are unchanged when
+  stars are toggled, a weak ray's escape azimuth sits just above π, and
+  `tests/starfield_tests.cpp` passes. Images: `docs/images/lensed_disk_i80.png`,
+  `lensed_disk_i20.png`.
 
 ## Done
 
+- `K-101` Schwarzschild null geodesic, photon sphere at \(r = 3M\), shadow
+  radius \(\sqrt{27}\,M\) (`geodesics/schwarzschild_photon.hpp`,
+  `tests/geodesic_tests.cpp`). Merged on main, 2026-06-13.
+- `K-109` Kerr null geodesics, Carter constant (`geodesics/kerr_geodesic.hpp`).
+  Merged on main, 2026-06-13.
+- `K-110` CPU photon ring and lensed disk, Schwarzschild and Kerr.
+  Merged on main, 2026-06-13.
+- `K-114` `.gitattributes` eol rules, including LF for sources and CRLF for
+  `.ps1` (ADR-0008). On main.
 - `K-001` Repo bootstrap iterations 1-8 (foundation, skeleton, vision,
   brain corpus, source cards, integration plan, modularization, daily
   workflow).

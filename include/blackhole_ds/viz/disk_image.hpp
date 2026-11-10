@@ -56,6 +56,7 @@
 #include "blackhole_ds/integrators/ode_state.hpp"
 #include "blackhole_ds/integrators/rk4.hpp"
 #include "blackhole_ds/viz/ppm_writer.hpp"
+#include "blackhole_ds/viz/starfield.hpp"
 
 namespace blackhole_ds::viz {
 
@@ -70,6 +71,10 @@ struct DiskView {
     double dphi = 0.01;            // orbit-angle step (rad)
     double phi_cap = 6.0 * 3.141592653589793; // ~3 full loops
     int samples = 2; // supersampling: samples x samples per pixel
+    // Synthetic celestial sphere behind the disk. Off restores the flat
+    // near-black floor. See starfield.hpp for the truth tiers.
+    bool draw_stars = true;
+    double star_camera_distance_M = 80.0;
 };
 
 enum class HitKind { Disk, Shadow, Background };
@@ -78,6 +83,9 @@ struct PixelHit {
     HitKind kind = HitKind::Background;
     double r_disk = 0.0; // disk radius (M) if kind == Disk
     int order = 0;       // image order (0 = direct/front)
+    // Azimuth swept from the observer to the far asymptote. Negative unless
+    // the ray escaped cleanly to infinity (the star-field direction).
+    double phi_escape = -1.0;
 };
 
 // Trace one image-plane point (X, Y) in units of M.
@@ -150,7 +158,18 @@ struct PixelHit {
         }
         if (past_peri && yn[0] <= u0) {
             // Returned to infinity without hitting the disk: background.
-            return PixelHit{HitKind::Background, 0.0, order};
+            // Interpolate the azimuth where u crosses u0 so the star field
+            // gets the escape angle, not the step past it.
+            double frac = 1.0;
+            if (y[0] > yn[0]) {
+                frac = (y[0] - u0) / (y[0] - yn[0]);
+                frac = std::clamp(frac, 0.0, 1.0);
+            }
+            PixelHit hit;
+            hit.kind = HitKind::Background;
+            hit.order = order;
+            hit.phi_escape = phi + frac * v.dphi;
+            return hit;
         }
 
         gprev = gn;
@@ -234,6 +253,10 @@ struct PixelHit {
         return Rgb{0, 0, 0};
     case HitKind::Background:
     default:
+        if (v.draw_stars && hit.phi_escape >= 0.0) {
+            return starfield_colour(X, Y, hit.phi_escape, v.inclination_deg,
+                                    v.star_camera_distance_M);
+        }
         return background;
     }
 }

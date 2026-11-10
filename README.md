@@ -3,12 +3,14 @@
 ![Lensed accretion disk around a Schwarzschild black hole, 80 deg inclination](docs/images/lensed_disk_i80.png)
 
 *A gravitationally lensed thin accretion disk at 80 deg inclination, rendered
-by this engine from the validated Schwarzschild null-geodesic equation. The
-disk's far side is bent up and over the shadow by spacetime curvature (the
-lensing warp), and one side blazes bright while the other dims — relativistic
-Doppler beaming of the orbiting material (∝ g⁴), the EHT-style asymmetry. The
-lensing geometry and the redshift factor g are GR-exact; the emissivity/colour
-ramp is a `visualization_metaphor`. See [docs/images/](docs/images/README.md).*
+by this engine from the validated Schwarzschild null-geodesic equation, with
+a synthetic star field on the rays that escape. The disk's far side is bent
+up and over the shadow by spacetime curvature (the lensing warp), and one
+side blazes bright while the other dims — relativistic Doppler beaming of
+the orbiting material (∝ g⁴), the EHT-style asymmetry. The lensing geometry
+is a numerical integration of the null geodesic and the redshift factor g
+is exact GR; the emissivity/colour ramp and the star catalog are a
+`visualization_metaphor`. See [docs/images/](docs/images/README.md).*
 
 ![Asymmetric D-shaped shadow of a spinning Kerr black hole, a/M = 0.99](docs/images/kerr_shadow_a099_i80.png)
 
@@ -63,8 +65,8 @@ through Git. ZIP files are intake artifacts only, never the source of truth.
 
 ```powershell
 # Clone, build, test, run — Windows PowerShell.
-git clone https://github.com/0thernes/Stress-Test-Agents-Maxxxing.git
-cd Stress-Test-Agents-Maxxxing
+git clone https://github.com/0thernes/black-hole-simulation-lab.git
+cd black-hole-simulation-lab
 
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
@@ -113,8 +115,9 @@ Implemented now:
   closed-form Bardeen 1973 Kerr shadow boundary; and a full **Kerr
   null-geodesic integrator** — the Carter-separated equations of motion in
   Mino time, validated by constants-of-motion conservation),
-  `viz/` (ASCII shadow, PPM shadow/photon-ring, lensed Doppler-beamed disk,
-  Kerr asymmetric-shadow, and the frame-dragged Kerr lensed-disk ray tracer),
+  `viz/` (ASCII shadow, PPM shadow/photon-ring, lensed Doppler-beamed disk
+  with a star field on the escaped rays, Kerr asymmetric-shadow, and the
+  frame-dragged Kerr lensed-disk ray tracer),
   `data/` (full-precision CSV export).
 - CLI executable with `--mass`, `--spin`, `--format text|csv`, `--steps`,
   `--deflection <b/M>` (light bending), `--shadow` (ASCII shadow),
@@ -138,11 +141,14 @@ Implemented now:
 
 Not implemented yet (in build order):
 
-- Lensed background **star field** behind the disk (the disk, its colour, the
-  Doppler beaming, and the higher-order lensed images are done; an external
-  celestial-sphere background to lens is not).
-- GPU port of the ray marcher (CUDA, RTX-class — the headline goal; the CPU
-  Kerr disk/shadow tracers are the validated seed of it).
+- GPU port of the ray marcher. Stage 0 is in place (ADR-0013): the disk
+  image goes through `viz/renderer.hpp`, which is the CPU tracer, and a
+  CUDA device-count probe compiles only when `BHDS_ENABLE_CUDA=ON` and
+  `nvcc` exists. CI does not set that flag, so the build stays CPU. The
+  device kernel that would shade pixels is not written yet.
+- Kerr-disk star field. The Schwarzschild disk samples a synthetic
+  celestial sphere on escaped rays. The Kerr disk tracer does not yet
+  return an escape direction, so its background is still the dark floor.
 - GRMHD or numerical-relativity solver.
 - Truth-tier column in the SQLite schema.
 - Production Power BI/Excel templates.
@@ -314,25 +320,20 @@ Full index: [docs/INDEX.md](docs/INDEX.md). The essentials:
 
 ## Next Milestones
 
-The visual simulation is the destination; these are the steps in order.
+The visual simulation is the destination. Status against that list:
 
-1. First geodesic integrator (null geodesics in Schwarzschild, RK45 with
-   error control), validated against the analytic photon sphere.
+1. Geodesic integrator — DONE. Schwarzschild null orbits, the photon
+   sphere at \(r = 3M\), and the shadow radius \(\sqrt{27}\,M\)
+   (`tests/geodesic_tests.cpp`, `tests/shadow_tests.cpp`).
 2. Truth-tier column in `data/schema.sql` plus matching exporter and
-   harness updates, so exact values and approximations can never share a
-   table unlabeled.
-3. E2E test: run executable, emit data, validate schema ingest round-trip.
-4. A/B harness for integrator candidate comparison (error, runtime,
-   stability).
-5. First lensed-image computation on CPU — DONE (lensed Doppler-beamed disk +
-   shadow/photon ring). Kerr shadow — DONE (closed-form Bardeen boundary,
-   `--kerr-shadow`). Kerr null-geodesic integrator + **frame-dragged Kerr
-   lensed disk** — DONE (`--kerr-disk`, real geodesics with the Carter
-   constant, anchored by an a → 0 regression to the Schwarzschild disk).
-6. GPU port of the ray marcher (CUDA, RTX 5070 Ti class) - the first
-   visual prototype: gravitationally lensed accretion-disk render with
-   honest tier labeling (visualization_metaphor for color mapping,
-   analytic/numerical tiers for the geometry underneath).
-7. First tsotchke integration (libirrep) per ADR-0005.
+   harness updates — not done.
+3. E2E test: run executable, emit data, validate schema ingest — not done.
+4. A/B harness for integrator comparison — not done.
+5. CPU lensed image — DONE. Doppler-beamed disk, shadow and photon ring,
+   Kerr shadow (`--kerr-shadow`), Kerr disk (`--kerr-disk`), and a star
+   field on Schwarzschild rays that escape (`viz/starfield.hpp`).
+6. GPU port — started, not shading pixels. ADR-0013. CPU fallback is the
+   default and is what CI builds.
+7. First tsotchke integration (libirrep) per ADR-0005 — not done.
 
 This repo is now the place where that work happens.
