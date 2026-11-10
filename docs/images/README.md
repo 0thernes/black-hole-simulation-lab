@@ -9,8 +9,8 @@ validated geodesic physics — regenerate any time with the commands below.
 
 | Image | What it is |
 |---|---|
-| `lensed_disk_i80.png` | Lensed thin accretion disk, observer inclination 80 deg (near edge-on). The far side is bent up and over the shadow by gravitational lensing, and one side is far brighter than the other from relativistic Doppler beaming — the canonical "Interstellar + EHT" look. |
-| `lensed_disk_i20.png` | The same disk at 20 deg inclination (near face-on) — a more open ring with a milder Doppler asymmetry. |
+| `lensed_disk_i80.png` | Lensed thin accretion disk, observer inclination 80 deg (near edge-on), with a synthetic star field on rays that miss the disk and the hole. The far side is bent up and over the shadow by gravitational lensing, and one side is far brighter than the other from relativistic Doppler beaming. |
+| `lensed_disk_i20.png` | The same disk at 20 deg inclination (near face-on). The disk fills the frame, so the star field shows in the gap between the inner disk edge and the shadow. |
 | `shadow_photon_ring.png` | The bare Schwarzschild shadow encircled by its photon ring (brightness from the integrated deflection angle). |
 | `kerr_shadow_a099_i80.png` | The shadow of a **spinning** (Kerr) black hole, spin a/M = 0.99, observer inclination 80 deg. Unlike the Schwarzschild circle, it is an asymmetric **D-shape**: spin flattens the co-rotating side and displaces the whole shadow (here by 4.67 M in the horizontal α-extent). This is the closed-form Bardeen 1973 boundary — the defining visual signature of black-hole spin, and what the EHT uses to constrain it. |
 | `kerr_disk_a09_i78.png` | The gravitationally lensed accretion disk around a **spinning** (Kerr) black hole, spin a/M = 0.9 at 78 deg inclination, **ray-traced through real Kerr null geodesics** (not the planar Schwarzschild approximation). The far side of the disk bends up over the shadow (the lensing warp), one side is Doppler-beamed bright, and frame dragging twists the geometry. Anchored by an a → 0 regression: at zero spin the tracer reproduces the Schwarzschild disk. |
@@ -42,6 +42,12 @@ blackhole_ds --kerr-disk kerr_disk_a09_i78.ppm --spin 0.9 --inclination 78
 - The **intrinsic emissivity profile and colour ramp** are a
   `visualization_metaphor` — a warm temperature-like ramp that fades with
   radius, not a radiometric surface-brightness model.
+- The **star field** behind `lensed_disk_i80.png` and `lensed_disk_i20.png`
+  is a synthetic catalog and a smooth band (`visualization_metaphor`).
+  Which star a background pixel shows is chosen by rotating the camera
+  direction through the ray's escape azimuth, and that azimuth is the
+  integrated Schwarzschild orbit (`numerical_approximation`). The Kerr
+  disk image does not have this background yet.
 - **Kerr spin** is now modelled for the *shadow* via the closed-form Bardeen
   1973 boundary (`kerr_shadow_a099_i80.png`): the boundary curve is
   `analytic_classical` (exact GR, no integration), validated by its a → 0

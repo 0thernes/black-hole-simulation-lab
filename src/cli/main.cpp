@@ -28,7 +28,12 @@
 #include "blackhole_ds/viz/disk_image.hpp"
 #include "blackhole_ds/viz/kerr_disk_image.hpp"
 #include "blackhole_ds/viz/kerr_shadow_image.hpp"
+#include "blackhole_ds/viz/renderer.hpp"
 #include "blackhole_ds/viz/shadow_image.hpp"
+
+#if defined(BHDS_HAS_CUDA)
+extern "C" int bhds_cuda_device_count();
+#endif
 
 namespace bhds = blackhole_ds;
 using bhds::cli::Options;
@@ -197,7 +202,7 @@ int main(int argc, char** argv) {
     if (opt.disk_set) {
         bhds::viz::DiskView dv;
         dv.inclination_deg = opt.inclination_deg;
-        const bhds::viz::Image img = bhds::viz::render_disk_image(dv);
+        const bhds::viz::Image img = bhds::viz::render_lensed_disk(dv);
         std::ofstream out(opt.disk_path, std::ios::binary);
         if (!out) {
             std::cerr << "could not open disk image path: " << opt.disk_path
@@ -210,10 +215,17 @@ int main(int argc, char** argv) {
                   << "\nObserver inclination: " << std::fixed
                   << std::setprecision(1) << dv.inclination_deg << " deg; disk "
                   << dv.r_in_M << "-" << dv.r_out_M << " M\n"
-                  << "Truth tier: lensing geometry + redshift factor "
-                     "(gravitational + orbital + Doppler) are GR-exact; "
-                     "emissivity/colour is a visualization_metaphor. No Kerr "
-                     "spin yet.\n";
+                  << "Truth tier: disk lensing geometry is a "
+                     "numerical_approximation of the Schwarzschild null "
+                     "geodesic; redshift factor g is analytic_classical; "
+                     "disk emissivity/colour and the synthetic star catalog "
+                     "are a visualization_metaphor. Stars are placed by the "
+                     "ray's escape azimuth. Backend: "
+                  << bhds::viz::render_backend_name()
+#if defined(BHDS_HAS_CUDA)
+                  << " (CUDA devices: " << bhds_cuda_device_count() << ")"
+#endif
+                  << ".\n";
         return EXIT_SUCCESS;
     }
     if (opt.kerr_shadow_set) {

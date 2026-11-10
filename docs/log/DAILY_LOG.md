@@ -20,6 +20,53 @@ Entry format:
 
 ---
 
+## 2026-11-10 (physics)
+
+- Context: The next change had to be testable GR, not another picture.
+- Done:
+  - Page–Thorne flux of a Novikov–Thorne disk, closed form at a = 0 and a
+    numerical integral for Kerr. Schwarzschild F(10 M) = 1.356875463805e-4
+    for Mdot = 1.
+  - Photon-sphere Lyapunov exponent 1/sqrt(27) per unit coordinate time,
+    half-orbit factor e^{pi}, subring demagnification e^{-pi} =
+    4.321391826377e-2. The orbit equation grows as cosh(phi).
+  - Schwarzschild Gamma^r_tt rebuilt from a finite difference of g_tt.
+  - Exact integer certificates, mirrored in proofs/ClassicalGR.lean.
+    Lean was not installed here, so CTest runs the static_asserts.
+  - Seeded quantum_rng (0thernes fork, commit 1a77e77) samples the flux
+    when unistd.h exists. Moonlab, QGTL, and Rosette Wire do not compute
+    these observables and are not linked.
+- Learned: dr_isco/da at a = 0+ is -3.266. A two-sided step of 1e-7 is
+  noise; 1e-4 and 1e-3 agree.
+- Next: put the Page–Thorne flux into the disk readout, and the Kerr
+  escape direction, still without a new picture for its own sake.
+
+## 2026-11-10
+
+- Context: The daily feed had stopped at 2026-10-24, and the board still
+  listed the geodesic and the lensed disk as not started.
+- Done:
+  - Audited every research drop on every branch. First digest 2026-06-14,
+    last 2026-10-24, 34 files, 328 entries. Nothing in git is a 2025 daily
+    drop. Wrote `knowledge/papers/ARCHIVE-AUDIT.md` and the monthly mini
+    reports. Backfilled the two long silences from the arXiv API, marked
+    as retrieved 2026-11-10.
+  - Star field behind the Schwarzschild lensed disk. Shadow stays black.
+    Disk pixels are unchanged. Reference images in `docs/images/` updated.
+  - Reference check: photon sphere at \(r = 3M\) is an equilibrium of the
+    orbit equation, and the shadow radius is \(\sqrt{27}\,M\).
+  - ADR-0013: CUDA port staged behind the CPU renderer. `BHDS_ENABLE_CUDA`
+    with no `nvcc` still configures the CPU build.
+- Learned: the feed's arXiv ids (119 of them) all resolve, and the titles
+  match. The Consensus entries never recorded an arXiv id.
+- Next: the CUDA kernel itself, one thread per pixel, diffed against the
+  CPU image. Kerr star field once that tracer returns an escape direction.
+- Open questions:
+  - Dependabot #6 (`actions/setup-python` 5 to 7) and #8 (`lxml` floor
+    `>=5.0` to `>=6.1.3`) were left unmerged. Notes are in the PR that
+    carries this log entry. #8 is the one with a security reason to look
+    at; #6 is a major bump of an action the workflow still calls as v5.
+
 ## 2026-06-12
 
 - Context: Full multi-agent repository audit ("Review Audit All") of the

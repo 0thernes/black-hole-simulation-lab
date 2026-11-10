@@ -26,6 +26,15 @@ One markdown file per pull, named `YYYY-MM-DD.md`, grouped by domain, each entry
 with title, authors, year, venue, a one-line summary, a truth-tier label, and a
 link. See any dated digest for the shape.
 
+Files named `BACKFILL-*.md` are not historical drops. They were retrieved
+later to cover a silence, and each entry says so.
+
+## Reading the archive
+
+The audit of every drop, the gaps, and the duplicates is
+[`../ARCHIVE-AUDIT.md`](../ARCHIVE-AUDIT.md). Month-by-month mini reports
+and the build list are in [`../reports/`](../reports/).
+
 ## Honesty note
 
 Most feed items are **not peer-reviewed** (arXiv preprints) and some are

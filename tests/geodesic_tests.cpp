@@ -12,6 +12,7 @@
 #include <cstdlib>
 
 #include "blackhole_ds/geodesics/schwarzschild_photon.hpp"
+#include "blackhole_ds/integrators/rk4.hpp"
 
 namespace sch = blackhole_ds::geodesics::schwarzschild;
 
@@ -35,9 +36,29 @@ bool close_rel(double actual, double expected, double rel_tol) {
 } // namespace
 
 int main() {
-    // --- Critical impact parameter is sqrt(27) = 3*sqrt(3) ---
+    // --- Reference: shadow radius sqrt(27) M, photon sphere at r = 3M ---
+    // b_crit = sqrt(27) M = 3*sqrt(3) M is the critical impact parameter.
+    // The unstable circular photon orbit sits at r = 3M (u = 1/3), where
+    // the orbit right-hand side u'' = 3u^2 - u is exactly zero. RK4 must
+    // stay on that orbit.
     CHECK(close_rel(sch::b_critical, std::sqrt(27.0), 1e-12));
     CHECK(close_rel(sch::b_critical, 3.0 * std::sqrt(3.0), 1e-12));
+    {
+        using blackhole_ds::integrators::rk4_step;
+        using blackhole_ds::integrators::State;
+        const auto deriv = [](double, const State<2>& y) -> State<2> {
+            return State<2>{y[1], 3.0 * y[0] * y[0] - y[0]};
+        };
+        State<2> y{1.0 / 3.0, 0.0};
+        const State<2> rhs = deriv(0.0, y);
+        CHECK(std::abs(rhs[0]) < 1e-15);
+        CHECK(std::abs(rhs[1]) < 1e-15);
+        for (int i = 0; i < 4000; ++i) {
+            y = rk4_step<2>(deriv, 0.01 * i, y, 0.01);
+        }
+        CHECK(std::abs(y[0] - 1.0 / 3.0) < 1e-12);
+        CHECK(std::abs(y[1]) < 1e-12);
+    }
 
     // --- Ray classification around the shadow boundary ---
     CHECK(sch::classify(10.0) == sch::RayFate::Escapes);

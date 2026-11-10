@@ -354,3 +354,45 @@ Numbers are assigned in order. Do not renumber.
 - Alternatives considered:
   - Omit the AI-assistance disclosure (rejected: dishonest).
   - Claim unaided sole human authorship (rejected: false).
+
+## ADR-0013: CUDA ray marcher, staged, CPU fallback mandatory
+
+- Date: 2026-11-10
+- Status: accepted (stage 0). Stages 1–4 are not done.
+- Context: The headline goal is a GPU ray marcher on an RTX-class card.
+  The CPU tracers (`viz/disk_image.hpp`, `viz/kerr_disk_image.hpp`,
+  `viz/starfield.hpp`) are the validated pictures. CI runs on
+  `windows-latest` with MSVC and has no GPU. A CUDA requirement on the
+  default build would make that CI red.
+- Decision: Stage the port. The default build is the CPU renderer, and it
+  stays the oracle.
+  - Stage 0 (this ADR). `viz/renderer.hpp` is the only call the CLI uses
+    for the lensed disk. It calls `render_disk_image`. `BHDS_ENABLE_CUDA`
+    defaults to OFF. When it is ON and CMake finds a CUDA compiler,
+    `src/viz/cuda_probe.cu` is built and linked. That file only reports
+    `cudaGetDeviceCount`. It does not shade a pixel. When it is ON and no
+    CUDA compiler exists, configure prints a status line and the CPU
+    build proceeds. `render_backend_name()` stays `"cpu"` until a kernel
+    actually writes the image.
+  - Stage 1. One thread per pixel for the Schwarzschild orbit equation
+    (`u'' = 3u^2 - u`), the disk crossings, and the star-field direction.
+    Compare the image to the CPU tracer on a fixed scene. Tolerance is a
+    per-pixel bound on the hit kind and, for disk hits, on the radius, plus
+    a bound on the measured shadow radius against \(\sqrt{27}\,M\).
+  - Stage 2. The same for the Kerr disk (`kerr_disk_image.hpp`). Heavier,
+    and the a → 0 frame must still match the Schwarzschild CPU image.
+  - Stage 3. Move the star catalog lookup to the device. The catalog seed
+    stays the one in `starfield.hpp`, so the picture does not change.
+  - Stage 4. Resolution and samples. Not GRMHD, not a new metric.
+- Consequences:
+  - CI without a GPU keeps passing, because the flag is off.
+  - A green CUDA build that only counts devices is not a GPU renderer.
+    The backend string does not say `cuda` until stage 1 lands.
+  - The CPU tests remain the acceptance test for every later stage.
+- Alternatives considered:
+  - Put CUDA on the default target (rejected: CI has no GPU, and a missing
+    `nvcc` would fail the build the project already has).
+  - A separate repository for the GPU port (rejected: the oracle and the
+    kernel would drift).
+  - Shade pixels in the stage-0 `.cu` with a stub colour (rejected: a stub
+    image would look like progress and would not match the CPU oracle).
