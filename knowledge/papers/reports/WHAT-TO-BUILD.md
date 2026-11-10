@@ -10,7 +10,7 @@ Ranked by what would change the simulator people actually run. Counts are how ma
 
 4. **Do not put plasma, hair, or a dark-matter halo into the default ray.** 13 entries mention plasma. Many more replace Kerr with a charged, hairy, or halo-dressed metric and then compare the shadow to EHT. Those are the papers that can fool a picture into looking "more realistic" while leaving the tested Kerr geodesic. If one of them is ever drawn, it needs its own truth label and a switch that defaults off.
 
-5. **Thin-disk emissivity is still a picture.** 28 entries mention accretion. The renderer multiplies a radial ramp by g^4. That g is the GR redshift. The ramp is not a radiative-transfer model. A later pass can swap the ramp for a published thin-disk spectrum. It should not be smuggled in as if the current colours were that spectrum.
+5. **Thin-disk emissivity is still a picture on screen.** 28 entries mention accretion. The renderer still multiplies a radial ramp by g^4. That g is the GR redshift. The ramp is not a radiative-transfer model. The Page–Thorne flux itself is now a tested function (`include/blackhole_ds/disk/novikov_thorne.hpp`); it is not yet what the pixels use. Swapping the ramp for that flux is a later readout, not a new picture.
 
 6. **Ringdown stays in the QNM module.** 94 entries mention ringdown or quasinormal modes. The Leaver solver, the WKB check, and the Berti fit are the place those papers can be compared. They do not change a pixel.
 

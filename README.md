@@ -305,10 +305,24 @@ Full index: [docs/INDEX.md](docs/INDEX.md). The essentials:
 | Decisions | [ADRs](docs/log/DECISIONS.md), [Daily Log](docs/log/DAILY_LOG.md) |
 | Quality | [Full Audit](docs/audits/AUDIT-2026-06-12-FULL-REPO-REVIEW.md), [500-Point Inspection](docs/audits/INSPECTION-500-POINT.md) |
 | Terms | [GLOSSARY](docs/GLOSSARY.md) |
+| Equations | [PHYSICS](docs/PHYSICS.md) |
+
+## Languages
+
+The simulator is C, C++, and CUDA C++ for the kernel and any GPU port, and
+Python for the harness, analysis, and validation. Eshkol
+([0thernes/eshkol](https://github.com/0thernes/eshkol), forked from
+tsotchke/eshkol) is allowed when its compiler is actually present to
+differentiate a formula. It is not a required dependency, and this tree does
+not call it. JavaScript, TypeScript, HTML, and WebGL are not added. The
+existing `gh-pages` branch is left as it is. The fit of Eshkol, Moonlab,
+QGTL, Rosette Wire, and quantum_rng is recorded in
+[docs/PHYSICS.md](docs/PHYSICS.md).
 
 ## Project Rules
 
 - No ZIP-as-final workflow.
+- No JavaScript, TypeScript, HTML, or WebGL front end.
 - No untracked project work after a meaningful change.
 - No generated build/data exports committed unless explicitly curated.
 - No secrets, credentials, tokens, private keys, or local daemon state.

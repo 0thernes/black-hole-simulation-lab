@@ -20,6 +20,27 @@ Entry format:
 
 ---
 
+## 2026-11-10 (physics)
+
+- Context: The next change had to be testable GR, not another picture.
+- Done:
+  - Page–Thorne flux of a Novikov–Thorne disk, closed form at a = 0 and a
+    numerical integral for Kerr. Schwarzschild F(10 M) = 1.356875463805e-4
+    for Mdot = 1.
+  - Photon-sphere Lyapunov exponent 1/sqrt(27) per unit coordinate time,
+    half-orbit factor e^{pi}, subring demagnification e^{-pi} =
+    4.321391826377e-2. The orbit equation grows as cosh(phi).
+  - Schwarzschild Gamma^r_tt rebuilt from a finite difference of g_tt.
+  - Exact integer certificates, mirrored in proofs/ClassicalGR.lean.
+    Lean was not installed here, so CTest runs the static_asserts.
+  - Seeded quantum_rng (0thernes fork, commit 1a77e77) samples the flux
+    when unistd.h exists. Moonlab, QGTL, and Rosette Wire do not compute
+    these observables and are not linked.
+- Learned: dr_isco/da at a = 0+ is -3.266. A two-sided step of 1e-7 is
+  noise; 1e-4 and 1e-3 agree.
+- Next: put the Page–Thorne flux into the disk readout, and the Kerr
+  escape direction, still without a new picture for its own sake.
+
 ## 2026-11-10
 
 - Context: The daily feed had stopped at 2026-10-24, and the board still
